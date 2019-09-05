@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'dart:developer';
+import "config.dart";
+import 'package:http/http.dart' as http;
+
+typedef VoidFunction = void Function(String loginToken);
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.title}) : super(key: key);
+  LoginPage({Key key, this.onLogIn}) : super(key: key);
 
-  final String title;
+  final VoidFunction onLogIn;
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final emailTextController = TextEditingController();
+  final passwordTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,6 +36,7 @@ class _LoginPageState extends State<LoginPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                 ),
+                controller: emailTextController,
             ),
             TextField(
                 autofocus: false,
@@ -36,14 +44,13 @@ class _LoginPageState extends State<LoginPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Password',
                 ),
+                controller: passwordTextController,
             ),
             new Container (
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: 10.0),
                 child: RaisedButton(
-                    onPressed: (){
-                        log("Press");
-                    },
+                    onPressed: () {},
                     padding: const EdgeInsets.all(15),
                     child: Text(
                         "Login",
@@ -69,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: 10.0),
                 child: FlatButton(
-                    onPressed: (){
+                      onPressed: (){
                         log("Press");
                     },
                     padding: const EdgeInsets.all(15),
@@ -84,4 +91,17 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-}
+
+    @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    emailTextController.dispose();
+    super.dispose();
+  }
+
+
+    Future<http.Response> onLogin(String apiBaseUrl) {
+      return http.post(apiBaseUrl + "/login", body: '{"email":"' + emailTextController.text + '","password":"' + passwordTextController.text +'"}', headers: {'Content-type': 'application/json'});
+    }
+  }
+

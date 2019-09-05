@@ -3,12 +3,12 @@ import 'dart:developer';
 import "config.dart";
 import 'package:http/http.dart' as http;
 
-typedef VoidFunction = void Function(String loginToken);
+typedef VoidFunction = void Function();
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.onLogIn}) : super(key: key);
+  LoginPage({Key key, this.onBack}) : super(key: key);
 
-  final VoidFunction onLogIn;
+  final VoidFunction onBack;
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -21,14 +21,28 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar
+      (
+        title: Text("Sign Up or Log in"),
+        leading: FlatButton
+        (
+          child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
+          onPressed: ()
+          {
+            this.widget.onBack();
+          },
+          ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Image(
-                image: AssetImage(
-                    'images/icon.jpg',
-                    ),
+            Expanded(
+              child: Image(
+                  image: AssetImage(
+                      'images/icon.jpg',
+                      ),
+              ),
             ),
             TextField(
                 autofocus: true,
@@ -98,7 +112,6 @@ class _LoginPageState extends State<LoginPage> {
     emailTextController.dispose();
     super.dispose();
   }
-
 
     Future<http.Response> onLogin(String apiBaseUrl) {
       return http.post(apiBaseUrl + "/login", body: '{"email":"' + emailTextController.text + '","password":"' + passwordTextController.text +'"}', headers: {'Content-type': 'application/json'});

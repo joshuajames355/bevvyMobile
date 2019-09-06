@@ -69,6 +69,7 @@ class ProductWidget extends StatelessWidget
           margin: EdgeInsets.all(3),
           child: Column
           (
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Center
               (

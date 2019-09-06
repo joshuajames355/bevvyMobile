@@ -187,13 +187,14 @@ class _AppState extends State<App>{
         ],
         bottom: PreferredSize
         (
-          preferredSize: const Size.fromHeight(50),
+          preferredSize: const Size.fromHeight(58),
           child: Align
           (
             alignment: Alignment.topCenter,
             child: Container
             (
               height: 50,
+              margin: EdgeInsets.all(4),
               child: ListView
               (
                 scrollDirection: Axis.horizontal,
@@ -201,7 +202,7 @@ class _AppState extends State<App>{
                 {
                     return Container
                     (
-                      margin: EdgeInsets.symmetric(horizontal: 5),
+                      margin: EdgeInsets.symmetric(horizontal: 4),
                       child: RaisedButton
                       (
                         child: Text(category),

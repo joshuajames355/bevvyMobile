@@ -104,7 +104,17 @@ class _AppState extends State<App>{
   {
     if(currentPage == StorePage.home)
     {
-      return StoreFrontHome(productListByCategory: widget.productListByCategory);
+      return StoreFrontHome
+      (
+        productListByCategory: widget.productListByCategory,
+        onSelectCategory: (String category)
+        {
+          setState(() {
+            currentCategory=category; 
+            currentPage=StorePage.category;
+          });
+        }
+      );
     }
     else if(currentPage == StorePage.search)
     {

@@ -2,12 +2,15 @@ import 'package:bevvymobile/product.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+typedef void OnSelectCategory(String category);
+
 //Renders a List of all products, seperated by categories.
 class StoreFrontHome extends StatelessWidget
 {
-  const StoreFrontHome({ Key key, this.productListByCategory}) : super(key: key);
+  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory}) : super(key: key);
 
   final Map<String, List<Product>> productListByCategory;
+  final OnSelectCategory onSelectCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -25,12 +28,25 @@ class StoreFrontHome extends StatelessWidget
                 (
                   child: Container
                   (
-                    margin: EdgeInsets.symmetric(vertical: 5),
-                    child: Text
+                    child: SizedBox
                     (
-                      category,
-                      style: TextStyle(fontSize: 20),
-                    ),
+                      width: double.infinity,
+                      child: FlatButton(
+                        child: Padding
+                        (
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Text
+                          (
+                            category,
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ),
+                        onPressed: ()
+                        {
+                          onSelectCategory(category);
+                        },
+                      )
+                    )
                   )
                 ),
                 Container

@@ -4,7 +4,7 @@ import 'package:bevvymobile/StoreFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
 import 'package:flutter/material.dart';
 
-enum StorePage {home, category, search, login}
+enum StorePage {home, category, search}
 
 class App extends StatefulWidget {
   App({Key key}) : super(key: key)
@@ -12,7 +12,7 @@ class App extends StatefulWidget {
     productList = [
       Product(iconName: "jd.jpg",
         title: "Jack Daniels (70cl)",
-        description: "Dunno, Guess I Should put a description here.",
+        description: "Dunno, Guess I Should put a description here. Lets just quickly make it long enough to wrap. This will probably make it long enough.",
         price: "£19.99",
         category: "Whiskey"),
       Product(iconName: "smirnoff.jpg",
@@ -78,44 +78,45 @@ class _AppState extends State<App>{
   StorePage currentPage = StorePage.home;
   String currentCategory;
   final TextEditingController _controller = TextEditingController();
+  final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    if(currentPage == StorePage.login)
-    {
-      return MaterialApp(
-      title: 'Bevvy',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: LoginPage(onBack: (){
-        setState(() {
-          this.currentPage = StorePage.home;
-        });
-      },)
-    );
-    }
-
-    Widget page;
-
-    if(currentPage == StorePage.home) page=StoreFrontHome(productListByCategory: widget.productListByCategory);
-    if(currentPage == StorePage.category) page=ProductGridView(productList: widget.productListByCategory[currentCategory]);
-    if(currentPage == StorePage.search) page=ProductGridView(productList: widget.productList.where((Product x)
-    {
-      return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-    }).toList());
-
     return MaterialApp(
       title: 'Bevvy',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold
-      (
-        appBar: buildAppBar(context),
-        body: page
-      ) 
+      initialRoute: "/",
+      routes: 
+      {
+        "/login" : (context) => LoginPage(),
+        "/" : (context) => Scaffold
+        (
+          appBar: buildAppBar(context),
+          body: buildBody(context),
+        ) 
+      }
     );
+  }
+
+  Widget buildBody(BuildContext context)
+  {
+    if(currentPage == StorePage.home)
+    {
+      return StoreFrontHome(productListByCategory: widget.productListByCategory);
+    }
+    else if(currentPage == StorePage.search)
+    {
+      return ProductGridView(productList: widget.productList.where((Product x)
+      {
+        return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+      }).toList());
+    }
+    else
+    {
+      return ProductGridView(productList: widget.productListByCategory[currentCategory]);
+    }
   }
 
   AppBar buildAppBar(BuildContext context)
@@ -132,7 +133,7 @@ class _AppState extends State<App>{
           onPressed: ()
           {
             setState(() {
-             currentPage = StorePage.home; 
+              currentPage=StorePage.home;
             });
           },
           padding: EdgeInsets.all(2),
@@ -157,16 +158,14 @@ class _AppState extends State<App>{
           controller: _controller,
           onChanged: (String currentText)
           {
-            setState(() 
-            {
-             currentPage = StorePage.search; 
+            setState(() {
+              currentPage=StorePage.search;
             });
           },
           onSubmitted: (String currentText)
           {
-            setState(() 
-            {
-             currentPage = StorePage.search; 
+            setState(() {
+              currentPage=StorePage.search;
             });
           },
         ),
@@ -176,10 +175,7 @@ class _AppState extends State<App>{
           (
             onPressed: ()
             {
-              setState(() 
-              {
-                currentPage = StorePage.login; 
-              });
+              Navigator.pushNamed(context, "/login");
             },
             icon: Icon
             (
@@ -211,9 +207,8 @@ class _AppState extends State<App>{
                         child: Text(category),
                         onPressed: ()
                         {
-                          setState(() 
-                          {
-                            currentCategory=category;
+                          setState(() {
+                            currentCategory=category; 
                             currentPage=StorePage.category;
                           });
                         },
@@ -229,6 +224,3 @@ class _AppState extends State<App>{
 }
 
 void main() => runApp(App());
-
-
-

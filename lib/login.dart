@@ -3,12 +3,8 @@ import 'dart:developer';
 import "config.dart";
 import 'package:http/http.dart' as http;
 
-typedef VoidFunction = void Function();
-
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.onBack}) : super(key: key);
-
-  final VoidFunction onBack;
+  LoginPage({Key key}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -29,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
           onPressed: ()
           {
-            this.widget.onBack();
+            Navigator.pop(context);
           },
           ),
       ),

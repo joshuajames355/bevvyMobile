@@ -9,6 +9,13 @@
             "request": "launch",
             "type": "dart",
             "program" : "lib/main_dev.dart"
+        },
+        {
+            "name": "BevvyMobile Profiling",
+            "request": "launch",
+            "type": "dart",
+            "program" : "lib/main_dev.dart",
+            "flutterMode": "profile"
         }
     ]
 }

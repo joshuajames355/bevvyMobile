@@ -5,17 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "BevvyMobile Dev",
+            "name": "Dev",
             "request": "launch",
             "type": "dart",
             "program" : "lib/main_dev.dart"
         },
         {
-            "name": "BevvyMobile Profiling",
+            "name": "Profiling",
             "request": "launch",
             "type": "dart",
             "program" : "lib/main_dev.dart",
             "flutterMode": "profile"
+        }
+        ,
+        {
+            "name": "Release",
+            "request": "launch",
+            "type": "dart",
+            "program" : "lib/main_prod.dart",
+            "flutterMode": "release"
         }
     ]
 }

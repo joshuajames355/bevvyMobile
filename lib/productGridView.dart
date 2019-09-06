@@ -1,6 +1,7 @@
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import "productWidget.dart";
 
 //Renders a List of all products, seperated by categories.
 class ProductGridView extends StatelessWidget

@@ -1,4 +1,5 @@
 import 'package:bevvymobile/product.dart';
+import 'package:bevvymobile/productWidget.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

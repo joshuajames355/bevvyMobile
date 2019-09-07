@@ -2,6 +2,7 @@ import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/StoreFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
+import 'package:bevvymobile/checkout.dart';
 import 'package:flutter/material.dart';
 
 enum StorePage {home, category, search}
@@ -48,7 +49,7 @@ class App extends StatefulWidget {
     ];
 
     categories = [];
-    productListByCategory = Map();
+    productListByCategory = Map<String, List<Product>>();
     productList.forEach((Product x)
     {
       if(!categories.contains(x.category))
@@ -79,6 +80,14 @@ class _AppState extends State<App>{
   String currentCategory;
   final TextEditingController _controller = TextEditingController();
   final navigatorKey = GlobalKey<NavigatorState>();
+  Map<Product, int> checkoutData; //Products and quantities.
+
+  @override
+  initState()
+  {
+    super.initState();
+    checkoutData = Map<Product, int>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,14 +96,20 @@ class _AppState extends State<App>{
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: "/",
       routes: 
       {
-        "/login" : (context) => LoginPage(),
         "/" : (context) => Scaffold
         (
           appBar: buildAppBar(context),
           body: buildBody(context),
+          floatingActionButton: FloatingActionButton
+          (
+            child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+            onPressed: ()
+            {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Checkout(checkoutData: checkoutData, removeFromBasket: removeFromBasket,)));
+            },
+          ),
         ) 
       }
     );
@@ -113,7 +128,9 @@ class _AppState extends State<App>{
             currentCategory=category; 
             currentPage=StorePage.category;
           });
-        }
+        },
+        checkoutData: checkoutData,
+        addToBasket: addToBasket
       );
     }
     else if(currentPage == StorePage.search)
@@ -121,11 +138,13 @@ class _AppState extends State<App>{
       return ProductGridView(productList: widget.productList.where((Product x)
       {
         return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-      }).toList());
+      }).toList(),
+      checkoutData: checkoutData,
+        addToBasket: addToBasket);
     }
     else
     {
-      return ProductGridView(productList: widget.productListByCategory[currentCategory]);
+      return ProductGridView(productList: widget.productListByCategory[currentCategory], checkoutData: checkoutData,  addToBasket: addToBasket);
     }
   }
 
@@ -185,7 +204,7 @@ class _AppState extends State<App>{
           (
             onPressed: ()
             {
-              Navigator.pushNamed(context, "/login");
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
             },
             icon: Icon
             (
@@ -231,6 +250,27 @@ class _AppState extends State<App>{
           )
         )
     );
+  }
+
+  addToBasket(Product product, int quantity)
+  {
+    setState(() {
+      if(checkoutData.containsKey(product))
+      {
+        checkoutData[product] += quantity;
+      }
+      else
+      {
+        checkoutData[product] = quantity;
+      }
+    });
+  }
+
+  removeFromBasket(Product product)
+  {
+    setState(() {
+      checkoutData.remove(product);
+    });
   }
 }
 

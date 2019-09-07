@@ -4,14 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 typedef void OnSelectCategory(String category);
+typedef void AddToBasketFunc(Product product, int quantity);
 
 //Renders a List of all products, seperated by categories.
 class StoreFrontHome extends StatelessWidget
 {
-  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory}) : super(key: key);
+  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory, this.checkoutData, this.addToBasket}) : super(key: key);
 
   final Map<String, List<Product>> productListByCategory;
   final OnSelectCategory onSelectCategory;
+  final Map<Product, int> checkoutData;
+  final AddToBasketFunc addToBasket;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +61,7 @@ class StoreFrontHome extends StatelessWidget
                     scrollDirection: Axis.horizontal,
                     children: products.map((Product x)
                     {
-                      return ProductWidget(product: x);
+                      return ProductWidget(product: x, checkoutData: checkoutData, addToBasket: addToBasket);
                     }).toList()
                   ),
                 )

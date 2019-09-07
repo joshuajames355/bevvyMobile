@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
-import "product.dart";
-import "productScreen.dart";
+import "package:bevvymobile/product.dart";
+import "package:bevvymobile/productScreen.dart";
+
+typedef void AddToBasketFunc(Product product, int quantity);
 
 //Displayed in the main list views
 class ProductWidget extends StatelessWidget
 {
-  const ProductWidget({ Key key, this.product}) : super(key: key);
+  const ProductWidget({ Key key, this.product, this.checkoutData, this.addToBasket} ) : super(key: key);
 
   final Product product;
+  final Map<Product, int> checkoutData;
+  final AddToBasketFunc addToBasket;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +22,7 @@ class ProductWidget extends StatelessWidget
       (
         onPressed: ()
         {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen(product: product,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen(product: product, checkoutData: checkoutData, addToBasket: addToBasket,)));
         },
         child: Container
         (

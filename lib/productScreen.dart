@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import "product.dart";
+import "package:bevvymobile/product.dart";
 import "dart:math";
+
+typedef void AddToBasketFunc(Product product, int quantity);
 
 class ProductScreen extends StatefulWidget
 {
-  const ProductScreen({ Key key, this.product}) : super(key: key);
+  const ProductScreen({ Key key, this.product, this.checkoutData, this.addToBasket}) : super(key: key);
 
   final Product product;
+  final Map<Product, int>  checkoutData;
+  final AddToBasketFunc addToBasket;
 
   @override
   _ProductScreenState createState() => _ProductScreenState();
@@ -99,7 +103,7 @@ class _ProductScreenState extends State<ProductScreen>{
                 (
                   onPressed: ()
                   {
-                    //Todo basket
+                    widget.addToBasket(widget.product, count);
                     Navigator.pop(context);
                   },
                   child: Padding

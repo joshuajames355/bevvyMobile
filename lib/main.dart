@@ -135,16 +135,33 @@ class _AppState extends State<App>{
     }
     else if(currentPage == StorePage.search)
     {
-      return ProductGridView(productList: widget.productList.where((Product x)
-      {
-        return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-      }).toList(),
-      checkoutData: checkoutData,
-        addToBasket: addToBasket);
+      return WillPopScope
+      (
+        child: ProductGridView(productList: widget.productList.where((Product x)
+        {
+          return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+        }).toList(),
+        checkoutData: checkoutData,
+          addToBasket: addToBasket),
+        onWillPop: () 
+        {
+          setState(() {
+            currentPage=StorePage.home; 
+          });
+        }
+      );
     }
     else
     {
-      return ProductGridView(productList: widget.productListByCategory[currentCategory], checkoutData: checkoutData,  addToBasket: addToBasket);
+      return WillPopScope(
+        child: ProductGridView(productList: widget.productListByCategory[currentCategory], checkoutData: checkoutData,  addToBasket: addToBasket),
+        onWillPop: () 
+        {
+          setState(() {
+            currentPage=StorePage.home; 
+          });
+        }
+      );
     }
   }
 

@@ -55,7 +55,7 @@ class StoreFrontHome extends StatelessWidget
                 ),
                 Container
                 (
-                  height: 170, //Todo, work out why removing this breaks the app.
+                  height: 200, //Todo, work out why removing this breaks the app.
                   child: ListView
                   (
                     scrollDirection: Axis.horizontal,

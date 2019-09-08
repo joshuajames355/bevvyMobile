@@ -19,14 +19,11 @@ class ProductGridView extends StatelessWidget
     return GridView.count
     (
       crossAxisCount: 2,
+      padding: EdgeInsets.all(10),
       children: productList.map((Product x) 
       {
-        return Container
-        (
-          margin: EdgeInsets.all(10),
-          child: ProductWidget(product: x, checkoutData: checkoutData, addToBasket: addToBasket)
-        );
-        }).toList()
+        return ProductWidget(product: x, checkoutData: checkoutData, addToBasket: addToBasket);
+      }).toList()
     );
   }
 }

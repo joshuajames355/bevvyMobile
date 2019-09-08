@@ -15,48 +15,56 @@ class ProductWidget extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-    alignment: Alignment.topLeft,
-    child: 
-      FlatButton
+    return FlatButton
+    (
+      onPressed: ()
+      {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen(product: product, checkoutData: checkoutData, addToBasket: addToBasket,)));
+      },
+      padding: EdgeInsets.all(5),
+      
+      child: Container
       (
-        onPressed: ()
-        {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen(product: product, checkoutData: checkoutData, addToBasket: addToBasket,)));
-        },
-        child: Container
+        decoration: BoxDecoration
         (
-          decoration: BoxDecoration
-          (
-            border: Border.all(color: Colors.black),
-          ),
-          width: imageSize + 50,
-          height: imageSize + 50,
-          alignment: Alignment(0,0),
-          margin: EdgeInsets.all(3),
-          child: Column
-          (
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Center
+          borderRadius: new BorderRadius.all(Radius.circular(12)),
+          color: Color.fromRGBO(205, 205, 205, 100)
+        ),
+        width: imageSize + 50,
+        height: imageSize + 80,
+        child: Column
+        (
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Center
+            (
+              child: Text
               (
-                child: Text
-                (
-                  product.title,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                product.title,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+
               ),
-              product.icon,
-              Container
+            ),
+            Center
+            (
+              child: Text
               (
-                margin: EdgeInsets.symmetric(horizontal: 5),
-                child: Row
-                (
-                  children: [Text(product.price)]
-                )
+                product.size + "•" + product.priceCategory + "•" + product.category,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12),
+              ),
+            ),
+            product.icon,
+            Container
+            (
+              margin: EdgeInsets.all(5),
+              child: Row
+              (
+                children: [Text(product.price, style: TextStyle(fontSize: 12),)]
               )
-            ]
-          ),
+            )
+          ]
         )
       )
     );

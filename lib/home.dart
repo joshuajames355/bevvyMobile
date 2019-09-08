@@ -203,6 +203,7 @@ class _HomeState extends State<Home> {
                       child: RaisedButton
                       (
                         child: Text(category),
+                        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.all(Radius.circular(12))),
                         onPressed: ()
                         {
                           setState(() {

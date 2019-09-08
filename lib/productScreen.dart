@@ -56,7 +56,8 @@ class _ProductScreenState extends State<ProductScreen>{
                   margin: EdgeInsets.symmetric(horizontal: 50),
                   child: Row
                   (
-                    children: [Text(widget.product.price)]
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [Text(widget.product.price) ,Text(widget.product.category)]
                   )
                 ),
                 Container

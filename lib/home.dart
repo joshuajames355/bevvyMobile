@@ -3,7 +3,7 @@ import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/StoreFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
-import 'package:bevvymobile/checkout.dart';
+import 'package:bevvymobile/basket.dart';
 
 typedef void RemoveFromBasketFunc(Product product);
 typedef void AddToBasketFunc(Product product, int quantity);
@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
         child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
         onPressed: ()
         {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Checkout(checkoutData: widget.checkoutData, removeFromBasket: widget.removeFromBasket,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Basket(checkoutData: widget.checkoutData, removeFromBasket: widget.removeFromBasket,)));
         },
       ),
     ); 

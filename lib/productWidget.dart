@@ -31,7 +31,7 @@ class ProductWidget extends StatelessWidget
           color: Color.fromRGBO(205, 205, 205, 100)
         ),
         width: imageSize + 50,
-        height: imageSize + 80,
+        height: imageSize + 100,
         child: Column
         (
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/product.dart';
@@ -46,7 +48,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
   StorePage currentPage = StorePage.home;
-  String currentCategory;
+  int currentCategory;
 
   @override
   Widget build(BuildContext context) 
@@ -70,18 +72,31 @@ class _HomeState extends State<Home> {
   {
     if(currentPage == StorePage.home)
     {
-      return StoreFrontHome
+      return GestureDetector
       (
-        productListByCategory: widget.productListByCategory,
-        onSelectCategory: (String category)
-        {
-          setState(() {
-            currentCategory=category; 
-            currentPage=StorePage.category;
-          });
-        },
-        checkoutData: widget.checkoutData,
-        addToBasket: widget.addToBasket
+        child: StoreFrontHome
+        (
+          productListByCategory: widget.productListByCategory,
+          onSelectCategory: (String category)
+          {
+            setState(() {
+              currentCategory=widget.categories.indexOf(category); 
+              currentPage=StorePage.category;
+            });
+          },
+          checkoutData: widget.checkoutData,
+          addToBasket: widget.addToBasket
+        ),
+        onHorizontalDragEnd: (DragEndDetails details)
+          {
+            if(details.velocity.pixelsPerSecond.dx < -150)
+            {
+              setState(() {
+                currentCategory=0;
+                currentPage=StorePage.category;
+              });
+            }
+          }
       );
     }
     else if(currentPage == StorePage.search)
@@ -105,7 +120,32 @@ class _HomeState extends State<Home> {
     else
     {
       return WillPopScope(
-        child: ProductGridView(productList: widget.productListByCategory[currentCategory], checkoutData: widget.checkoutData,  addToBasket: widget.addToBasket),
+        child: GestureDetector
+        (
+          child: ProductGridView(productList: widget.productListByCategory[widget.categories[currentCategory]], checkoutData: widget.checkoutData,  addToBasket: widget.addToBasket),
+          onHorizontalDragEnd: (DragEndDetails details)
+          {
+            if(details.velocity.pixelsPerSecond.dx > 150)
+            {
+              setState(() {
+                if(currentCategory==0)
+                {
+                  currentPage=StorePage.home;
+                }
+                else
+                {
+                  currentCategory--;
+                }
+              });
+            }
+            else if(details.velocity.pixelsPerSecond.dx < -150)
+            {
+              setState(() {
+                currentCategory=min(currentCategory+1, widget.categories.length-1);
+              });
+            }
+          },
+        ),
         onWillPop: () 
         {
           setState(() {
@@ -207,7 +247,7 @@ class _HomeState extends State<Home> {
                         onPressed: ()
                         {
                           setState(() {
-                            currentCategory=category; 
+                            currentCategory=widget.categories.indexOf(category); 
                             currentPage=StorePage.category;
                           });
                         },

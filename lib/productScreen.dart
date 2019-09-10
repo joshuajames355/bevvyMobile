@@ -57,7 +57,7 @@ class _ProductScreenState extends State<ProductScreen>{
                   child: Row
                   (
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text(widget.product.price) ,Text(widget.product.category)]
+                    children: [Text("£" + widget.product.price.toStringAsFixed(2)) ,Text(widget.product.category)]
                   )
                 ),
                 Container

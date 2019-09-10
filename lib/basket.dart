@@ -19,19 +19,31 @@ class BasketDataWidget extends StatelessWidget
       children: <Widget>
       [
         Expanded(
-          child: Text(checkoutData[product].toString() + " X " + this.product.title,
-            style: TextStyle(fontSize: 18),
-        )),
-        FloatingActionButton
+          child: Row(
+            children: <Widget>
+            [
+              Text(checkoutData[product].toString() + " X " + this.product.title,
+                style: TextStyle(fontSize: 18),
+              ),
+              Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2),style: TextStyle(fontSize: 18),)
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )          
+        ),
+        Container
         (
-          heroTag: product.title,
-          mini: true,
-          onPressed: ()
-          {
-            removeFromBasket(product);
-          },
-          child: Icon(IconData(57691, fontFamily: 'MaterialIcons')),
+          margin: EdgeInsets.only(left: 15),
+          child: FloatingActionButton
+          (
+            heroTag: product.title,
+            mini: true,
+            onPressed: ()
+            {
+              removeFromBasket(product);
+            },
+            child: Icon(IconData(57691, fontFamily: 'MaterialIcons')),
           )
+        )
       ],
     );
   }
@@ -71,6 +83,12 @@ class Basket extends StatelessWidget
               (children: checkoutData.keys.map((Product x) => BasketDataWidget(product: x,checkoutData: checkoutData, removeFromBasket: removeFromBasket,)).toList(),
               ),
             ),
+            Container
+            (
+              margin: EdgeInsets.symmetric(vertical: 12),
+              alignment: Alignment.centerLeft,
+              child: Text("Total: £" + getTotal(checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 18),),
+            ),
             RaisedButton
             (
               child:  Container
@@ -91,4 +109,13 @@ class Basket extends StatelessWidget
       )
     );
   }
+}
+
+double getTotal(Map<Product, int> basket)
+{
+  double total = 0;
+  basket.forEach((Product k, int quantity){
+    total += k.price * quantity;
+  });
+  return total;
 }

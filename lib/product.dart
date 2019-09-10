@@ -9,7 +9,7 @@ class Product
   final String title;
   final String description;
   final String iconName;
-  final String price;
+  final double price;
   final String category;
   final String size;
   final String priceCategory;

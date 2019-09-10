@@ -61,7 +61,7 @@ class ProductWidget extends StatelessWidget
               margin: EdgeInsets.all(5),
               child: Row
               (
-                children: [Text(product.price, style: TextStyle(fontSize: 12),)]
+                children: [Text("£" + product.price.toStringAsFixed(2), style: TextStyle(fontSize: 12),)]
               )
             )
           ]

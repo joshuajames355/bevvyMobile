@@ -35,24 +35,40 @@ class _CheckoutState extends State<Checkout>
           },
         ),
       ), 
-      body: Column
+      body: Container
       (
-        children: 
-        [
-          RaisedButton
-          (
-            padding: EdgeInsets.all(25),
-            child: Text("Address"),
-            onPressed: ()
-            {
-              showDialog(context: context, builder: (BuildContext context){
-                return AddressDialog(currentAddress: currentAddress, setAddress: newAddress,);
-              });
-            },
-          ),
-          Text("Address: " + currentAddress.addressSummary())
-        ]
-      ),
+        margin: EdgeInsets.all(12),
+        child: Column
+        (
+          children: 
+          [
+            Container
+            (
+              margin: EdgeInsets.symmetric(vertical: 12),
+              child: Align
+              (
+                child: Text("Delivery Address: " + currentAddress.addressSummary(), style: TextStyle(fontSize: 16),),
+                alignment: Alignment.centerLeft,
+              )
+            ),
+            RaisedButton
+            (
+              padding: EdgeInsets.all(12),
+              child: Container
+              (
+                width: double.infinity,
+                child: Center(child: Text("Change Address")),
+              ),
+              onPressed: ()
+              {
+                showDialog(context: context, builder: (BuildContext context){
+                  return AddressDialog(currentAddress: currentAddress, setAddress: newAddress,);
+                });
+              },
+            ),
+          ]
+        ),
+      )
     );
   }
 }

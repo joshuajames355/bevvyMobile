@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/product.dart';
@@ -9,11 +10,12 @@ import 'package:bevvymobile/basket.dart';
 
 typedef void RemoveFromBasketFunc(Product product);
 typedef void AddToBasketFunc(Product product, int quantity);
+typedef void AddOrder(Order order);
 
 enum StorePage {home, category, search}
 
 class Home extends StatefulWidget {
-  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket}) : super(key: key)
+  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket, this.orders, this.onAddOrder}) : super(key: key)
   {
     categories = [];
     productListByCategory = Map<String, List<Product>>();
@@ -40,6 +42,8 @@ class Home extends StatefulWidget {
   final Map<Product, int> checkoutData;
   RemoveFromBasketFunc removeFromBasket;
   AddToBasketFunc addToBasket;
+  List<Order> orders;
+  final AddOrder onAddOrder;
 
   @override
   _HomeState createState() => _HomeState();
@@ -62,7 +66,7 @@ class _HomeState extends State<Home> {
         child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
         onPressed: ()
         {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Basket(checkoutData: widget.checkoutData, removeFromBasket: widget.removeFromBasket,)));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Basket(checkoutData: widget.checkoutData, removeFromBasket: widget.removeFromBasket, onAddOrder: widget.onAddOrder,)));
         },
       ),
     ); 
@@ -77,18 +81,22 @@ class _HomeState extends State<Home> {
         child: Container
         (
           decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child:StoreFrontHome
+          child: StoreFrontHome
           (
             productListByCategory: widget.productListByCategory,
             onSelectCategory: (String category)
             {
-              setState(() {
-                currentCategory=widget.categories.indexOf(category); 
-                currentPage=StorePage.category;
-              });
+              if(widget.categories.contains(category))
+              {
+                setState(() {
+                  currentCategory=widget.categories.indexOf(category); 
+                  currentPage=StorePage.category;
+                });
+              }
             },
             checkoutData: widget.checkoutData,
-            addToBasket: widget.addToBasket
+            addToBasket: widget.addToBasket,
+            orders: widget.orders,
           ),
         ),
         onHorizontalDragEnd: (DragEndDetails details)

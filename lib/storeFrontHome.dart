@@ -1,3 +1,5 @@
+import 'package:bevvymobile/order.dart';
+import 'package:bevvymobile/orderWidget.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/productWidget.dart';
 import 'package:flutter/foundation.dart';
@@ -9,66 +11,74 @@ typedef void AddToBasketFunc(Product product, int quantity);
 //Renders a List of all products, seperated by categories.
 class StoreFrontHome extends StatelessWidget
 {
-  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory, this.checkoutData, this.addToBasket}) : super(key: key);
+  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory, this.checkoutData, this.addToBasket, this.orders}) : super(key: key);
 
   final Map<String, List<Product>> productListByCategory;
   final OnSelectCategory onSelectCategory;
   final Map<Product, int> checkoutData;
   final AddToBasketFunc addToBasket;
+  final List<Order> orders;
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> children = [];
+    if(orders.length > 0)
+    {
+      children.add(makeSection("Orders", orders.map((Order order) => OrderWidget(order: order,)).toList()));
+    }
+    children.addAll(productListByCategory.keys.toList().map((String category)
+    {
+      return makeSection(category, productListByCategory[category].map((Product product) => ProductWidget(addToBasket: addToBasket, checkoutData: checkoutData, product: product,)).toList());
+    }));
     return ListView
       (
-        children: productListByCategory.keys.toList().map((String category)
-        {
-          List<Product> products = productListByCategory[category];
-          return Container
-          (
-            child: Column
-            (
-              children: <Widget>[
-                Center
-                (
-                  child: Container
-                  (
-                    child: SizedBox
-                    (
-                      width: double.infinity,
-                      child: FlatButton(
-                        child: Padding
-                        (
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          child: Text
-                          (
-                            category,
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ),
-                        onPressed: ()
-                        {
-                          onSelectCategory(category);
-                        },
-                      )
-                    )
-                  )
-                ),
-                Container
-                (
-                  height: 200, //Todo, work out why removing this breaks the app.
-                  child: ListView
-                  (
-                    scrollDirection: Axis.horizontal,
-                    children: products.map((Product x)
-                    {
-                      return ProductWidget(product: x, checkoutData: checkoutData, addToBasket: addToBasket);
-                    }).toList()
-                  ),
-                )
-              ],
-            ),
-          );
-        }).toList()
+        children: children
       );
+  }
+
+  Widget makeSection(String title, List<Widget> content)
+  {
+    return Container
+    (
+      child: Column
+      (
+        children: <Widget>[
+          Center
+          (
+            child: Container
+            (
+              child: SizedBox
+              (
+                width: double.infinity,
+                child: FlatButton(
+                  child: Padding
+                  (
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text
+                    (
+                      title,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
+                  onPressed: ()
+                  {
+                    onSelectCategory(title);
+                  },
+                )
+              )
+            )
+          ),
+          Container
+          (
+            height: 200, //Todo, work out why removing this breaks the app.
+            child: ListView
+            (
+              scrollDirection: Axis.horizontal,
+              children: content
+            ),
+          )
+        ],
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bevvymobile/home.dart';
+import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
 
@@ -131,12 +132,14 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Products and quantities.
+  List<Order> orders;
 
   @override
   initState()
   {
     super.initState();
     checkoutData = Map<Product, int>();
+    orders = List<Order>();
   }
 
   @override
@@ -152,6 +155,8 @@ class _AppState extends State<App>{
             removeFromBasket: removeFromBasket,
             productList: widget.productList,
             checkoutData: checkoutData,
+            orders: orders,
+            onAddOrder: addOrder,
           )
       }
     );
@@ -175,6 +180,13 @@ class _AppState extends State<App>{
   {
     setState(() {
       checkoutData.remove(product);
+    });
+  }
+
+  addOrder(Order order)
+  {
+    setState(() {
+      orders.add(order);
     });
   }
 }

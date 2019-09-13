@@ -28,7 +28,7 @@ class ProductWidget extends StatelessWidget
         decoration: BoxDecoration
         (
           borderRadius: new BorderRadius.all(Radius.circular(12)),
-          color: Color.fromRGBO(205, 205, 205, 100)
+          color: Theme.of(context).primaryColorLight,
         ),
         width: imageSize + 50,
         height: imageSize + 100,

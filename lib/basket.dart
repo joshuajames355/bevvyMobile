@@ -73,7 +73,8 @@ class Basket extends StatelessWidget
       ),
       body: Container
       (
-        margin: EdgeInsets.all(25),
+        padding: EdgeInsets.all(25),
+        color: Theme.of(context).backgroundColor,
         child: Column
         (
           children: [
@@ -91,8 +92,10 @@ class Basket extends StatelessWidget
             ),
             RaisedButton
             (
+              color: Theme.of(context).primaryColor,
               child:  Container
               (
+                padding: EdgeInsets.symmetric(vertical: 12),
                 child: Center
                 (
                   child: Text("Proceed To Checkout", style: TextStyle(fontSize: 18),)

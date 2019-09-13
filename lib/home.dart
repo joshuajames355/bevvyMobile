@@ -74,18 +74,22 @@ class _HomeState extends State<Home> {
     {
       return GestureDetector
       (
-        child: StoreFrontHome
+        child: Container
         (
-          productListByCategory: widget.productListByCategory,
-          onSelectCategory: (String category)
-          {
-            setState(() {
-              currentCategory=widget.categories.indexOf(category); 
-              currentPage=StorePage.category;
-            });
-          },
-          checkoutData: widget.checkoutData,
-          addToBasket: widget.addToBasket
+          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+          child:StoreFrontHome
+          (
+            productListByCategory: widget.productListByCategory,
+            onSelectCategory: (String category)
+            {
+              setState(() {
+                currentCategory=widget.categories.indexOf(category); 
+                currentPage=StorePage.category;
+              });
+            },
+            checkoutData: widget.checkoutData,
+            addToBasket: widget.addToBasket
+          ),
         ),
         onHorizontalDragEnd: (DragEndDetails details)
           {
@@ -97,18 +101,23 @@ class _HomeState extends State<Home> {
               });
             }
           }
+          
       );
     }
     else if(currentPage == StorePage.search)
     {
       return WillPopScope
       (
-        child: ProductGridView(productList: widget.productList.where((Product x)
-        {
-          return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-        }).toList(),
-        checkoutData: widget.checkoutData,
-          addToBasket: widget.addToBasket),
+        child: Container
+        (
+          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+          child:ProductGridView(productList: widget.productList.where((Product x)
+          {
+            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+          }).toList(),
+          checkoutData: widget.checkoutData,
+            addToBasket: widget.addToBasket),
+        ),
         onWillPop: () 
         {
           setState(() {
@@ -120,31 +129,35 @@ class _HomeState extends State<Home> {
     else
     {
       return WillPopScope(
-        child: GestureDetector
+        child: Container
         (
-          child: ProductGridView(productList: widget.productListByCategory[widget.categories[currentCategory]], checkoutData: widget.checkoutData,  addToBasket: widget.addToBasket),
-          onHorizontalDragEnd: (DragEndDetails details)
-          {
-            if(details.velocity.pixelsPerSecond.dx > 150)
+          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+          child: GestureDetector
+          (
+            child: ProductGridView(productList: widget.productListByCategory[widget.categories[currentCategory]], checkoutData: widget.checkoutData,  addToBasket: widget.addToBasket),
+            onHorizontalDragEnd: (DragEndDetails details)
             {
-              setState(() {
-                if(currentCategory==0)
-                {
-                  currentPage=StorePage.home;
-                }
-                else
-                {
-                  currentCategory--;
-                }
-              });
-            }
-            else if(details.velocity.pixelsPerSecond.dx < -150)
-            {
-              setState(() {
-                currentCategory=min(currentCategory+1, widget.categories.length-1);
-              });
-            }
-          },
+              if(details.velocity.pixelsPerSecond.dx > 150)
+              {
+                setState(() {
+                  if(currentCategory==0)
+                  {
+                    currentPage=StorePage.home;
+                  }
+                  else
+                  {
+                    currentCategory--;
+                  }
+                });
+              }
+              else if(details.velocity.pixelsPerSecond.dx < -150)
+              {
+                setState(() {
+                  currentCategory=min(currentCategory+1, widget.categories.length-1);
+                });
+              }
+            },
+          ),
         ),
         onWillPop: () 
         {
@@ -224,7 +237,7 @@ class _HomeState extends State<Home> {
         ],
         bottom: PreferredSize
         (
-          preferredSize: const Size.fromHeight(58),
+          preferredSize: const Size.fromHeight(60),
           child: Align
           (
             alignment: Alignment.topCenter,
@@ -243,6 +256,7 @@ class _HomeState extends State<Home> {
                       child: RaisedButton
                       (
                         child: Text(category),
+                        color: Theme.of(context).backgroundColor,
                         shape: RoundedRectangleBorder(borderRadius: new BorderRadius.all(Radius.circular(12))),
                         onPressed: ()
                         {

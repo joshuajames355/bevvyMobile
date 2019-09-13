@@ -39,8 +39,8 @@ class _ProductScreenState extends State<ProductScreen>{
         child: 
           Container
           (
+            decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
             alignment: Alignment(0,0),
-            margin: EdgeInsets.all(3),
             child: Column
             (
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -70,7 +70,6 @@ class _ProductScreenState extends State<ProductScreen>{
                       FloatingActionButton(
                         heroTag: "btn1",
                         child: new Icon(IconData(0xe15b, fontFamily: 'MaterialIcons'), color: Colors.black,),
-                        backgroundColor: Colors.white,
                         onPressed: () 
                         {
                           setState(() 
@@ -89,7 +88,6 @@ class _ProductScreenState extends State<ProductScreen>{
                       FloatingActionButton(
                         heroTag: "btn2",
                         child: new Icon(Icons.add, color: Colors.black,),
-                        backgroundColor: Colors.white,
                         onPressed: () 
                         {
                           setState(() 
@@ -107,6 +105,7 @@ class _ProductScreenState extends State<ProductScreen>{
                     widget.addToBasket(widget.product, count);
                     Navigator.pop(context);
                   },
+                  color: Theme.of(context).primaryColor,
                   child: Padding
                   (
                     padding: EdgeInsets.all(15),

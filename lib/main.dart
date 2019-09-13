@@ -2,6 +2,71 @@ import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
 
+
+int primaryColour = 0XFFB14AED;
+Map<int, Color> colorPalette = 
+{
+  50: Color(0xFFC874D9),
+  100: Color(0xFFC874D9),
+  200: Color(0xFFC874D9),
+  300: Color(primaryColour),
+  400: Color(primaryColour),
+  500: Color(primaryColour),
+  600: Color(primaryColour),
+  700: Color(0xFF1B1F3B),
+  800: Color(0xFF1B1F3B),
+  900: Color(0xFF1B1F3B),
+};
+
+ThemeData theme1 = ThemeData
+(
+  primarySwatch: MaterialColor(primaryColour, colorPalette),
+  backgroundColor: Color(0xFFE1BBC9),
+);
+
+
+int primaryColour2 = 0XFFE23425;
+Map<int, Color> colorPalette2 = 
+{
+  50: Color(0xFFE24725),
+  100: Color(0xFFE24725),
+  200: Color(0xFFE24725),
+  300: Color(primaryColour2),
+  400: Color(primaryColour2),
+  500: Color(primaryColour2),
+  600: Color(primaryColour2),
+  700: Color(0xFFE22525),
+  800: Color(0xFFE22525),
+  900: Color(0xFFE22525),
+};
+
+ThemeData theme2 = ThemeData
+(
+  primarySwatch: MaterialColor(primaryColour2, colorPalette2),
+  backgroundColor: Color(0x2FE26D25),//E26D25
+);
+
+int primaryColour3 = 0XFF910B3E;
+Map<int, Color> colorPalette3 = 
+{
+  50: Color(0xFFC70039),
+  100: Color(0xFFC70039),
+  200: Color(0xFFC70039),
+  300: Color(primaryColour3),
+  400: Color(primaryColour3),
+  500: Color(primaryColour3),
+  600: Color(primaryColour3),
+  700: Color(0xFF571847),
+  800: Color(0xFF571847),
+  900: Color(0xFF571847),
+};
+
+ThemeData theme3 = ThemeData
+(
+  primarySwatch: MaterialColor(primaryColour3, colorPalette3),
+  backgroundColor: Color(0x3FFF5633),
+);
+
 class App extends StatefulWidget {
   App({Key key}) : super(key: key)
   {
@@ -78,9 +143,7 @@ class _AppState extends State<App>{
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bevvy',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: theme2,
       routes: 
       {
         "/" : (context) => Home

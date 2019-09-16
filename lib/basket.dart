@@ -107,7 +107,14 @@ class Basket extends StatelessWidget
               ),
               onPressed: ()
               {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Checkout(checkoutData: checkoutData, onAddOrder: onAddOrder,)));
+                if(checkoutData.length == 0)
+                {
+                  showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least on item to your basket.")));
+                }
+                else
+                {                
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Checkout(checkoutData: checkoutData, onAddOrder: onAddOrder,)));
+                }
               },
             )
             ]

@@ -54,99 +54,94 @@ class _AddressDialogState extends State<AddressDialog>
   @override 
   Widget build(BuildContext context)
   {
-    return Dialog(
+    return SimpleDialog(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
       ),      
-      child: Center(
-        child: dialogContent(context),
-      )
+      children: dialogContent(context),
     );
   }
 
-  Widget dialogContent(BuildContext context)
+  List<Widget> dialogContent(BuildContext context)
   {
-    return Column
-    (
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>
-      [
-        TextField
-        (
-          controller: _houseNumberController,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'House Number',
+    return
+    [
+      TextField
+      (
+        controller: _houseNumberController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 5)
           ),
+          labelText: 'House Number',
         ),
-        TextField
-        (
-          controller: _houseStreetController,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'Street',
-          ),              
-        ),             
-        TextField
-        (
-          controller: _cityController,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'City',
-          ),              
-        ),
-        TextField
-        (
-          controller: _countyController,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'County',
-          ),              
-        ),
-        TextField
-        (
-          controller: _postcodeController,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'Postcode',
-          ),              
-        ),
-        FlatButton
-        (
-          padding: EdgeInsets.symmetric(vertical: 25),
-          child: Container
-          (
-            width: double.infinity, 
-            child: Center(child: Text("Confirm"))
+      ),
+      TextField
+      (
+        controller: _houseStreetController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 5)
           ),
-          onPressed: ()
-            {
-              widget.setAddress
+          labelText: 'Street',
+        ),              
+      ),             
+      TextField
+      (
+        controller: _cityController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 5)
+          ),
+          labelText: 'City',
+        ),              
+      ),
+      TextField
+      (
+        controller: _countyController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 5)
+          ),
+          labelText: 'County',
+        ),              
+      ),
+      TextField
+      (
+        controller: _postcodeController,
+        decoration: InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.black, width: 5)
+          ),
+          labelText: 'Postcode',
+        ),              
+      ),
+      FlatButton
+      (
+        padding: EdgeInsets.symmetric(vertical: 25),
+        child: Container
+        (
+          width: double.infinity, 
+          child: Center(child: Text("Confirm"))
+        ),
+        onPressed: ()
+          {
+            widget.setAddress
+            (
+              AddressInformation
               (
-                AddressInformation
-                (
-                  city: _cityController.text,
-                  street: _houseStreetController.text,
-                  houseNumber: _houseNumberController.text,
-                  postcode: _postcodeController.text,
-                  county: _countyController.text
-                )
-              );
-              Navigator.pop(context);
-            },
-        )
+                city: _cityController.text,
+                street: _houseStreetController.text,
+                houseNumber: _houseNumberController.text,
+                postcode: _postcodeController.text,
+                county: _countyController.text
+              )
+            );
+            Navigator.pop(context);
+          },
+      )
          
-      ],
-    );
+      ];
+    
   }
 }

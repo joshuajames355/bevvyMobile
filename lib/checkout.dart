@@ -1,3 +1,4 @@
+import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class Checkout extends StatefulWidget
 class _CheckoutState extends State<Checkout> 
 {
   AddressInformation currentAddress = AddressInformation.blank();
+  String paymentMethod = "cash";
 
   void newAddress(AddressInformation newAddress)
   {
@@ -44,12 +46,21 @@ class _CheckoutState extends State<Checkout>
       ), 
       body: Container
       (
-        padding: EdgeInsets.all(12),
+        padding: EdgeInsets.all(15),
         decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
         child: Column
         (
           children: 
           [
+            Container
+            (
+              margin: EdgeInsets.symmetric(vertical: 12),
+              child: Align
+              (
+                child: Text("Total: £" + getTotal(widget.checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 16),),
+                alignment: Alignment.centerLeft,
+              )
+            ),
             Container
             (
               margin: EdgeInsets.symmetric(vertical: 12),
@@ -75,7 +86,47 @@ class _CheckoutState extends State<Checkout>
                 });
               },
             ),
-            Expanded(child: Container(),), //Just Fill space
+            Container
+            (
+              margin: EdgeInsets.all(10),
+              child: DropdownButton
+              (
+                icon: Icon(Icons.arrow_downward),
+                value: paymentMethod,
+                onChanged: (String newValue)
+                {
+                  setState(() {
+                    paymentMethod = newValue; 
+                  });
+                },
+                items: <DropdownMenuItem<String>>
+                [
+                  DropdownMenuItem<String>
+                  (
+                    child: Text("Pay With Cash"),
+                    value: "cash",
+                  ),
+                  DropdownMenuItem<String>
+                  (
+                    child: Text("Pay By Card"),
+                    value: "card",
+                  )
+                ], 
+              ), 
+            ),
+            Expanded(
+              child: TextField
+                (
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black, width: 5)
+                    ),
+                    labelText: 'Note to Driver',
+                  ),
+                ),
+              ),
             RaisedButton
             (
               color: Theme.of(context).primaryColor,
@@ -83,7 +134,7 @@ class _CheckoutState extends State<Checkout>
               child: Container
               (
                 width: double.infinity,
-                child: Center(child: Text("Purchase")),
+                child: Center(child: Text("Continue")),
               ),
               onPressed: ()
               {

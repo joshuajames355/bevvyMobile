@@ -11,11 +11,12 @@ import 'package:bevvymobile/basket.dart';
 typedef void RemoveFromBasketFunc(Product product);
 typedef void AddToBasketFunc(Product product, int quantity);
 typedef void AddOrder(Order order);
+typedef void SetLocation(String newLocation);
 
 enum StorePage {home, category, search}
 
 class Home extends StatefulWidget {
-  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket, this.orders, this.onAddOrder}) : super(key: key)
+  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket, this.orders, this.onAddOrder, this.location, this.onSetLocation}) : super(key: key)
   {
     categories = [];
     productListByCategory = Map<String, List<Product>>();
@@ -36,6 +37,7 @@ class Home extends StatefulWidget {
     });
   }
 
+  String location;
   List<Product> productList;
   List<String> categories;
   Map<String, List<Product>> productListByCategory;
@@ -43,6 +45,7 @@ class Home extends StatefulWidget {
   RemoveFromBasketFunc removeFromBasket;
   AddToBasketFunc addToBasket;
   List<Order> orders;
+  SetLocation onSetLocation;
   final AddOrder onAddOrder;
 
   @override
@@ -68,6 +71,62 @@ class _HomeState extends State<Home> {
         {
           Navigator.push(context, MaterialPageRoute(builder: (context) => Basket(checkoutData: widget.checkoutData, removeFromBasket: widget.removeFromBasket, onAddOrder: widget.onAddOrder,)));
         },
+      ),
+      bottomNavigationBar: BottomAppBar
+      (
+        color: Theme.of(context).backgroundColor,
+        child: FlatButton
+        (
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+          onPressed: ()
+          {
+            showDialog(context: context, builder: (BuildContext context)
+            {
+              return SimpleDialog
+              (
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+                title: Center(child: Text("Set Location")),
+                children: <Widget>
+                [
+                  SimpleDialogOption
+                  (
+                    child: Container
+                    (
+                      margin: EdgeInsets.all(15),
+                      child: Row(children: [Text("Use Current Location"),]),
+                    ),
+                    onPressed: ()
+                    {
+                      widget.onSetLocation("Current Location");
+                      Navigator.pop(context);
+                    },
+
+                  ),
+                  SimpleDialogOption
+                  (
+                    child: Container
+                    (
+                      margin: EdgeInsets.all(15),
+                      child: Row(children: [Text("Set Location"),]),
+                    ),
+                    onPressed: ()
+                    {
+                      widget.onSetLocation("Other Location");
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              );
+            });
+          },
+          color: Theme.of(context).primaryColor,
+          child: Container
+          (
+            width: double.infinity,
+            padding: EdgeInsets.all(12),
+            child: Text("Delivering To: " + widget.location, style: TextStyle(fontSize: 18),),
+          )
+        ),
       ),
     ); 
   }

@@ -2,7 +2,7 @@ import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
-
+//import 'package:location/location.dart';
 
 int primaryColour = 0XFFB14AED;
 Map<int, Color> colorPalette = 
@@ -44,7 +44,7 @@ Map<int, Color> colorPalette2 =
 ThemeData theme2 = ThemeData
 (
   primarySwatch: MaterialColor(primaryColour2, colorPalette2),
-  backgroundColor: Color(0x2FE26D25),//E26D25
+  backgroundColor: Color(0xFFF2C1A4),//E26D25
 );
 
 int primaryColour3 = 0XFF910B3E;
@@ -65,7 +65,7 @@ Map<int, Color> colorPalette3 =
 ThemeData theme3 = ThemeData
 (
   primarySwatch: MaterialColor(primaryColour3, colorPalette3),
-  backgroundColor: Color(0x3FFF5633),
+  backgroundColor: Color(0xFFFFA796),
 );
 
 class App extends StatefulWidget {
@@ -133,6 +133,7 @@ class App extends StatefulWidget {
 class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Products and quantities.
   List<Order> orders;
+  String location = "Current Location";
 
   @override
   initState()
@@ -157,6 +158,8 @@ class _AppState extends State<App>{
             checkoutData: checkoutData,
             orders: orders,
             onAddOrder: addOrder,
+            location: location,
+            onSetLocation: setLocation,
           )
       }
     );
@@ -188,6 +191,13 @@ class _AppState extends State<App>{
     setState(() {
       orders.add(order);
       checkoutData = Map<Product, int>();
+    });
+  }
+
+  setLocation(String newLocation)
+  {
+    setState(() {
+     location=newLocation; 
     });
   }
 }

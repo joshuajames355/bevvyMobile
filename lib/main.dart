@@ -187,6 +187,7 @@ class _AppState extends State<App>{
   {
     setState(() {
       orders.add(order);
+      checkoutData = Map<Product, int>();
     });
   }
 }

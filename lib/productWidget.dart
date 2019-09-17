@@ -55,7 +55,7 @@ class ProductWidget extends StatelessWidget
                 style: TextStyle(fontSize: 12),
               ),
             ),
-            product.icon,
+            Expanded(child: product.icon),
             Container
             (
               margin: EdgeInsets.all(5),

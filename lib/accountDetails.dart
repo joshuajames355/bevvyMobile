@@ -39,7 +39,13 @@ class AccountDetails extends StatelessWidget
             (
               margin: EdgeInsets.symmetric(vertical: 12),
               alignment: Alignment.centerLeft,
-              child: Text("Email: " + user.email, style: TextStyle(fontSize: 18),),
+              child: Text("Email       : " +( user.email ?? "Not Set"), style: TextStyle(fontSize: 18),),
+            ),
+            Container
+            (
+              margin: EdgeInsets.symmetric(vertical: 12),
+              alignment: Alignment.centerLeft,
+              child: Text("Phone No: " +( user.phoneNumber ?? "Not Set"), style: TextStyle(fontSize: 18),),
             ),
             Expanded(child: Container()),//Fill space
             RaisedButton

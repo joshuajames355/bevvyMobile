@@ -64,6 +64,7 @@ class _AddressDialogState extends State<AddressDialog>
           borderRadius: BorderRadius.circular(12),
       ),      
       children: dialogContent(context),
+      contentPadding: EdgeInsets.all(7),
     );
   }
 

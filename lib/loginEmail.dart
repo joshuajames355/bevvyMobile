@@ -105,8 +105,6 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
                   widget.onLogin(result.user);
                 }).catchError((e)
                 {
-                  print(e);
-                  print(e.code);
                   if(e.code == "ERROR_USER_NOT_FOUND")
                   {
                     showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("User not found.")));

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'dart:developer';
-import "config.dart";
-import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 import 'package:bevvymobile/firebase.dart';
 import 'package:bevvymobile/loginEmail.dart';
+import 'package:bevvymobile/loginPhone.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+final GoogleSignIn _googleSignIn = GoogleSignIn();
 
 
 class LoginPage extends StatefulWidget {
@@ -18,9 +19,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailTextController = TextEditingController();
-  final passwordTextController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +44,18 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               GoogleSignInButton
               (
-                onPressed: (){},
+                onPressed: () async
+                {
+                  final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+                  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+                  final AuthCredential credential = GoogleAuthProvider.getCredential
+                  (
+                    accessToken: googleAuth.accessToken,
+                    idToken: googleAuth.idToken,
+                  );
+                  final FirebaseUser user = (await auth.signInWithCredential(credential)).user;
+                  widget.onLogin(user);
+                },
               ),
               Container 
               (
@@ -77,28 +86,34 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Container 
               (
-                  width: double.infinity,
-                  child: RaisedButton(
-                        onPressed: (){
-                          log("Press");
-                      },
-                      color: Colors.lightGreen,
-                      padding: EdgeInsets.all(7),
-                      child: Row(children: <Widget>
-                      [
-                        Padding
-                        (
-                          child: Icon(IconData(58705, fontFamily: 'MaterialIcons'), color: Colors.white,), 
-                          padding: EdgeInsets.only(right: 25),
-                        ),
+                width: double.infinity,
+                child: RaisedButton(
+                  onPressed: (){
+                    showDialog(context: context, builder: (BuildContext context)
+                    {
+                      return LoginPhonePage(onLogin: widget.onLogin,);
+                    });
+                  },
+                  color: Colors.lightGreen,
+                  padding: EdgeInsets.all(7),
+                  child: Row
+                  (
+                    children: <Widget>
+                    [
+                      Padding
+                      (
+                        child: Icon(IconData(58705, fontFamily: 'MaterialIcons'), color: Colors.white,), 
+                        padding: EdgeInsets.only(right: 25),
+                      ),
 
-                        Text(
-                          "Sign in with Phone",
-                          style: TextStyle(fontSize: 18, color: Colors.white),
-                          textAlign: TextAlign.center,
-                        ),                        
-                      ])
+                      Text(
+                        "Sign in with Phone",
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),                        
+                    ]
                   )
+                )
               ),
             ],
           ),
@@ -110,12 +125,7 @@ class _LoginPageState extends State<LoginPage> {
     @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    emailTextController.dispose();
     super.dispose();
   }
-
-    Future<http.Response> onLogin(String apiBaseUrl) {
-      return http.post(apiBaseUrl + "/login", body: '{"email":"' + emailTextController.text + '","password":"' + passwordTextController.text +'"}', headers: {'Content-type': 'application/json'});
-    }
-  }
+}
 

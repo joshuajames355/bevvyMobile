@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "802264056148",
+    "firebase_url": "https://bevvy-dev.firebaseio.com",
+    "project_id": "bevvy-dev",
+    "storage_bucket": "bevvy-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:802264056148:android:e97e502eaf7014f21f48c1",
+        "android_client_info": {
+          "package_name": "com.example.bevvymobileDev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "802264056148-df1mvcodcvvbsjjv7bssvfmetb058k23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbaW0SyM9LcEiDPGNeMxmtQB0vK8Hhh-o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "802264056148-df1mvcodcvvbsjjv7bssvfmetb058k23.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

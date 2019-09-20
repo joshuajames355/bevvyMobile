@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bevvymobile/loginEmail.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/login.dart';
@@ -7,6 +8,8 @@ import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/StoreFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
 import 'package:bevvymobile/basket.dart';
+
+import 'package:firebase_auth/firebase_auth.dart';
 
 typedef void RemoveFromBasketFunc(Product product);
 typedef void AddToBasketFunc(Product product, int quantity);
@@ -16,7 +19,7 @@ typedef void SetLocation(String newLocation);
 enum StorePage {home, category, search}
 
 class Home extends StatefulWidget {
-  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket, this.orders, this.onAddOrder, this.location, this.onSetLocation}) : super(key: key)
+  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket, this.orders, this.onAddOrder, this.location, this.onSetLocation, this.onLogin, this.user}) : super(key: key)
   {
     categories = [];
     productListByCategory = Map<String, List<Product>>();
@@ -47,6 +50,8 @@ class Home extends StatefulWidget {
   List<Order> orders;
   SetLocation onSetLocation;
   final AddOrder onAddOrder;
+  final OnLogin onLogin;
+  final FirebaseUser user;
 
   @override
   _HomeState createState() => _HomeState();
@@ -292,7 +297,14 @@ class _HomeState extends State<Home> {
           (
             onPressed: ()
             {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
+              if(widget.user == null)
+              {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(onLogin: widget.onLogin,)));
+              }
+              else
+              {
+                return;
+              }
             },
             icon: Icon
             (

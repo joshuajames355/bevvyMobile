@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'dart:developer';
 import "config.dart";
 import 'package:http/http.dart' as http;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
+import 'package:bevvymobile/firebase.dart';
+import 'package:bevvymobile/loginEmail.dart';
+
 
 class LoginPage extends StatefulWidget {
-  LoginPage({Key key}) : super(key: key);
+  LoginPage({Key key, this.onLogin}) : super(key: key);
+
+  final OnLogin onLogin;
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -30,74 +37,72 @@ class _LoginPageState extends State<LoginPage> {
           ),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: Image(
-                  image: AssetImage(
-                      'images/icon.jpg',
-                      ),
+        child: Padding
+        (
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              GoogleSignInButton
+              (
+                onPressed: (){},
               ),
-            ),
-            TextField(
-                autofocus: true,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                ),
-                controller: emailTextController,
-            ),
-            TextField(
-                autofocus: false,
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                ),
-                controller: passwordTextController,
-            ),
-            new Container (
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 10.0),
-                child: RaisedButton(
-                    onPressed: () {},
-                    padding: const EdgeInsets.all(15),
-                    child: Text(
-                        "Login",
-                        style: TextStyle(fontSize: 20.0),
-                    ),
-                )
-            ),
-            new Container (
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 10.0),
-                child: RaisedButton(
-                    onPressed: (){
-                        log("Press");
-                    },
-                    padding: const EdgeInsets.all(15),
-                    child: Text(
-                        "Create Account",
-                        style: TextStyle(fontSize: 20.0),
-                    ),
-                )
-            ),
-            new Container (
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 10.0),
-                child: FlatButton(
-                      onPressed: (){
-                        log("Press");
-                    },
-                    padding: const EdgeInsets.all(15),
-                    child: Text(
-                        "Forgotten Password",
-                        style: TextStyle(fontSize: 20.0),
-                    ),
-                )
-            ),
-          ],
-        ),
+              Container 
+              (
+                  width: double.infinity,
+                  child: RaisedButton(
+                        onPressed: (){
+                          showDialog(context: context, builder: (BuildContext context)
+                          {
+                            return LoginEmailPage(onLogin: widget.onLogin,);
+                          });
+                      },
+                      color: Colors.red,
+                      padding: EdgeInsets.all(7),
+                      child: Row(children: <Widget>
+                      [
+                        Padding
+                        (
+                          child: Icon(IconData(57534, fontFamily: 'MaterialIcons'), color: Colors.white,), 
+                          padding: EdgeInsets.only(right: 25),
+                        ),
+                        Text(
+                            "Sign in with Email",
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                            textAlign: TextAlign.center,
+                        ),                        
+                      ])
+                  )
+              ),
+              Container 
+              (
+                  width: double.infinity,
+                  child: RaisedButton(
+                        onPressed: (){
+                          log("Press");
+                      },
+                      color: Colors.lightGreen,
+                      padding: EdgeInsets.all(7),
+                      child: Row(children: <Widget>
+                      [
+                        Padding
+                        (
+                          child: Icon(IconData(58705, fontFamily: 'MaterialIcons'), color: Colors.white,), 
+                          padding: EdgeInsets.only(right: 25),
+                        ),
+
+                        Text(
+                          "Sign in with Phone",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),                        
+                      ])
+                  )
+              ),
+            ],
+          ),
+        )
       ),
     );
   }

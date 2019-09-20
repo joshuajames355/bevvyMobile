@@ -1,8 +1,10 @@
 import 'package:bevvymobile/home.dart';
+import 'package:bevvymobile/loginEmail.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
-//import 'package:location/location.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 int primaryColour = 0XFFB14AED;
 Map<int, Color> colorPalette = 
@@ -134,6 +136,8 @@ class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Products and quantities.
   List<Order> orders;
   String location = "Current Location";
+  FirebaseUser user;
+  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
 
   @override
   initState()
@@ -148,6 +152,7 @@ class _AppState extends State<App>{
     return MaterialApp(
       title: 'Bevvy',
       theme: theme2,
+      navigatorKey: navKey,
       routes: 
       {
         "/" : (context) => Home
@@ -160,6 +165,8 @@ class _AppState extends State<App>{
             onAddOrder: addOrder,
             location: location,
             onSetLocation: setLocation,
+            onLogin: onLogin,
+            user: user,
           )
       }
     );
@@ -199,6 +206,14 @@ class _AppState extends State<App>{
     setState(() {
      location=newLocation; 
     });
+  }
+
+  onLogin(FirebaseUser newUser)
+  {
+    setState(() {
+      user=newUser;
+    });
+    navKey.currentState.popUntil(ModalRoute.withName("/"));
   }
 }
 

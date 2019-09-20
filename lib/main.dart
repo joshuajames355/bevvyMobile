@@ -1,3 +1,4 @@
+import 'package:bevvymobile/firebase.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/loginEmail.dart';
 import 'package:bevvymobile/order.dart';
@@ -145,6 +146,14 @@ class _AppState extends State<App>{
     super.initState();
     checkoutData = Map<Product, int>();
     orders = List<Order>();
+
+    //Used to ensure persistance.
+    auth.currentUser().then((FirebaseUser newUser)
+    {
+      setState(() {
+       user=newUser; 
+      });
+    });
   }
 
   @override

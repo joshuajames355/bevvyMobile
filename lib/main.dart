@@ -1,10 +1,8 @@
 import 'package:bevvymobile/firebase.dart';
 import 'package:bevvymobile/home.dart';
-import 'package:bevvymobile/loginEmail.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 int primaryColour = 0XFFB14AED;
@@ -176,6 +174,7 @@ class _AppState extends State<App>{
             onSetLocation: setLocation,
             onLogin: onLogin,
             user: user,
+            onLogout: onLogout
           )
       }
     );
@@ -223,6 +222,13 @@ class _AppState extends State<App>{
       user=newUser;
     });
     navKey.currentState.popUntil(ModalRoute.withName("/"));
+  }
+
+  onLogout()
+  {
+    setState(() {
+      user=null;
+    });
   }
 }
 

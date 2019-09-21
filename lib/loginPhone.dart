@@ -19,6 +19,8 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
   final _smsCodeTextController = TextEditingController();
   bool _isTextSent = false;
   String _verificationCode;
+  String _phoneNumber;
+  int _resendCode;
 
    @override 
   Widget build(BuildContext context)
@@ -56,7 +58,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
         (
           autofocus: true,
           controller: _noTextController,
-          textInputAction: TextInputAction.send,
+          textInputAction: TextInputAction.go,
           keyboardType: TextInputType.phone,
           decoration: InputDecoration(
             border: OutlineInputBorder(
@@ -64,6 +66,9 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
             ),
             labelText: 'Phone Number',
           ),
+          onSubmitted: (String no){
+            signIn();
+            },
         ),
       ),
       Row
@@ -82,67 +87,79 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                 child: Text("Sign In"),
                 padding: EdgeInsets.symmetric(vertical: 20),
               ),
-              onPressed: ()
-              {
-                //Assuming UK numbers
-                var number = _noTextController.text;
-                if(number.startsWith("07"))
-                {
-                  number = "+44" + number.substring(1);
-                }
-                else if (number.startsWith("7"))
-                {
-                  number = "+44" + number;
-                }
-                else if(!number.startsWith("+44"))
-                {
-                  print("Number not recognized: " + number);
-                }
-                auth.verifyPhoneNumber(phoneNumber: number, timeout: Duration(seconds: 120), 
-                verificationCompleted: (AuthCredential credential)
-                {
-                  auth.signInWithCredential(credential).then((AuthResult result)
-                  {
-                    widget.onLogin(result.user);
-                  }).catchError((e)
-                  {
-                    if(e.code == "ERROR_INVALID_CREDENTIAL")
-                    {
-                      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
-                    }
-                    else if(e.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL")
-                    {
-                      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
-                    }
-                    else if(e.code == "ERROR_USER_DISABLED")
-                    {
-                      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
-                    }
-                  });
-                },
-                verificationFailed: (AuthException error)
-                {
-
-                },
-                codeSent: (String verificationID, [int resendingToken])
-                {
-                  setState(() 
-                  {
-                    _isTextSent = true;
-                    _verificationCode = verificationID;
-                  });
-                },
-                codeAutoRetrievalTimeout: (String verificationId)
-                {
-
-                });
-          
-              },
+              onPressed: signIn
             ),
           ),
         ],
       )
     ];
+  }
+
+  signIn()
+  {
+  //Assuming UK numbers
+    _phoneNumber = _noTextController.text;
+    if(_phoneNumber.startsWith("07"))
+    {
+      _phoneNumber = "+44" + _phoneNumber.substring(1);
+    }
+    else if (_phoneNumber.startsWith("7"))
+    {
+      _phoneNumber = "+44" + _phoneNumber;
+    }
+    else if(!_phoneNumber.startsWith("+44"))
+    {
+      print("Number not recognized: " + _phoneNumber);
+    }
+    auth.verifyPhoneNumber(phoneNumber: _phoneNumber, timeout: Duration(seconds: 30), 
+      verificationCompleted: verificationCompleted,
+      verificationFailed: (AuthException error) 
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Verification Failed.")));
+        setState(() 
+        {
+          _isTextSent = false;
+        });
+      },
+      codeSent: (String verificationID, [int resendingToken])
+      {
+        setState(() 
+        {
+          _isTextSent = true;
+          _verificationCode = verificationID;
+          _resendCode = resendingToken;
+        });
+      },
+      codeAutoRetrievalTimeout: (String verificationId){}
+    ).then((x)
+    {
+      setState(() 
+      {
+        _isTextSent = true;
+      });
+    });        
+  }
+
+  verificationCompleted(AuthCredential credential)
+  {
+    auth.signInWithCredential(credential).then((AuthResult result)
+    {
+      widget.onLogin(result.user);
+    }).catchError((e)
+    {
+      if(e.code == "ERROR_INVALID_CREDENTIAL")
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
+      }
+      else if(e.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL")
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
+      }
+      else if(e.code == "ERROR_USER_DISABLED")
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
+      }
+    });
   }
 
   List<Widget> verifyCodeUI(BuildContext context)
@@ -155,7 +172,7 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
         (
           autofocus: true,
           controller: _smsCodeTextController,
-          textInputAction: TextInputAction.send,
+          textInputAction: TextInputAction.go,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             border: OutlineInputBorder(
@@ -163,6 +180,10 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
             ),
             labelText: 'SMS Code',
           ),
+          onSubmitted: (String code) 
+          {
+            verify();
+          }
         ),
       ),
       Row
@@ -203,7 +224,34 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
               ),
               onPressed: ()
               {
-                
+                auth.verifyPhoneNumber(phoneNumber: _phoneNumber, timeout: Duration(seconds: 30), 
+                  verificationCompleted: verificationCompleted,
+                  verificationFailed: (AuthException error) 
+                  {
+                    showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Verification Failed.")));
+                    setState(() 
+                    {
+                      _isTextSent = false;
+                    });
+                  },
+                  codeSent: (String verificationID, [int resendingToken])
+                  {
+                    setState(() 
+                    {
+                      _isTextSent = true;
+                      _verificationCode = verificationID;
+                      _resendCode = resendingToken;
+                    });
+                  },
+                  codeAutoRetrievalTimeout: (String verificationId)
+                  {
+                    setState(() 
+                    {
+                      _verificationCode = verificationId;
+                    });
+                  },
+                  forceResendingToken: _resendCode
+                );     
               },
             ),
           ),
@@ -218,33 +266,35 @@ class _LoginPhonePageState extends State<LoginPhonePage> {
                 child: Text("Verify"),
                 padding: EdgeInsets.symmetric(vertical: 20),
               ),
-              onPressed: ()
-              {
-                var credentials = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _smsCodeTextController.text);
-                auth.signInWithCredential(credentials).then((AuthResult result)
-                {
-                  widget.onLogin(result.user);
-                }).catchError((e)
-                {
-                  if(e.code == "ERROR_INVALID_CREDENTIAL")
-                  {
-                    showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
-                  }
-                  else if(e.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL")
-                  {
-                    showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
-                  }
-                  else if(e.code == "ERROR_USER_DISABLED")
-                  {
-                    showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
-                  }
-                });
-              },
+              onPressed: verify,
             ),
           ),
         ],
       )
     ];
+  }
+
+  verify()
+  {
+    var credentials = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _smsCodeTextController.text);
+    auth.signInWithCredential(credentials).then((AuthResult result)
+    {
+      widget.onLogin(result.user);
+    }).catchError((e)
+    {
+      if(e.code == "ERROR_INVALID_CREDENTIAL")
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
+      }
+      else if(e.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL")
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
+      }
+      else if(e.code == "ERROR_USER_DISABLED")
+      {
+        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
+      }
+    });
   }
 
     @override

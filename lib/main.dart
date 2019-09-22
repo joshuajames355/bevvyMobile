@@ -3,6 +3,7 @@ import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/firebase.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/login.dart';
+import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
@@ -204,6 +205,18 @@ class _AppState extends State<App>{
             (
               product: args, 
               addToBasket: addToBasket,
+            )
+          );  
+        }
+        else if(settings.name == "/order")
+        {
+          final Order args = settings.arguments;
+
+          return ExpandRoute
+          (
+            page: OrderScreen
+            (
+              order: args,
             )
           );  
         }

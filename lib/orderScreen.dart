@@ -4,8 +4,6 @@ import "package:bevvymobile/product.dart";
 import "package:bevvymobile/order.dart";
 import 'package:intl/intl.dart';
 
-typedef void AddToBasketFunc(Product product, int quantity);
-
 class OrderScreen extends StatefulWidget
 {
   const OrderScreen({ Key key, this.order}) : super(key: key);

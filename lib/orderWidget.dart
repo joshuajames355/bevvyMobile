@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/order.dart';
-import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/product.dart';
 
 class OrderWidget extends StatelessWidget
@@ -13,7 +12,7 @@ class OrderWidget extends StatelessWidget
   Widget build(BuildContext context) {
     return FlatButton
     (
-      onPressed: (){ Navigator.push(context, MaterialPageRoute(builder: (context) => OrderScreen(order: order)));},
+      onPressed: (){ Navigator.pushNamed(context,"/order", arguments: order);},
       padding: EdgeInsets.all(5),
       child: Container
       (

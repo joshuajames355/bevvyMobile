@@ -282,7 +282,7 @@ class _AppState extends State<App>{
       user=newUser;
     });
     navKey.currentState.popUntil(ModalRoute.withName("/"));
-    showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Sucess"), content: Text("You are now Logged in.")));
+    showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
   }
 
   onLogout()

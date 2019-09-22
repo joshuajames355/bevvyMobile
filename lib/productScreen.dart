@@ -33,68 +33,66 @@ class _ProductScreenState extends State<ProductScreen>{
           },
           ),
       ),
-      body: Align(
-        alignment: Alignment.topLeft,
-        child: 
-          Container
+      body: Container
+      (
+        decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
+        child: Padding
+        (
+          padding: EdgeInsets.all(20),
+          child: Column
           (
-            decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-            alignment: Alignment(0,0),
-            child: Column
-            (
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                widget.product.iconLarge,
-                Container
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              widget.product.iconLarge,
+              Expanded
+              (
+                child: Padding
                 (
-                  margin: EdgeInsets.symmetric(horizontal: 50),
-                  child: Text(widget.product.description)
-                ),
-                Container
+                  padding: EdgeInsets.symmetric(vertical: 15),
+                  child: ListView(children: [Text(widget.product.description)])
+                )
+              ),
+              Row
+              (
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [Text("£" + widget.product.price.toStringAsFixed(2)) ,Text(widget.product.category)]
+              ),
+              Padding
+              (
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: Row
                 (
-                  margin: EdgeInsets.symmetric(horizontal: 50),
-                  child: Row
-                  (
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [Text("£" + widget.product.price.toStringAsFixed(2)) ,Text(widget.product.category)]
-                  )
-                ),
-                Container
-                (
-                  margin: EdgeInsets.symmetric(horizontal: 5),
-                  child: Row
-                  (
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      FloatingActionButton(
-                        heroTag: "btn1",
-                        child: new Icon(IconData(0xe15b, fontFamily: 'MaterialIcons'), color: Colors.black,),
-                        onPressed: () 
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    FloatingActionButton(
+                      heroTag: "btn1",
+                      child: new Icon(IconData(0xe15b, fontFamily: 'MaterialIcons'), color: Colors.black,),
+                      onPressed: () 
+                      {
+                        setState(() 
                         {
-                          setState(() 
-                          {
-                            count = max(1, count - 1);
-                          });
-                        }
+                          count = max(1, count - 1);
+                        });
+                      }
+                    ),
+                    Text(
+                      count.toString(),
+                      style: TextStyle
+                      (
+                        fontSize: 24
                       ),
-                      Text(
-                        count.toString(),
-                        style: TextStyle
-                        (
-                          fontSize: 24
-                        ),
-                      ),
-                      FloatingActionButton(
-                        heroTag: "btn2",
-                        child: new Icon(Icons.add, color: Colors.black,),
-                        onPressed: () 
+                    ),
+                    FloatingActionButton(
+                      heroTag: "btn2",
+                      child: new Icon(Icons.add, color: Colors.black,),
+                      onPressed: () 
+                      {
+                        setState(() 
                         {
-                          setState(() 
-                          {
-                            count = count + 1;
-                          });
-                        }
-                      ),]
+                          count = count + 1;
+                        });
+                      }
+                    ),]
                   )
                 ),
                 RaisedButton
@@ -113,10 +111,11 @@ class _ProductScreenState extends State<ProductScreen>{
                     )
                   ),
                 )
-              ]
-            ),
-          )
+              
+            ]
+          ),
         )
+      )        
     );    
   }
 }

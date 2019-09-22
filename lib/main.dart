@@ -8,9 +8,12 @@ import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
+
 import 'package:flutter/material.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/observer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 int primaryColour = 0XFFB14AED;
 Map<int, Color> colorPalette = 
@@ -77,62 +80,9 @@ ThemeData theme3 = ThemeData
 );
 
 class App extends StatefulWidget {
-  App({Key key}) : super(key: key)
-  {
-    productList = [
-      Product(iconName: "jd.jpg",
-        title: "Jack Daniels",
-        size: "70cl",
-        priceCategory: "££",
-        description: "Dunno, Guess I Should put a description here. Lets just quickly make it long enough to wrap. This will probably make it long enough.",
-        price: 19.99,
-        category: "Whiskey"),
-      Product(iconName: "smirnoff.jpg",
-        title: "Smirnoff",
-        size: "70cl",
-        priceCategory: "££",
-        description: "Dunno, Guess I Should put a description here.",
-        price: 18.99,
-        category: "Vodka"),
-      Product(iconName: "russianStandard.jpg",
-        title: "Russian Standard",
-        size: "70cl",
-        priceCategory: "££",
-        description: "Dunno, Guess I Should put a description here.",
-        price: 17.99,
-        category: "Vodka"),
-      Product(iconName: "strongbow.jpg",
-        title: "Strongbow",
-        size: "440ml",
-        priceCategory: "£",
-        description: "Dunno, Guess I Should put a description here.",
-        price: 2.99,
-        category: "Cider"),
-      Product(iconName: "fosters.jpg",
-        title: "Fosters",
-        size: "330ml",
-        priceCategory: "£",
-        description: "Dunno, Guess I Should put a description here.",
-        price: 3.99,
-        category: "Beer"),
-      Product(iconName: "echoFalls.jpg",
-        title: "Echo Falls",
-        size: "500ml",
-        priceCategory: "£",
-        description: "Dunno, Guess I Should put a description here.",
-        price: 4.50,
-        category: "Wine"),
-      Product(iconName: "absolutVodka.jpg",
-        title: "Absolut Vodka",
-        size: "1L",
-        priceCategory: "£££",
-        description: "Dunno, Guess I Should put a description here.",
-        price: 25.50,
-        category: "Vodka"),
-    ];
-  }
+  App({Key key}) : super(key: key);
 
-  List<Product> productList;
+  final Firestore store = Firestore();
 
   @override
   _AppState createState() => _AppState();
@@ -172,14 +122,35 @@ class _AppState extends State<App>{
       ],
       routes: 
       {
-        "/" : (context) => Home
+        "/" : (context) => StreamBuilder
         (
-          productList: widget.productList,
-          orders: orders,
-          location: location,
-          onSetLocation: setLocation,
-          user: user,
-        ),
+          stream: widget.store.collection("inventory").snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
+          {
+            if(!snapshot.hasData)
+            {
+              return Container
+              (
+                color: Theme.of(context).backgroundColor,
+                width: double.infinity,
+                height: double.infinity,
+                child: Align
+                (
+                  alignment: Alignment.center,
+                  child: CircularProgressIndicator(),
+                )
+              );
+            }
+            return Home
+            (
+              productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+              orders: orders,
+              location: location,
+              onSetLocation: setLocation,
+              user: user,
+            );
+          }
+        )
       },
       onGenerateRoute: (RouteSettings settings)
       {

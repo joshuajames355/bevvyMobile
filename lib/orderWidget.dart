@@ -17,6 +17,7 @@ class OrderWidget extends StatelessWidget
       padding: EdgeInsets.all(5),
       child: Container
       (
+        padding: EdgeInsets.all(5),
         decoration: BoxDecoration
         (
           borderRadius: new BorderRadius.all(Radius.circular(12)),
@@ -26,7 +27,6 @@ class OrderWidget extends StatelessWidget
         height: imageSize + 100,
         child: Column
         (
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text
             (
@@ -41,14 +41,14 @@ class OrderWidget extends StatelessWidget
               overflow: TextOverflow.ellipsis,
               style: TextStyle(fontSize: 18),
             ),
-            Container
+            Expanded
             (
-              child: Column
+              child: ListView
               (
                 children: order.products.keys.map((Product product)
-                {
-                  return Text(" - " + order.products[product].toString() + " X " + product.title);
-                }).toList(),
+                  {
+                    return Text(" - " + order.products[product].toString() + " X " + product.title, overflow: TextOverflow.ellipsis);
+                  }).toList(),
               ),
             )
           ]

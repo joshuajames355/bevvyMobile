@@ -49,19 +49,23 @@ class _OrderScreenState extends State<OrderScreen>{
                 (
                   child: Container
                   (
-                    margin: EdgeInsets.all(50),
+                    margin: EdgeInsets.all(25),
                     child: ListView
                     (
                       children: widget.order.products.keys.map((Product product)
                       {
-                        return Text(" - " +  widget.order.products[product].toString() + " X " + product.title);
+                        return Text
+                        (
+                          " - " +  widget.order.products[product].toString() + " X " + product.title, 
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 18),);
                       }).toList(),
                     )
                   ),
                 ),           
                 Container
                 (
-                  margin: EdgeInsets.symmetric(horizontal: 50),
+                  margin: EdgeInsets.symmetric(horizontal: 25),
                   child: Row
                   (
                     children: [Text("Total: £" + getTotal(widget.order.products).toStringAsFixed(2), style: TextStyle(fontSize: 16))]
@@ -69,7 +73,7 @@ class _OrderScreenState extends State<OrderScreen>{
                 ),
                 Container
                 (
-                  margin: EdgeInsets.fromLTRB(50, 20, 50, 0),
+                  margin: EdgeInsets.fromLTRB(25, 20, 25, 0),
                   child: Row
                   (
                     children: [Text("Status: " + widget.order.status, style: TextStyle(fontSize: 16))]
@@ -77,7 +81,7 @@ class _OrderScreenState extends State<OrderScreen>{
                 ),
                 Container
                 (
-                  margin: EdgeInsets.fromLTRB(50, 20, 50, 50),
+                  margin: EdgeInsets.fromLTRB(25, 20, 25, 25),
                   child: Row
                   (
                     children: [Text("Arriving at: " + formatter.format(widget.order.arrivalTime), style: TextStyle(fontSize: 16),)]

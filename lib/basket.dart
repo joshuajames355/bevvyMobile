@@ -23,8 +23,12 @@ class BasketDataWidget extends StatelessWidget
           child: Row(
             children: <Widget>
             [
-              Text(checkoutData[product].toString() + " X " + this.product.title,
-                style: TextStyle(fontSize: 18),
+              Flexible
+              (
+                child:  Text(checkoutData[product].toString() + " X " + this.product.title,
+                  style: TextStyle(fontSize: 18),
+                  overflow: TextOverflow.ellipsis,
+                )
               ),
               Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2),style: TextStyle(fontSize: 18),)
             ],

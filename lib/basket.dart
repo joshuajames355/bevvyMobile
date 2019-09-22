@@ -1,6 +1,5 @@
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
-import 'package:bevvymobile/checkout.dart';
 import 'package:flutter/material.dart';
 
 typedef void RemoveFromBasketFunc(Product product);
@@ -53,11 +52,10 @@ class BasketDataWidget extends StatelessWidget
 
 class Basket extends StatelessWidget
 {
-  const Basket({ Key key, this.checkoutData, this.removeFromBasket, this.onAddOrder}) : super(key: key);
+  const Basket({ Key key, this.checkoutData, this.removeFromBasket}) : super(key: key);
 
   final Map<Product, int> checkoutData;
   final RemoveFromBasketFunc removeFromBasket;
-  final AddOrder onAddOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +111,7 @@ class Basket extends StatelessWidget
                 }
                 else
                 {                
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Checkout(checkoutData: checkoutData, onAddOrder: onAddOrder,)));
+                  Navigator.pushNamed(context, "/checkout");
                 }
               },
             )

@@ -6,10 +6,9 @@ typedef void AddToBasketFunc(Product product, int quantity);
 
 class ProductScreen extends StatefulWidget
 {
-  const ProductScreen({ Key key, this.product, this.checkoutData, this.addToBasket}) : super(key: key);
+  const ProductScreen({ Key key, this.product, this.addToBasket}) : super(key: key);
 
   final Product product;
-  final Map<Product, int>  checkoutData;
   final AddToBasketFunc addToBasket;
 
   @override

@@ -1,14 +1,10 @@
 import 'dart:math';
 
-import 'package:bevvymobile/loginEmail.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
-import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/StoreFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
-import 'package:bevvymobile/basket.dart';
-import 'package:bevvymobile/accountDetails.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -16,12 +12,11 @@ typedef void RemoveFromBasketFunc(Product product);
 typedef void AddToBasketFunc(Product product, int quantity);
 typedef void AddOrder(Order order);
 typedef void SetLocation(String newLocation);
-typedef void OnLogout();
 
 enum StorePage {home, category, search}
 
 class Home extends StatefulWidget {
-  Home({Key key, this.productList, this.checkoutData, this.removeFromBasket, this.addToBasket, this.orders, this.onAddOrder, this.location, this.onSetLocation, this.onLogin, this.user, this.onLogout}) : super(key: key)
+  Home({Key key, this.productList, this.addToBasket, this.orders, this.location, this.onSetLocation, this.user}) : super(key: key)
   {
     categories = [];
     productListByCategory = Map<String, List<Product>>();
@@ -46,15 +41,10 @@ class Home extends StatefulWidget {
   List<Product> productList;
   List<String> categories;
   Map<String, List<Product>> productListByCategory;
-  final Map<Product, int> checkoutData;
-  RemoveFromBasketFunc removeFromBasket;
   AddToBasketFunc addToBasket;
   List<Order> orders;
   SetLocation onSetLocation;
-  final AddOrder onAddOrder;
-  final OnLogin onLogin;
   final FirebaseUser user;
-  final OnLogout onLogout;
 
   @override
   _HomeState createState() => _HomeState();
@@ -77,7 +67,7 @@ class _HomeState extends State<Home> {
         child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
         onPressed: ()
         {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => Basket(checkoutData: widget.checkoutData, removeFromBasket: widget.removeFromBasket, onAddOrder: widget.onAddOrder,)));
+          Navigator.pushNamed(context, "/basket");
         },
       ),
       bottomNavigationBar: BottomAppBar
@@ -161,7 +151,6 @@ class _HomeState extends State<Home> {
                 });
               }
             },
-            checkoutData: widget.checkoutData,
             addToBasket: widget.addToBasket,
             orders: widget.orders,
           ),
@@ -190,7 +179,6 @@ class _HomeState extends State<Home> {
           {
             return x.title.toLowerCase().contains(_controller.text.toLowerCase());
           }).toList(),
-          checkoutData: widget.checkoutData,
             addToBasket: widget.addToBasket),
         ),
         onWillPop: () 
@@ -209,7 +197,11 @@ class _HomeState extends State<Home> {
           decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
           child: GestureDetector
           (
-            child: ProductGridView(productList: widget.productListByCategory[widget.categories[currentCategory]], checkoutData: widget.checkoutData,  addToBasket: widget.addToBasket),
+            child: ProductGridView
+            (
+              productList: widget.productListByCategory[widget.categories[currentCategory]],  
+              addToBasket: widget.addToBasket
+            ),
             onHorizontalDragEnd: (DragEndDetails details)
             {
               if(details.velocity.pixelsPerSecond.dx > 150)
@@ -302,11 +294,12 @@ class _HomeState extends State<Home> {
             {
               if(widget.user == null)
               {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(onLogin: widget.onLogin,)));
+                Navigator.pushNamed(context, "/login");
               }
               else
               {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AccountDetails(user: widget.user, onLogout: widget.onLogout,)));
+                Navigator.pushNamed(context, "/accountDetails");
+
               }
             },
             icon: Icon

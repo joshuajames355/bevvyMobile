@@ -11,11 +11,10 @@ typedef void AddToBasketFunc(Product product, int quantity);
 //Renders a List of all products, seperated by categories.
 class StoreFrontHome extends StatelessWidget
 {
-  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory, this.checkoutData, this.addToBasket, this.orders}) : super(key: key);
+  const StoreFrontHome({ Key key, this.productListByCategory, this.onSelectCategory, this.addToBasket, this.orders}) : super(key: key);
 
   final Map<String, List<Product>> productListByCategory;
   final OnSelectCategory onSelectCategory;
-  final Map<Product, int> checkoutData;
   final AddToBasketFunc addToBasket;
   final List<Order> orders;
 
@@ -28,7 +27,7 @@ class StoreFrontHome extends StatelessWidget
     }
     children.addAll(productListByCategory.keys.toList().map((String category)
     {
-      return makeSection(category, productListByCategory[category].map((Product product) => ProductWidget(addToBasket: addToBasket, checkoutData: checkoutData, product: product,)).toList());
+      return makeSection(category, productListByCategory[category].map((Product product) => ProductWidget(addToBasket: addToBasket, product: product,)).toList());
     }));
     return ListView
       (

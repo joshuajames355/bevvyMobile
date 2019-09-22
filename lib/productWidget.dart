@@ -7,10 +7,9 @@ typedef void AddToBasketFunc(Product product, int quantity);
 //Displayed in the main list views
 class ProductWidget extends StatelessWidget
 {
-  const ProductWidget({ Key key, this.product, this.checkoutData, this.addToBasket} ) : super(key: key);
+  const ProductWidget({ Key key, this.product, this.addToBasket} ) : super(key: key);
 
   final Product product;
-  final Map<Product, int> checkoutData;
   final AddToBasketFunc addToBasket;
 
   @override
@@ -19,7 +18,7 @@ class ProductWidget extends StatelessWidget
     (
       onPressed: ()
       {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen(product: product, checkoutData: checkoutData, addToBasket: addToBasket,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ProductScreen(product: product, addToBasket: addToBasket,)));
       },
       padding: EdgeInsets.all(5),
       

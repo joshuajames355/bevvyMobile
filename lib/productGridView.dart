@@ -8,10 +8,9 @@ typedef void AddToBasketFunc(Product product, int quantity);
 //Renders a List of all products, seperated by categories.
 class ProductGridView extends StatelessWidget
 {
-  const ProductGridView({ Key key, this.productList, this.checkoutData, this.addToBasket}) : super(key: key);
+  const ProductGridView({ Key key, this.productList, this.addToBasket}) : super(key: key);
 
   final List<Product> productList;
-  final Map<Product, int> checkoutData;
   final AddToBasketFunc addToBasket;
 
   @override
@@ -22,7 +21,7 @@ class ProductGridView extends StatelessWidget
       padding: EdgeInsets.symmetric(vertical: 10),
       children: productList.map((Product x) 
       {
-        return ProductWidget(product: x, checkoutData: checkoutData, addToBasket: addToBasket);
+        return ProductWidget(product: x, addToBasket: addToBasket);
       }).toList()
     );
   }

@@ -1,9 +1,14 @@
+import 'package:bevvymobile/basket.dart';
+import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/firebase.dart';
 import 'package:bevvymobile/home.dart';
+import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
+import 'package:bevvymobile/accountDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_analytics/observer.dart';
 
 int primaryColour = 0XFFB14AED;
 Map<int, Color> colorPalette = 
@@ -160,22 +165,38 @@ class _AppState extends State<App>{
       title: 'Bevvy',
       theme: theme2,
       navigatorKey: navKey,
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: analytics),
+      ],
       routes: 
       {
         "/" : (context) => Home
           (
             addToBasket: addToBasket,
-            removeFromBasket: removeFromBasket,
             productList: widget.productList,
-            checkoutData: checkoutData,
             orders: orders,
-            onAddOrder: addOrder,
             location: location,
             onSetLocation: setLocation,
-            onLogin: onLogin,
-            user: user,
-            onLogout: onLogout
-          )
+          ),
+        "/basket" : (context) => Basket
+        (
+          checkoutData: checkoutData,
+          removeFromBasket: removeFromBasket,
+        ),
+        "/login" : (context) => LoginPage
+        (
+          onLogin: onLogin,
+        ),
+        "/accountDetails" : (context) => AccountDetails
+        (
+          user: user,
+          onLogout: onLogout,
+        ),
+        "/checkout" : (context) => Checkout
+        (
+          onAddOrder: addOrder,
+          checkoutData: checkoutData,
+        ),       
       }
     );
   }

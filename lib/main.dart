@@ -3,8 +3,10 @@ import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/firebase.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/login.dart';
+import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
+import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -171,33 +173,70 @@ class _AppState extends State<App>{
       routes: 
       {
         "/" : (context) => Home
-          (
-            addToBasket: addToBasket,
-            productList: widget.productList,
-            orders: orders,
-            location: location,
-            onSetLocation: setLocation,
-          ),
-        "/basket" : (context) => Basket
         (
-          checkoutData: checkoutData,
-          removeFromBasket: removeFromBasket,
-        ),
-        "/login" : (context) => LoginPage
-        (
-          onLogin: onLogin,
-        ),
-        "/accountDetails" : (context) => AccountDetails
-        (
+          productList: widget.productList,
+          orders: orders,
+          location: location,
+          onSetLocation: setLocation,
           user: user,
-          onLogout: onLogout,
         ),
-        "/checkout" : (context) => Checkout
-        (
-          onAddOrder: addOrder,
-          checkoutData: checkoutData,
-        ),       
-      }
+      },
+      onGenerateRoute: (RouteSettings settings)
+      {
+        if(settings.name == "/login")
+        {
+          return SlideLeftRoute(          
+            page: LoginPage
+            (
+              onLogin: onLogin,
+            ),
+          );
+        }
+        else if(settings.name == "/accountDetails")
+        {
+          return SlideLeftRoute(          
+            page: AccountDetails
+            (
+              user: user,
+              onLogout: onLogout,
+            ),    
+          );
+        }
+        else if(settings.name == "/basket")
+        {
+          return ExpandRoute(          
+            page: Basket
+            (
+              checkoutData: checkoutData,
+              removeFromBasket: removeFromBasket,
+            ),
+          );
+        }
+        else if (settings.name == "/checkout")
+        {
+          return SlideLeftRoute
+          (
+            page: Checkout
+            (
+              onAddOrder: addOrder,
+              checkoutData: checkoutData,
+            ), 
+          );   
+        }
+        else if(settings.name == "/product")
+        {
+          final Product args = settings.arguments;
+
+          return ExpandRoute
+          (
+            page: ProductScreen
+            (
+              product: args, 
+              addToBasket: addToBasket,
+            )
+          );  
+        }
+      },
     );
   }
 

@@ -9,14 +9,13 @@ import 'package:bevvymobile/productGridView.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 typedef void RemoveFromBasketFunc(Product product);
-typedef void AddToBasketFunc(Product product, int quantity);
 typedef void AddOrder(Order order);
 typedef void SetLocation(String newLocation);
 
 enum StorePage {home, category, search}
 
 class Home extends StatefulWidget {
-  Home({Key key, this.productList, this.addToBasket, this.orders, this.location, this.onSetLocation, this.user}) : super(key: key)
+  Home({Key key, this.productList, this.orders, this.location, this.onSetLocation, this.user}) : super(key: key)
   {
     categories = [];
     productListByCategory = Map<String, List<Product>>();
@@ -41,7 +40,6 @@ class Home extends StatefulWidget {
   List<Product> productList;
   List<String> categories;
   Map<String, List<Product>> productListByCategory;
-  AddToBasketFunc addToBasket;
   List<Order> orders;
   SetLocation onSetLocation;
   final FirebaseUser user;
@@ -151,7 +149,6 @@ class _HomeState extends State<Home> {
                 });
               }
             },
-            addToBasket: widget.addToBasket,
             orders: widget.orders,
           ),
         ),
@@ -176,10 +173,10 @@ class _HomeState extends State<Home> {
         (
           decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
           child:ProductGridView(productList: widget.productList.where((Product x)
-          {
-            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-          }).toList(),
-            addToBasket: widget.addToBasket),
+            {
+              return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+            }).toList()
+          ),
         ),
         onWillPop: () 
         {
@@ -200,7 +197,6 @@ class _HomeState extends State<Home> {
             child: ProductGridView
             (
               productList: widget.productListByCategory[widget.categories[currentCategory]],  
-              addToBasket: widget.addToBasket
             ),
             onHorizontalDragEnd: (DragEndDetails details)
             {

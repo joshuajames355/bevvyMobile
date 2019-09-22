@@ -3,15 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import "productWidget.dart";
 
-typedef void AddToBasketFunc(Product product, int quantity);
-
 //Renders a List of all products, seperated by categories.
 class ProductGridView extends StatelessWidget
 {
-  const ProductGridView({ Key key, this.productList, this.addToBasket}) : super(key: key);
+  const ProductGridView({ Key key, this.productList}) : super(key: key);
 
   final List<Product> productList;
-  final AddToBasketFunc addToBasket;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +18,7 @@ class ProductGridView extends StatelessWidget
       padding: EdgeInsets.symmetric(vertical: 10),
       children: productList.map((Product x) 
       {
-        return ProductWidget(product: x, addToBasket: addToBasket);
+        return ProductWidget(product: x, );
       }).toList()
     );
   }

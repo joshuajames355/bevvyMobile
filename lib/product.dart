@@ -44,7 +44,7 @@ class Product
     ), 
     iconLarge = CachedNetworkImage
     (
-      imageUrl: getLargeUrl(data), 
+      imageUrl: getLargeUrl(data) ?? (data["images"] is Map ? (data["images"]["thumbnail"] ?? "") : ""), //Fallbacks to thumbnail if no large url
       placeholder: (context, url) => Align(
         alignment: Alignment.center,
         child: Container
@@ -59,7 +59,7 @@ class Product
       title = data["name"] ?? "",
       price = double.parse(data["price"] ?? "0")/100,
       description = data["description"] ?? "",
-      size = data["size"] is Map ? data["size"]["magnitude"] ?? "" : "",
+      size = (data["size"] is Map ? (data["size"]["magnitude"] ?? "" ) + (data["size"]["unit"] ?? "" ): ""),
       priceCategory = "\$\$",
       category = data["category"] ?? "None"
     ;    
@@ -80,11 +80,11 @@ String getLargeUrl(Map<String, dynamic> data)
     }
     else
     {
-      return "";
+      return null;
     }
   }
   catch (error)
   {
-    return "";
+    return null;
   }
 }

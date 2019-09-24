@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; 
 
 final double imageSize = 120;
 final double largeImageSize = 250;
 
 class Product
 {
+  final String id;
   final String title;
   final String description;
   final double price;
@@ -18,7 +18,7 @@ class Product
   final Widget iconLarge;
 
   //Loads Image from file
-  Product({this.title, this.description, this.price, this.category, iconName, this.size, this.priceCategory}) : icon = Image(
+  Product({this.id, this.title, this.description, this.price, this.category, iconName, this.size, this.priceCategory}) : icon = Image(
       image: AssetImage("images/" + iconName),
       width: imageSize,
       height: imageSize) ,iconLarge = Image(image: AssetImage("images/" + iconName),
@@ -61,7 +61,8 @@ class Product
       description = data["description"] ?? "",
       size = (data["size"] is Map ? (data["size"]["magnitude"] ?? "" ) + (data["size"]["unit"] ?? "" ): ""),
       priceCategory = "\$\$",
-      category = data["category"] ?? "None"
+      category = data["category"] ?? "None",
+      id = data["id"] ?? ""
     ;    
 }
 

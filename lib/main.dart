@@ -90,11 +90,12 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App>{
-  Map<Product, int> checkoutData; //Products and quantities.
+  Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
   String location = "Current Location";
   FirebaseUser user;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+  Future<QuerySnapshot> inventory;
 
   @override
   initState()
@@ -102,6 +103,8 @@ class _AppState extends State<App>{
     super.initState();
     checkoutData = Map<Product, int>();
     orders = List<Order>();
+
+    inventory = widget.store.collection("inventory").getDocuments();
 
     //Used to ensure persistance.
     auth.currentUser().then((FirebaseUser newUser)
@@ -123,9 +126,9 @@ class _AppState extends State<App>{
       ],
       routes: 
       {
-        "/" : (context) => StreamBuilder
+        "/" : (context) => FutureBuilder
         (
-          stream: widget.store.collection("inventory").snapshots(),
+          future: inventory,
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
           {
             if(!snapshot.hasData)

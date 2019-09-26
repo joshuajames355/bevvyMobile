@@ -124,44 +124,44 @@ class _AppState extends State<App>{
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
-      routes: 
-      {
-        "/" : (context) => FutureBuilder
-        (
-          future: inventory,
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
-          {
-            if(!snapshot.hasData)
-            {
-              return Container
-              (
-                color: Theme.of(context).backgroundColor,
-                width: double.infinity,
-                height: double.infinity,
-                child: Align
-                (
-                  alignment: Alignment.center,
-                  child: CircularProgressIndicator(),
-                )
-              );
-            }
-            return Home
-            (
-              productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-              orders: orders,
-              location: location,
-              onSetLocation: setLocation,
-              user: user,
-            );
-          }
-        )
-      },
       onGenerateRoute: (RouteSettings settings)
       {
+        if(settings.name == "/")
+        {
+          return MaterialPageRoute(builder: (context) => FutureBuilder
+          (
+            future: inventory,
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
+            {
+              if(!snapshot.hasData)
+              {
+                return Container
+                (
+                  color: Theme.of(context).backgroundColor,
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: Align
+                  (
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
+                );
+              }
+              return Home
+              (
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                orders: orders,
+                location: location,
+                onSetLocation: setLocation,
+                user: user,
+              );
+            }
+          ));
+        }
         if(settings.name == "/login")
         {
           return SlideLeftRoute(          
-            page: LoginPage
+            page: (BuildContext context) => LoginPage
             (
               onLogin: onLogin,
             ),
@@ -169,18 +169,32 @@ class _AppState extends State<App>{
         }
         else if(settings.name == "/accountDetails")
         {
-          return SlideLeftRoute(          
-            page: AccountDetails
-            (
-              user: user,
-              onLogout: onLogout,
-            ),    
-          );
+          if(user!=null && !user.isAnonymous)
+          {
+            return SlideLeftRoute
+            (          
+              page: (BuildContext context) => AccountDetails
+              (
+                user: user,
+                onLogout: onLogout,
+                onUserChange: onUserChange,
+              ),    
+            );
+          }
+          else
+          {
+            return SlideLeftRoute(          
+              page: (BuildContext context) => LoginPage
+              (
+                onLogin: onLogin,
+              ),
+            );
+          }
         }
         else if(settings.name == "/basket")
         {
           return ExpandRoute(          
-            page: Basket
+            page: (BuildContext context) => Basket
             (
               checkoutData: checkoutData,
               removeFromBasket: removeFromBasket,
@@ -191,7 +205,7 @@ class _AppState extends State<App>{
         {
           return SlideLeftRoute
           (
-            page: Checkout
+            page: (BuildContext context) => Checkout
             (
               onAddOrder: addOrder,
               checkoutData: checkoutData,
@@ -204,7 +218,7 @@ class _AppState extends State<App>{
 
           return ExpandRoute
           (
-            page: ProductScreen
+            page: (BuildContext context) => ProductScreen
             (
               product: args, 
               addToBasket: addToBasket,
@@ -217,7 +231,7 @@ class _AppState extends State<App>{
 
           return ExpandRoute
           (
-            page: OrderScreen
+            page: (BuildContext context) => OrderScreen
             (
               order: args,
             )

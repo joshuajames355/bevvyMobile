@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+typedef Widget PageBuilderFunc(BuildContext context);
+
 class SlideLeftRoute extends PageRouteBuilder {
-  final Widget page;
+  final PageBuilderFunc page;
 
   SlideLeftRoute({this.page})
       : super(
@@ -10,7 +12,7 @@ class SlideLeftRoute extends PageRouteBuilder {
             BuildContext context,
             Animation<double> animation,
             Animation<double> secondaryAnimation,
-          ) => page,
+          ) => page(context),
           transitionsBuilder: (
             BuildContext context,
             Animation<double> animation,
@@ -28,7 +30,7 @@ class SlideLeftRoute extends PageRouteBuilder {
 }
 
 class SlideUpRoute extends PageRouteBuilder {
-  final Widget page;
+  final PageBuilderFunc page;
 
   SlideUpRoute({this.page})
       : super(
@@ -37,7 +39,7 @@ class SlideUpRoute extends PageRouteBuilder {
             BuildContext context,
             Animation<double> animation,
             Animation<double> secondaryAnimation,
-          ) => page,
+          ) => page(context),
           transitionsBuilder: (
             BuildContext context,
             Animation<double> animation,
@@ -55,7 +57,7 @@ class SlideUpRoute extends PageRouteBuilder {
 }
 
 class ExpandRoute extends PageRouteBuilder {
-  final Widget page;
+  final PageBuilderFunc page;
 
   ExpandRoute({this.page})
       : super(
@@ -64,7 +66,7 @@ class ExpandRoute extends PageRouteBuilder {
             BuildContext context,
             Animation<double> animation,
             Animation<double> secondaryAnimation,
-          ) => page,
+          ) => page(context),
           transitionsBuilder: (
             BuildContext context,
             Animation<double> animation,

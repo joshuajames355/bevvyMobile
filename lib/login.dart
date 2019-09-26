@@ -80,38 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),                        
                       ])
                   )
-              ),
-              Container 
-              (
-                width: double.infinity,
-                child: RaisedButton(
-                  onPressed: (){
-                    showDialog(context: context, builder: (BuildContext context)
-                    {
-                      return LoginPhonePage(onLogin: widget.onLogin,);
-                    });
-                  },
-                  color: Colors.lightGreen,
-                  padding: EdgeInsets.all(7),
-                  child: Row
-                  (
-                    children: <Widget>
-                    [
-                      Padding
-                      (
-                        child: Icon(IconData(58705, fontFamily: 'MaterialIcons'), color: Colors.white,), 
-                        padding: EdgeInsets.only(right: 25),
-                      ),
-
-                      Text(
-                        "Sign in with Phone",
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),                        
-                    ]
-                  )
-                )
-              ),
+              )
             ],
           ),
         )

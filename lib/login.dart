@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
-import 'package:bevvymobile/firebase.dart';
+import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/loginEmail.dart';
 import 'package:bevvymobile/loginPhone.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-final GoogleSignIn _googleSignIn = GoogleSignIn();
-
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key, this.onLogin}) : super(key: key);
@@ -46,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
               (
                 onPressed: () async
                 {
-                  final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+                  final GoogleSignInAccount googleUser = await googleSignIn.signIn();
                   final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
                   final AuthCredential credential = GoogleAuthProvider.getCredential
                   (

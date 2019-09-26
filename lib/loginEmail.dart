@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bevvymobile/firebase.dart';
+import 'package:bevvymobile/globals.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
@@ -135,6 +135,7 @@ class _LoginEmailPageState extends State<LoginEmailPage> {
 
     auth.signInWithEmailAndPassword(email: _emailTextController.text, password: _passwordTextController.text).then((AuthResult result)
     {
+      Navigator.pop(context);
       widget.onLogin(result.user);
     }).catchError((e)
     {

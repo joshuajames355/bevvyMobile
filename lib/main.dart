@@ -1,6 +1,6 @@
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/checkout.dart';
-import 'package:bevvymobile/firebase.dart';
+import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/orderScreen.dart';
@@ -108,6 +108,13 @@ class _AppState extends State<App>{
 
     //Used to ensure persistance.
     auth.currentUser().then((FirebaseUser newUser)
+    {
+      setState(() {
+       user=newUser; 
+      });
+    });
+
+    auth.onAuthStateChanged.listen((FirebaseUser newUser)
     {
       setState(() {
        user=newUser; 
@@ -279,18 +286,23 @@ class _AppState extends State<App>{
 
   onLogin(FirebaseUser newUser)
   {
-    setState(() {
-      user=newUser;
-    });
-    navKey.currentState.popUntil(ModalRoute.withName("/"));
+    navKey.currentState.pop();
     showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
   }
 
   onLogout()
   {
-    setState(() {
-      user=null;
-    });
+    showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged out.")));
+  }
+
+  onUserChange()
+  {
+    auth.currentUser().then((FirebaseUser newUser)
+    {
+      setState(() {
+       user=newUser; 
+      });
+    });  
   }
 }
 

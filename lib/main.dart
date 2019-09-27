@@ -95,7 +95,7 @@ class _AppState extends State<App>{
   String location = "Current Location";
   FirebaseUser user;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
-  Future<QuerySnapshot> inventory;
+  Future<QuerySnapshot> catalogue;
 
   @override
   initState()
@@ -104,7 +104,7 @@ class _AppState extends State<App>{
     checkoutData = Map<Product, int>();
     orders = List<Order>();
 
-    inventory = widget.store.collection("inventory").getDocuments();
+    catalogue = widget.store.collection("catalogue").getDocuments();
 
     //Used to ensure persistance.
     auth.currentUser().then((FirebaseUser newUser)
@@ -137,7 +137,7 @@ class _AppState extends State<App>{
         {
           return MaterialPageRoute(builder: (context) => FutureBuilder
           (
-            future: inventory,
+            future: catalogue,
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
             {
               if(!snapshot.hasData)

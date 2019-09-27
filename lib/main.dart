@@ -104,7 +104,7 @@ class _AppState extends State<App>{
     checkoutData = Map<Product, int>();
     orders = List<Order>();
 
-    catalogue = widget.store.collection("catalogue").getDocuments();
+    catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
     auth.currentUser().then((FirebaseUser newUser)

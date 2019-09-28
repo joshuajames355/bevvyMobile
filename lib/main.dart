@@ -1,5 +1,6 @@
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/checkout.dart';
+import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/login.dart';
@@ -9,6 +10,7 @@ import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
+import 'package:bevvymobile/splashScreen.dart';
 
 import 'package:flutter/material.dart';
 
@@ -112,13 +114,26 @@ class _AppState extends State<App>{
       setState(() {
        user=newUser; 
       });
+      if(newUser != null)
+      {
+        navKey.currentState.pushNamed("/home");
+      }
     });
 
     auth.onAuthStateChanged.listen((FirebaseUser newUser)
     {
+      print("change");
       setState(() {
        user=newUser; 
       });
+      if(newUser != null)
+      {
+        navKey.currentState.pushNamed("/home");
+      }
+      else
+      {
+        navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      }
     });
   }
 
@@ -135,6 +150,10 @@ class _AppState extends State<App>{
       {
         if(settings.name == "/")
         {
+          return MaterialPageRoute(builder: (context) => SplashScreen());
+        }
+        if(settings.name == "/home")
+        {
           return MaterialPageRoute(builder: (context) => FutureBuilder
           (
             future: catalogue,
@@ -142,25 +161,31 @@ class _AppState extends State<App>{
             {
               if(!snapshot.hasData)
               {
-                return Container
-                (
-                  color: Theme.of(context).backgroundColor,
-                  width: double.infinity,
-                  height: double.infinity,
-                  child: Align
+                return WillPopScope(
+                  onWillPop: () async => false,
+                  child: Container
                   (
-                    alignment: Alignment.center,
-                    child: CircularProgressIndicator(),
+                    color: Theme.of(context).backgroundColor,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Align
+                    (
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
                   )
                 );
               }
-              return Home
-              (
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-                orders: orders,
-                location: location,
-                onSetLocation: setLocation,
-                user: user,
+              return  WillPopScope(
+                  onWillPop: () async => false,
+                  child: Home
+                (
+                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                  orders: orders,
+                  location: location,
+                  onSetLocation: setLocation,
+                  user: user,
+                )
               );
             }
           ));
@@ -168,35 +193,26 @@ class _AppState extends State<App>{
         if(settings.name == "/login")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => LoginPage
-            (
-              onLogin: onLogin,
-            ),
+            page: (BuildContext context) => LoginPage(email: settings.arguments),
+          );
+        }
+        if(settings.name == "/createAccount")
+        {
+          return SlideLeftRoute(          
+            page: (BuildContext context) => CreateAccount(email: settings.arguments,)
           );
         }
         else if(settings.name == "/accountDetails")
         {
-          if(user!=null && !user.isAnonymous)
-          {
-            return SlideLeftRoute
-            (          
-              page: (BuildContext context) => AccountDetails
-              (
-                user: user,
-                onLogout: onLogout,
-                onUserChange: onUserChange,
-              ),    
-            );
-          }
-          else
-          {
-            return SlideLeftRoute(          
-              page: (BuildContext context) => LoginPage
-              (
-                onLogin: onLogin,
-              ),
-            );
-          }
+          return SlideLeftRoute
+          (          
+            page: (BuildContext context) => AccountDetails
+            (
+              user: user,
+              onLogout: onLogout,
+              onUserChange: onUserChange,
+            ),    
+          );
         }
         else if(settings.name == "/basket")
         {

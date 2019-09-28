@@ -139,7 +139,7 @@ class _CheckoutState extends State<Checkout>
               onPressed: ()
               {
                 widget.onAddOrder(new Order(products: Map.from(widget.checkoutData), status: "Pending", arrivalTime: DateTime.now().add(new Duration(minutes: 20))));
-                Navigator.popUntil(context, ModalRoute.withName("/"));
+                Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
               },
             ),
           ]

@@ -3,22 +3,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bevvymobile/globals.dart';
 
 //Initial Screen
-class LoginPage extends StatefulWidget
+class CreateAccount extends StatefulWidget
 {
-  const LoginPage({ Key key, this.email}) : super(key: key);
+  const CreateAccount({ Key key, this.email}) : super(key: key);
 
   final String email;
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _CreateAccountState createState() => _CreateAccountState();
 }
 
-class _LoginPageState extends State<LoginPage>
+class _CreateAccountState extends State<CreateAccount>
 {
+
+  TextEditingController _firstNameController = TextEditingController();
+  TextEditingController _lastController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   TextEditingController _emailController;
 
+  FocusNode _lastNode = FocusNode();
   FocusNode _passwordNode = FocusNode();
+  FocusNode _emailNode = FocusNode();
+
+  DateTime _dateOfBirth;
 
   var _obscureText = true;
 
@@ -36,7 +43,7 @@ class _LoginPageState extends State<LoginPage>
     (
       appBar: AppBar
       (
-        title: Text("Sign In"),
+        title: Text("Sign Up"),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -63,6 +70,43 @@ class _LoginPageState extends State<LoginPage>
                     padding: EdgeInsets.symmetric(vertical: 5),
                     child: TextField
                     (
+                      autofocus: true,
+                      controller: _firstNameController,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 5)
+                        ),
+                        labelText: 'First Name',
+                      ),
+                      onSubmitted: (v) => _lastNode.requestFocus(),
+                    ),
+                  ),
+                  Padding
+                  (
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: TextField
+                    (
+                      focusNode: _lastNode,
+                      controller: _lastController,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black, width: 5)
+                        ),
+                        labelText: 'Last Name',
+                      ),
+                      onSubmitted: (v) => _emailNode.requestFocus(),
+                    ),
+                  ),
+                  Padding
+                  (
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    child: TextField
+                    (
+                      focusNode: _emailNode,
                       controller: _emailController,
                       textInputAction: TextInputAction.next,
                       keyboardType: TextInputType.emailAddress,
@@ -72,15 +116,25 @@ class _LoginPageState extends State<LoginPage>
                         ),
                         labelText: 'Email',
                       ),
-                      onSubmitted: (v) => _passwordNode.requestFocus(),
+                      onSubmitted: (v) => onDateSubmit(),
                     ),
+                  ),
+                  FlatButton
+                  (
+                    child: Row
+                    (
+                      children: 
+                      [
+                        Text("Date of birth: " + (_dateOfBirth == null ? "" : formatDOB()))
+                      ]
+                    ),
+                    onPressed: () => onDateSubmit(),
                   ),
                   Padding
                   (
                     padding: EdgeInsets.symmetric(vertical: 5),
                     child: TextField
                     (
-                      autofocus: true,
                       focusNode: _passwordNode,
                       controller: _passwordController,
                       keyboardType: TextInputType.visiblePassword,
@@ -102,7 +156,7 @@ class _LoginPageState extends State<LoginPage>
                           },
                         )
                       ),
-                      onSubmitted: (v) => onSubmit(),
+                      onSubmitted: (v) => onDateSubmit(),
                     ),
                   ),
                 ],
@@ -120,7 +174,7 @@ class _LoginPageState extends State<LoginPage>
                 width: double.infinity,
                 child: Center
                 (
-                  child: Text("Sign In"),
+                  child: Text("Create Account"),
                 ),
               ),
               onPressed: () => onSubmit(),
@@ -131,17 +185,60 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
+  String formatDOB()
+  {
+    return _dateOfBirth.day.toString().padLeft(2, "0") + "/" + _dateOfBirth.month.toString().padLeft(2, "0") + "/" + _dateOfBirth.year.toString();
+  }
+
+  onDateSubmit()
+  {
+    showDatePicker(context: context, initialDate: _dateOfBirth == null ? DateTime.now() : _dateOfBirth, firstDate: DateTime(1900), lastDate: DateTime.now()).then((DateTime value)
+    {
+      if(value != null)
+      {
+        setState(() {
+          _dateOfBirth=value;
+        });
+      }
+      _passwordNode.requestFocus();
+    });
+  }
+
   onSubmit()
   {
-    if(_emailController.text == "" || _passwordController.text == "" || _emailController.text == null || _passwordController.text == null) 
+    if(_firstNameController.text == "")
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("The email and password fields must not be empty.")));
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You must enter you first name.")));
+      return;
+    }
+    if(_lastController.text == "")
+    {
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You must enter you last name.")));
       return;
     }
 
-    auth.signInWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((AuthResult result)
+    if(_dateOfBirth == null)
     {
-      print("Login");
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Date of birth not selected.")));
+      return;
+    }
+
+    var currentDatetime = DateTime.now();
+    if(currentDatetime.year - _dateOfBirth.year < 18
+      || (currentDatetime.year - _dateOfBirth.year == 18 && currentDatetime.month < _dateOfBirth.month)
+      ||  (currentDatetime.year - _dateOfBirth.year == 18 && currentDatetime.month == _dateOfBirth.month && currentDatetime.day < _dateOfBirth.day) )
+    {
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You need to be older than 18.")));
+      return;
+    }
+
+    auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((AuthResult result)
+    {
+      final dateOfBirth = _dateOfBirth;
+      final firstName = _firstNameController.text;
+      final lastName = _lastController.text;
+
+      //Todo create user account.
     }).catchError((e)
     {
       if(e.code == "ERROR_USER_NOT_FOUND")
@@ -164,6 +261,6 @@ class _LoginPageState extends State<LoginPage>
       {
         showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
       }
-    });         
+    });           
   }
 }

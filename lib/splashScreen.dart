@@ -10,7 +10,7 @@ class SplashScreen extends StatefulWidget
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin
 {
 
   TextEditingController _controller = TextEditingController();
@@ -19,46 +19,74 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     SplashScreenImage(desription: "Description 2", imageFilename: "images/jd.jpg",)
     ];
   AnimationController animationController;
-  Animation<double> opacityAnimation;
   Animation<double> imageAnimation;
+
+  AnimationController introAnimationController;
+  Animation<double> introAnimation;
+
   int currentImage = 0;
+  double position = 0;
+  double opacity = 0;
 
   @override
   void initState() {
+    super.initState();
+
     animationController = AnimationController(duration: const Duration(milliseconds: 500), vsync: this);
-    imageAnimation = Tween<double>(begin: 0, end: 300).animate(CurvedAnimation(parent: animationController, curve: Curves.easeIn, reverseCurve: Curves.easeOut));
-    opacityAnimation = Tween<double>(begin: 1, end: 0).animate(CurvedAnimation(parent: animationController, curve: Curves.easeIn, reverseCurve: Curves.easeOut));
+    imageAnimation = Tween<double>(begin: 400, end: 0).animate
+    (
+      CurvedAnimation
+      (
+        parent: animationController, 
+        curve: Curves.easeInOutSine,
+      )
+    );
 
     imageAnimation.addStatusListener((AnimationStatus state)
     {
-      if(state == AnimationStatus.dismissed)
+      if(state == AnimationStatus.completed)
       {
-        Future.delayed(Duration(seconds: 5)).then((x)
+        Future.delayed(Duration(seconds: 4)).then((x)
         {
-          animationController.forward();
+          animationController.reverse();
         });
       }
-      if(state == AnimationStatus.completed)
+      if(state == AnimationStatus.dismissed)
       {
         setState(()
         {
           currentImage = (currentImage + 1) % images.length;
         });
-        animationController.reverse();
+        animationController.forward();
       }
     });
 
     imageAnimation.addListener(()
     {
-      setState(() {});
+      setState(() 
+      {
+        position = imageAnimation.value;
+        opacity = 1;
+      });
     });
 
-    Future.delayed(Duration(seconds: 5)).then((x)
+    introAnimationController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
+    introAnimation = Tween<double>(begin: 600, end: 0).animate
+    (
+      CurvedAnimation
+      (
+        parent: introAnimationController, 
+        curve: Curves.easeIn,
+      )
+    );
+    introAnimation.addListener(()
+    {
+      setState(() {});
+    });
+    introAnimationController.forward().then((x)
     {
       animationController.forward();
     });
-
-    super.initState();
   }
 
   @override
@@ -88,42 +116,57 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               (
                 child: Opacity
                 (
-                  opacity: opacityAnimation.value,
+                  opacity: opacity,
                   child: images[currentImage]
                 ),
-                offset: Offset(imageAnimation.value,0),
+                offset: Offset(position,0),
               ),
               fit: FlexFit.loose
             ),
-            TextField
+            Divider(),
+            Flexible
             (
-              autofocus: false,
-              controller: _controller,
-              textInputAction: TextInputAction.done,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                border: UnderlineInputBorder(),
-                 // borderSide: BorderSide(color: Colors.white, width: 5)
-                labelText: 'Email Address',
-              ),
-              onSubmitted: (v) => onSubmit(),
-            ),
-            Padding
-            (
-              padding: EdgeInsets.only(top: 8),
-              child: RaisedButton
+              fit: FlexFit.loose,
+              child: Transform.translate
               (
-                padding: EdgeInsets.all(12),
-                color: Theme.of(context).primaryColor,
-                child: Container
+                offset: Offset(0, introAnimation.value),
+                child: Column
                 (
-                  width: double.infinity,
-                  child: Center
-                  (
-                    child: Text("Login in or signup"),
-                  ),
+                  children: <Widget>
+                  [
+                    TextField
+                    (
+                      autofocus: false,
+                      controller: _controller,
+                      textInputAction: TextInputAction.done,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(),
+                        // borderSide: BorderSide(color: Colors.white, width: 5)
+                        labelText: 'Email Address',
+                      ),
+                      onSubmitted: (v) => onSubmit(),
+                    ),
+                    Padding
+                    (
+                      padding: EdgeInsets.only(top: 8),
+                      child: RaisedButton
+                      (
+                        padding: EdgeInsets.all(12),
+                        color: Theme.of(context).primaryColor,
+                        child: Container
+                        (
+                          width: double.infinity,
+                          child: Center
+                          (
+                            child: Text("Login in or signup"),
+                          ),
+                        ),
+                        onPressed: () => onSubmit(),
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed: () => onSubmit(),
               ),
             ),
             MediaQuery.of(context).viewInsets.bottom==0.0 ? 
@@ -162,6 +205,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   void dispose()
   {
     animationController.dispose();
+    introAnimationController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -180,26 +224,33 @@ class SplashScreenImage extends StatelessWidget
   {
     return Container
     (
-      child: Column
+      child: Card
       (
-        children: 
-        [ 
-          Flexible
+        child: Padding
+        (
+          padding: EdgeInsets.all(12),
+          child: Column
           (
-            child: Image
-            (
-              height: 200,
-              width: 200,
-              image: AssetImage(imageFilename),
-            ),
-            fit: FlexFit.loose,
-          ),
-          Padding
-          (
-            child: Text(desription),
-            padding: EdgeInsets.all(3),
+            children: 
+            [ 
+              Flexible
+              (
+                child: Image
+                (
+                  height: 200,
+                  width: 200,
+                  image: AssetImage(imageFilename),
+                ),
+                fit: FlexFit.loose,
+              ),
+              Padding
+              (
+                child: Text(desription),
+                padding: EdgeInsets.all(3),
+              )
+            ]
           )
-        ]
+        )
       )
     );
   }

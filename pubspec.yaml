@@ -19,10 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.0+2
   shared_preferences: ^0.5.3+4
   cached_network_image: ^1.1.1 
-  intl: ^0.16.0
+  intl: ^0.15.0
+  datetime_picker_formfield: ^0.4.3
 
   firebase_analytics: ^5.0.2
   firebase_core: ^0.4.0+1

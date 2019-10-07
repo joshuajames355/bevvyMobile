@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
 import 'package:bevvymobile/globals.dart';
 
 //Initial Screen
 class CreateAccount extends StatefulWidget
 {
-  const CreateAccount({ Key key, this.email}) : super(key: key);
+  const CreateAccount({ Key key, this.user}) : super(key: key);
 
-  final String email;
+  final FirebaseUser user;
 
   @override
   _CreateAccountState createState() => _CreateAccountState();
@@ -16,29 +18,24 @@ class CreateAccount extends StatefulWidget
 class _CreateAccountState extends State<CreateAccount>
 {
 
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _emailController;
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
 
-  FocusNode _lastNode = FocusNode();
-  FocusNode _passwordNode = FocusNode();
   FocusNode _emailNode = FocusNode();
+  FocusNode _dobNode = FocusNode();
 
   DateTime _dateOfBirth;
 
-  var _obscureText = true;
-
   @override
   void initState() {
-    _emailController = TextEditingController(text: widget.email);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context)
   {
-    IconData visibilityIcon = _obscureText ? IconData(59636, fontFamily: 'MaterialIcons') : IconData(59637, fontFamily: 'MaterialIcons');
+    DateTime endDate = DateTime.now();
+    endDate = DateTime(endDate.year - 18, endDate.month, endDate.day);
     return Scaffold
     (
       appBar: AppBar
@@ -65,99 +62,72 @@ class _CreateAccountState extends State<CreateAccount>
               (
                 children: <Widget>
                 [
-                  Padding
+                  Card
                   (
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: TextField
+                    child: Padding
                     (
-                      autofocus: true,
-                      controller: _firstNameController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black, width: 5)
+                      padding: EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 0),
+                      child: TextField
+                      (
+                        autofocus: false,
+                        controller: _nameController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Full Name',
                         ),
-                        labelText: 'First Name',
-                      ),
-                      onSubmitted: (v) => _lastNode.requestFocus(),
+                        onSubmitted: (x) =>  _emailNode.requestFocus(),
+                      )
                     ),
                   ),
-                  Padding
+                  Card
                   (
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: TextField
+                    child: Padding
                     (
-                      focusNode: _lastNode,
-                      controller: _lastController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black, width: 5)
+                      padding: EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 0),
+                      child: TextField
+                      (
+                        focusNode: _emailNode,
+                        controller: _emailController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.emailAddress,
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Email',
                         ),
-                        labelText: 'Last Name',
-                      ),
-                      onSubmitted: (v) => _emailNode.requestFocus(),
+                        onSubmitted: (x) =>  _dobNode.requestFocus(),
+                      )
                     ),
                   ),
-                  Padding
+                  Card
                   (
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: TextField
+                    child: Padding
                     (
-                      focusNode: _emailNode,
-                      controller: _emailController,
-                      textInputAction: TextInputAction.next,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black, width: 5)
-                        ),
-                        labelText: 'Email',
-                      ),
-                      onSubmitted: (v) => onDateSubmit(),
-                    ),
-                  ),
-                  FlatButton
-                  (
-                    child: Row
-                    (
-                      children: 
-                      [
-                        Text("Date of birth: " + (_dateOfBirth == null ? "" : formatDOB()))
-                      ]
-                    ),
-                    onPressed: () => onDateSubmit(),
-                  ),
-                  Padding
-                  (
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: TextField
-                    (
-                      focusNode: _passwordNode,
-                      controller: _passwordController,
-                      keyboardType: TextInputType.visiblePassword,
-                      textInputAction: TextInputAction.next,
-                      obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black, width: 5)
-                        ),
-                        labelText: 'Password',
-                        suffixIcon: FlatButton(
-                          child: Icon(visibilityIcon),
-                          onPressed: ()
+                      padding: EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 0),
+                      child: DateTimeField
+                      (
+                        focusNode: _dobNode,
+                        format: DateFormat("yyyy-MM-dd"),
+                        onShowPicker: (context, currentValue) {
+                          return showDatePicker
+                          (
+                              context: context,
+                              firstDate: DateTime(1900),
+                              initialDate: currentValue ?? DateTime(2000),
+                              lastDate: endDate
+                          ).then((DateTime x)
                           {
-                            setState(() 
-                            {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                        )
+                            _dateOfBirth = x;
+                            return x;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            border: UnderlineInputBorder(),
+                            labelText: 'Date Of Birth',
+                          ),
                       ),
-                      onSubmitted: (v) => onDateSubmit(),
-                    ),
+                    )
                   ),
                 ],
               )
@@ -192,7 +162,9 @@ class _CreateAccountState extends State<CreateAccount>
 
   onDateSubmit()
   {
-    showDatePicker(context: context, initialDate: _dateOfBirth == null ? DateTime.now() : _dateOfBirth, firstDate: DateTime(1900), lastDate: DateTime.now()).then((DateTime value)
+    DateTime endDate = DateTime.now();
+    endDate = DateTime(endDate.year - 18, endDate.month, endDate.day);
+    showDatePicker(context: context, initialDate: _dateOfBirth == null ? DateTime(2000) : _dateOfBirth, firstDate: DateTime(1900), lastDate: endDate).then((DateTime value)
     {
       if(value != null)
       {
@@ -200,20 +172,14 @@ class _CreateAccountState extends State<CreateAccount>
           _dateOfBirth=value;
         });
       }
-      _passwordNode.requestFocus();
     });
   }
 
   onSubmit()
   {
-    if(_firstNameController.text == "")
+    if(_nameController.text == "")
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You must enter you first name.")));
-      return;
-    }
-    if(_lastController.text == "")
-    {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You must enter you last name.")));
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You must enter your name.")));
       return;
     }
 
@@ -232,35 +198,13 @@ class _CreateAccountState extends State<CreateAccount>
       return;
     }
 
-    auth.createUserWithEmailAndPassword(email: _emailController.text, password: _passwordController.text).then((AuthResult result)
-    {
-      final dateOfBirth = _dateOfBirth;
-      final firstName = _firstNameController.text;
-      final lastName = _lastController.text;
+    final dateOfBirth = _dateOfBirth;
+    final fullName = _nameController.text;
+    final emailAddress = _emailController.text;
 
-      //Todo create user account.
-    }).catchError((e)
-    {
-      if(e.code == "ERROR_USER_NOT_FOUND")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("User not found.")));
-      }
-      else if(e.code == "ERROR_WRONG_PASSWORD")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Wrong password.")));
-      }
-      else if(e.code == "ERROR_INVALID_EMAIL")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("The Email address is invalid.")));
-      }
-      else if(e.code == "ERROR_TOO_MANY_REQUESTS")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Too many request.\n Try again later.")));
-      }
-      else if(e.code == "ERROR_USER_DISABLED")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
-      }
-    });           
+    //TODO: Do onboarding
+
+    Navigator.pushNamed(context, "/home");
+
   }
 }

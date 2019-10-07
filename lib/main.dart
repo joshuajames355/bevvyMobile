@@ -1,9 +1,9 @@
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/createAccount.dart';
+import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
-import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
@@ -122,15 +122,10 @@ class _AppState extends State<App>{
 
     auth.onAuthStateChanged.listen((FirebaseUser newUser)
     {
-      print("change");
       setState(() {
        user=newUser; 
       });
-      if(newUser != null)
-      {
-        navKey.currentState.pushNamed("/home");
-      }
-      else
+      if(newUser == null)
       {
         navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
       }
@@ -152,7 +147,7 @@ class _AppState extends State<App>{
         {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
-        if(settings.name == "/home")
+        else if(settings.name == "/home")
         {
           return MaterialPageRoute(builder: (context) => FutureBuilder
           (
@@ -190,16 +185,16 @@ class _AppState extends State<App>{
             }
           ));
         }
-        if(settings.name == "/login")
+        else if(settings.name == "/createAccountSMS")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => LoginPage(email: settings.arguments),
+            page: (BuildContext context) => CreateAccountSMS()
           );
         }
-        if(settings.name == "/createAccount")
+        else if(settings.name == "/createAccount")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => CreateAccount(email: settings.arguments,)
+            page: (BuildContext context) => CreateAccount(user: settings.arguments,)
           );
         }
         else if(settings.name == "/accountDetails")

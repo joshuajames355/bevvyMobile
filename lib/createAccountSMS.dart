@@ -6,9 +6,7 @@ import 'package:bevvymobile/globals.dart';
 //Initial Screen
 class CreateAccountSMS extends StatefulWidget
 {
-  const CreateAccountSMS({ Key key, this.email}) : super(key: key);
-
-  final String email;
+  const CreateAccountSMS({ Key key}) : super(key: key);
 
   @override
   _CreateAccountSMSState createState() => _CreateAccountSMSState();
@@ -207,7 +205,14 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
   {
     auth.signInWithCredential(credential).then((AuthResult result)
     {
-      Navigator.pushNamed(context, "/createAccount");
+      if(false) //TODO: If account has completed onboarding
+      {
+        Navigator.pushNamed(context, "/home");
+      }
+      else
+      {
+        Navigator.pushNamed(context, "/createAccount", arguments: result.user);
+      }
     }).catchError((e)
     {
       if(e.code == "ERROR_INVALID_CREDENTIAL")

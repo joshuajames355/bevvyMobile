@@ -15,14 +15,15 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   TextEditingController _controller = TextEditingController();
   List<Widget> images = [
-    SplashScreenImage(desription: "Description 1. Our company is called Jovi, maybe we should do something.", imageFilename: "images/smirnoff.jpg",),
-    SplashScreenImage(desription: "Description 2", imageFilename: "images/jd.jpg",)
+    SplashScreenImage(description: "Description 1. Our company is called Jovi, maybe we should do something.", imageFilename: "images/smirnoff.jpg",),
+    SplashScreenImage(description: "Description 2", imageFilename: "images/jd.jpg",)
     ];
   AnimationController animationController;
   Animation<double> imageAnimation;
 
   AnimationController introAnimationController;
-  Animation<double> introAnimation;
+  Animation<double> introAnimationContinueButton;
+  Animation<double> introAnimationLogo;
 
   int currentImage = 0;
   double position = 0;
@@ -70,16 +71,34 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       });
     });
 
-    introAnimationController = AnimationController(duration: const Duration(milliseconds: 800), vsync: this);
-    introAnimation = Tween<double>(begin: 600, end: 0).animate
+    introAnimationController = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this);
+    introAnimationLogo = Tween<double>(begin: -500, end: 0).animate
     (
       CurvedAnimation
       (
         parent: introAnimationController, 
-        curve: Curves.easeIn,
+        curve: Interval
+        (
+          0,
+          0.8,
+          curve: Curves.easeIn,
+        )
       )
     );
-    introAnimation.addListener(()
+    introAnimationContinueButton = Tween<double>(begin: 600, end: 0).animate
+    (
+      CurvedAnimation
+      (
+        parent: introAnimationController, 
+        curve: Interval
+        (
+          0.5,
+          1,
+          curve: Curves.easeIn,
+        )
+      )
+    );
+    introAnimationContinueButton.addListener(()
     {
       setState(() {});
     });
@@ -95,14 +114,6 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     
     return Scaffold
     (
-      appBar: AppBar
-      (
-        backgroundColor: Theme.of(context).primaryColorLight,
-        title: Center
-        (
-          child: Text("Jovi", style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold))
-        ),
-      ),
       body: Padding
       (
         padding: EdgeInsets.all(12),
@@ -110,75 +121,74 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         (
           children: <Widget>
           [
-            Flexible
+            Transform.translate
             (
-              child: Transform.translate
+              offset: Offset(introAnimationLogo.value, 0),
+              child: Image
               (
-                child: Opacity
+                height: 200,
+                width: 200,
+                image: AssetImage
                 (
-                  opacity: opacity,
-                  child: images[currentImage]
+                  'images/logo.png',
                 ),
-                offset: Offset(position,0),
               ),
-              fit: FlexFit.loose
             ),
-            Divider(),
-            Flexible
+            Divider
             (
-              fit: FlexFit.loose,
-              child: Transform.translate
+              height: 12,
+            ),
+            Container
+            (
+              height: 24,
+            ),
+            Transform.translate
+            (
+              child: Opacity
               (
-                offset: Offset(0, introAnimation.value),
+                opacity: opacity,
+                child: images[currentImage]
+              ),
+              offset: Offset(position,0),
+            ),    
+            Expanded
+            (
+              child: Container(),
+            ),
+            Transform.translate
+            (
+              offset: Offset(0, introAnimationContinueButton.value),
+              child: Padding
+              (
+                padding: EdgeInsets.symmetric(vertical: 15),
                 child: Column
                 (
-                  children: <Widget>
+                  children:
                   [
-                    TextField
+                    RaisedButton
                     (
-                      autofocus: false,
-                      controller: _controller,
-                      textInputAction: TextInputAction.done,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        border: UnderlineInputBorder(),
-                        // borderSide: BorderSide(color: Colors.white, width: 5)
-                        labelText: 'Email Address',
+                      padding: EdgeInsets.all(12),
+                      color: Theme.of(context).primaryColor,
+                      child: Container
+                      (
+                        width: double.infinity,
+                        child: Center
+                        (
+                          child: Text("Continue"),
+                        ),
                       ),
-                      onSubmitted: (v) => onSubmit(),
+                      onPressed: () => onSubmit(),
                     ),
                     Padding
                     (
-                      padding: EdgeInsets.only(top: 8),
-                      child: RaisedButton
-                      (
-                        padding: EdgeInsets.all(12),
-                        color: Theme.of(context).primaryColor,
-                        child: Container
-                        (
-                          width: double.infinity,
-                          child: Center
-                          (
-                            child: Text("Login in or signup"),
-                          ),
-                        ),
-                        onPressed: () => onSubmit(),
-                      ),
+                      padding: EdgeInsets.only(top: 12),
+                      child: Text("Some boring legal stuff. Will probably fill this is later with something more usefull, but until then we have this random stream of conscionness where lorem ipsum would have probably been more appropriate.",
+                        style: TextStyle(fontSize: 8),) 
                     ),
-                  ],
+                  ]
                 ),
-              ),
-            ),
-            MediaQuery.of(context).viewInsets.bottom==0.0 ? 
-              Expanded
-              (
-                child: Container(),
-              ) :
-              Container(),
-            MediaQuery.of(context).viewInsets.bottom==0.0 ? 
-              Text("Some boring legal stuff. Will probably fill this is later with something more usefull, but until then we have this random stream of conscionness where lorem ipsum would have probably been more appropriate.",
-                  style: TextStyle(fontSize: 8),) :
-                Container(),
+              ),                  
+            ),              
           ],
         )
       )
@@ -187,18 +197,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   onSubmit()
   {
-    auth.fetchSignInMethodsForEmail(email: _controller.text).then((List<String> results)
-    {
-      //If their is an email/password account
-      if (results.where((String x) => x == "password").length > 0)
-      {
-        Navigator.pushNamed(context, "/login", arguments: _controller.text);
-      }
-      else
-      {
-        Navigator.pushNamed(context, "/createAccount", arguments: _controller.text);
-      }
-    });
+    Navigator.pushNamed(context, "/createAccountSMS", arguments: _controller.text);
   }
 
   @override
@@ -213,10 +212,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
 class SplashScreenImage extends StatelessWidget
 {
-  const SplashScreenImage({ Key key, this.imageFilename, this.desription}) : super(key: key);
+  const SplashScreenImage({ Key key, this.imageFilename, this.description}) : super(key: key);
 
   final String imageFilename;
-  final String desription;
+  final String description;
 
 
   @override
@@ -233,19 +232,15 @@ class SplashScreenImage extends StatelessWidget
           (
             children: 
             [ 
-              Flexible
+              Image
               (
-                child: Image
-                (
-                  height: 200,
-                  width: 200,
-                  image: AssetImage(imageFilename),
-                ),
-                fit: FlexFit.loose,
+                height: 200,
+                width: 200,
+                image: AssetImage(imageFilename),
               ),
               Padding
               (
-                child: Text(desription),
+                child: Text(description),
                 padding: EdgeInsets.all(3),
               )
             ]

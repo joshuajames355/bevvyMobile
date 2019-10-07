@@ -239,9 +239,9 @@ class _HomeState extends State<Home> {
           (
           child: Image(
             image: AssetImage
-              (
-                'images/icon.jpg',
-              ),
+            (
+              'images/logoBlack.png',
+            ),
           ),
           onPressed: ()
           {

@@ -67,63 +67,7 @@ class _HomeState extends State<Home> {
         {
           Navigator.pushNamed(context, "/basket");
         },
-      ),
-      bottomNavigationBar: BottomAppBar
-      (
-        color: Theme.of(context).backgroundColor,
-        child: FlatButton
-        (
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-          onPressed: ()
-          {
-            showDialog(context: context, builder: (BuildContext context)
-            {
-              return SimpleDialog
-              (
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                title: Center(child: Text("Set Location")),
-                children: <Widget>
-                [
-                  SimpleDialogOption
-                  (
-                    child: Container
-                    (
-                      margin: EdgeInsets.all(15),
-                      child: Row(children: [Text("Use Current Location"),]),
-                    ),
-                    onPressed: ()
-                    {
-                      widget.onSetLocation("Current Location");
-                      Navigator.pop(context);
-                    },
-
-                  ),
-                  SimpleDialogOption
-                  (
-                    child: Container
-                    (
-                      margin: EdgeInsets.all(15),
-                      child: Row(children: [Text("Set Location"),]),
-                    ),
-                    onPressed: ()
-                    {
-                      widget.onSetLocation("Other Location");
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              );
-            });
-          },
-          color: Theme.of(context).primaryColor,
-          child: Container
-          (
-            width: double.infinity,
-            padding: EdgeInsets.all(12),
-            child: Text("Delivering To: " + widget.location, style: TextStyle(fontSize: 18),),
-          )
-        ),
-      ),
+      )
     ); 
   }
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:bevvymobile/globals.dart';
 
 //Initial Screen
 class SplashScreen extends StatefulWidget

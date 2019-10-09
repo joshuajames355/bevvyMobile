@@ -91,7 +91,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                   padding: EdgeInsets.only(left: 5, right: 5, bottom: 12, top: 0),
                   child: TextField
                   (
-                    autofocus: false,
+                    autofocus: true,
                     controller: _noTextController,
                     textInputAction: TextInputAction.done,
                     keyboardType: TextInputType.phone,

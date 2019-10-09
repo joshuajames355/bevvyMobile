@@ -31,7 +31,6 @@ class AccountDetails extends StatelessWidget
       body: Container
       (
         padding: EdgeInsets.all(25),
-        color: Theme.of(context).backgroundColor,
         child: Column
         (
           children: [

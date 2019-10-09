@@ -18,53 +18,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-int primaryColour = 0xFF3c4245;
+int primaryColour = 0XFF91FFF8;
 Map<int, Color> colorPalette = 
 {
-  50: Color(0xFF5f6769),
-  100: Color(0xFF5f6769),
-  200: Color(0xFF5f6769),
+  50: Color(primaryColour),
+  100: Color(primaryColour),
+  200: Color(primaryColour),
   300: Color(primaryColour),
   400: Color(primaryColour),
   500: Color(primaryColour),
   600: Color(primaryColour),
-  700: Color(0xFF3c4245),
-  800: Color(0xFF3c4245),
-  900: Color(0xFF3c4245),
+  700: Color(primaryColour),
+  800: Color(primaryColour),
+  900: Color(primaryColour),
 };
-
-ThemeData theme1 = ThemeData
-(
-  primarySwatch: MaterialColor(primaryColour, colorPalette),
-  backgroundColor: Color(0xFF000000),
-);
-
-
-int primaryColour2 = 0XFFE23425;
-Map<int, Color> colorPalette2 = 
-{
-  50: Color(0xFFE24725),
-  100: Color(0xFFE24725),
-  200: Color(0xFFE24725),
-  300: Color(primaryColour2),
-  400: Color(primaryColour2),
-  500: Color(primaryColour2),
-  600: Color(primaryColour2),
-  700: Color(0xFFE22525),
-  800: Color(0xFFE22525),
-  900: Color(0xFFE22525),
-};
-
-ThemeData theme2 = ThemeData
-(
-  primarySwatch: MaterialColor(primaryColour2, colorPalette2),
-  backgroundColor: Color(0xFFF2C1A4),//E26D25
-);
 
 ThemeData darkTheme = ThemeData
 (
-  backgroundColor: Color(0XFF121212),
   brightness: Brightness.dark,
+  accentColor: MaterialColor(primaryColour, colorPalette),
 );
 
 class App extends StatefulWidget {

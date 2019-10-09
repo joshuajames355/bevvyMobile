@@ -120,7 +120,7 @@ class _AppState extends State<App>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bevvy',
+      title: 'Jovi',
       theme: darkTheme,
       navigatorKey: navKey,
       navigatorObservers: [

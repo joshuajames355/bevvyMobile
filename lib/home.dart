@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
@@ -72,7 +73,7 @@ class _HomeState extends State<Home> {
       ),
       drawer: Drawer
       (
-        child: ListView
+        child: Column
         (
           children: 
           [
@@ -106,7 +107,16 @@ class _HomeState extends State<Home> {
               {
                 Navigator.popAndPushNamed(context, "/accountDetails");
               },
-            )
+            ),
+            Expanded(child: Container(),),
+            ListTile
+            (
+              title: Center(child: Text("Log out")),
+              onTap: ()
+              {
+                auth.signOut();
+              },
+            ),
           ]
         ),
       ),

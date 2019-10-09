@@ -161,7 +161,6 @@ class _AppState extends State<App>{
             page: (BuildContext context) => AccountDetails
             (
               user: user,
-              onLogout: onLogout,
               onUserChange: onUserChange,
             ),    
           );
@@ -254,11 +253,6 @@ class _AppState extends State<App>{
   {
     navKey.currentState.pop();
     showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
-  }
-
-  onLogout()
-  {
-    showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged out.")));
   }
 
   onUserChange()

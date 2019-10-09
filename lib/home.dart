@@ -77,10 +77,7 @@ class _HomeState extends State<Home> {
     {
       return GestureDetector
       (
-        child: Container
-        (
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child: StoreFrontHome
+        child: StoreFrontHome
           (
             productListByCategory: widget.productListByCategory,
             onSelectCategory: (String category)
@@ -94,7 +91,6 @@ class _HomeState extends State<Home> {
               }
             },
             orders: widget.orders,
-          ),
         ),
         onHorizontalDragEnd: (DragEndDetails details)
           {
@@ -113,15 +109,11 @@ class _HomeState extends State<Home> {
     {
       return WillPopScope
       (
-        child: Container
-        (
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child:ProductGridView(productList: widget.productList.where((Product x)
-            {
-              return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-            }).toList()
-          ),
-        ),
+        child: ProductGridView(productList: widget.productList.where((Product x)
+          {
+            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+          }).toList()
+        ),        
         onWillPop: () 
         {
           setState(() {
@@ -133,39 +125,35 @@ class _HomeState extends State<Home> {
     else
     {
       return WillPopScope(
-        child: Container
+        child: GestureDetector
         (
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child: GestureDetector
+          child: ProductGridView
           (
-            child: ProductGridView
-            (
-              productList: widget.productListByCategory[widget.categories[currentCategory]],  
-            ),
-            onHorizontalDragEnd: (DragEndDetails details)
-            {
-              if(details.velocity.pixelsPerSecond.dx > 150)
-              {
-                setState(() {
-                  if(currentCategory==0)
-                  {
-                    currentPage=StorePage.home;
-                  }
-                  else
-                  {
-                    currentCategory--;
-                  }
-                });
-              }
-              else if(details.velocity.pixelsPerSecond.dx < -150)
-              {
-                setState(() {
-                  currentCategory=min(currentCategory+1, widget.categories.length-1);
-                });
-              }
-            },
+            productList: widget.productListByCategory[widget.categories[currentCategory]],  
           ),
-        ),
+          onHorizontalDragEnd: (DragEndDetails details)
+          {
+            if(details.velocity.pixelsPerSecond.dx > 150)
+            {
+              setState(() {
+                if(currentCategory==0)
+                {
+                  currentPage=StorePage.home;
+                }
+                else
+                {
+                  currentCategory--;
+                }
+              });
+            }
+            else if(details.velocity.pixelsPerSecond.dx < -150)
+            {
+              setState(() {
+                currentCategory=min(currentCategory+1, widget.categories.length-1);
+              });
+            }
+          },
+        ),        
         onWillPop: () 
         {
           setState(() {

@@ -179,13 +179,17 @@ class _CreateAccountState extends State<CreateAccount>
   {
     if(_nameController.text == "")
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You must enter your name.")));
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Full Name is required.")));
       return;
     }
-
+    if(_emailController.text == "")
+    {
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Email Address is required.")));
+      return;
+    }
     if(_dateOfBirth == null)
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Date of birth not selected.")));
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Date of birth is required.")));
       return;
     }
 

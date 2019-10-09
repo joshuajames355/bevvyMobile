@@ -219,14 +219,12 @@ class _AppState extends State<App>{
         {
           final Product args = settings.arguments;
 
-          return ExpandRoute
-          (
-            page: (BuildContext context) => ProductScreen
+          return MaterialPageRoute(builder: (context) => ProductScreen
             (
               product: args, 
               addToBasket: addToBasket,
             )
-          );  
+          );
         }
         else if(settings.name == "/order")
         {

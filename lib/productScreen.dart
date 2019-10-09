@@ -43,7 +43,11 @@ class _ProductScreenState extends State<ProductScreen>{
           (
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              widget.product.iconLarge,
+              Hero
+              (
+                tag: widget.product.id,
+                child: widget.product.iconLarge,
+              ),
               Expanded
               (
                 child: Padding
@@ -115,7 +119,7 @@ class _ProductScreenState extends State<ProductScreen>{
             ]
           ),
         )
-      )        
+      )      
     );    
   }
 }

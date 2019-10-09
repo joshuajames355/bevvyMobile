@@ -52,12 +52,14 @@ class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
   StorePage currentPage = StorePage.home;
   int currentCategory;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) 
   {
     return Scaffold
     (
+      key: scaffoldKey,
       appBar: buildAppBar(context),
       body: buildBody(context),
       floatingActionButton: FloatingActionButton
@@ -67,7 +69,47 @@ class _HomeState extends State<Home> {
         {
           Navigator.pushNamed(context, "/basket");
         },
-      )
+      ),
+      drawer: Drawer
+      (
+        child: ListView
+        (
+          children: 
+          [
+            DrawerHeader
+            (
+              child: Image
+              (
+                height: 100,
+                width: 100,
+                image: AssetImage
+                (
+                  'images/logo.png',
+                ),
+              ),
+            ),
+            ListTile
+            (
+              title: Center(child: Text("Home")),
+              onTap: ()
+              {
+                setState(() {
+                  currentPage=StorePage.home; 
+                });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile
+            (
+              title: Center(child: Text("My Account")),
+              onTap: ()
+              {
+                Navigator.popAndPushNamed(context, "/accountDetails");
+              },
+            )
+          ]
+        ),
+      ),
     ); 
   }
 
@@ -169,17 +211,10 @@ class _HomeState extends State<Home> {
     return AppBar(
         leading: FlatButton
           (
-          child: Image(
-            image: AssetImage
-            (
-              'images/logoBlack.png',
-            ),
-          ),
+          child: Icon(IconData(58834, fontFamily: 'MaterialIcons')),
           onPressed: ()
           {
-            setState(() {
-              currentPage=StorePage.home;
-            });
+            scaffoldKey.currentState.openDrawer();
           },
           padding: EdgeInsets.all(2),
         ),
@@ -192,7 +227,6 @@ class _HomeState extends State<Home> {
             icon: Icon
             (
               IconData(59574, fontFamily: 'MaterialIcons'),
-              color: Colors.black,
               size: 30
             ),
           ),
@@ -220,20 +254,11 @@ class _HomeState extends State<Home> {
           (
             onPressed: ()
             {
-              if(widget.user == null)
-              {
-                Navigator.pushNamed(context, "/login");
-              }
-              else
-              {
-                Navigator.pushNamed(context, "/accountDetails");
-
-              }
+              
             },
             icon: Icon
             (
-              IconData(59475, fontFamily: 'MaterialIcons'),
-              color: Colors.black,
+              IconData(57682, fontFamily: 'MaterialIcons'),
               size: 30
             ),
           )

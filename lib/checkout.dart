@@ -47,7 +47,6 @@ class _CheckoutState extends State<Checkout>
       body: Container
       (
         padding: EdgeInsets.all(15),
-        decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
         child: Column
         (
           children: 

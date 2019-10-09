@@ -16,14 +16,12 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
 {
 
   TextEditingController _noTextController = TextEditingController();
-  TextEditingController _smsPin = TextEditingController();
-
-  FocusNode _passwordNode = FocusNode();
-  FocusNode _emailNode = FocusNode();
 
   bool _isTextSent = false;
+  bool _isNumberValid = false;
   String _verificationCode = "";
   String _phoneNumber = "";
+  String _phoneNumberValidated = "";
   int _resendCode = 0;
 
   @override
@@ -102,6 +100,14 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                       labelText: textFieldLabel,
                     ),
                     onSubmitted: (x) => signIn(),
+                    onChanged: (x){
+                      if(!_isTextSent)
+                      {
+                        setState(() {
+                         _isNumberValid = validatePhoneNumber();
+                        });
+                      }
+                    },
                   )
                 ),
               ),
@@ -114,10 +120,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                     child: Text("Resend"),
                     width: double.infinity,
                   ),
-                  onPressed: ()
-                  {
-                    
-                  },
+                  onPressed: _sendSMS,
                 ),
               ) : Container(),
               Expanded(child: Container(),),
@@ -136,17 +139,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                     child: Text(buttonLabel),
                   ),
                 ),
-                onPressed: ()
-                {
-                  if(_isTextSent)
-                  {
-                    verify();
-                  }
-                  else
-                  {
-                    signIn();
-                  }
-                },
+                onPressed: _isTextSent ? verify : (_isNumberValid ? signIn : null) 
               )
             ]
           )
@@ -155,23 +148,55 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
     );
   }
 
-  signIn()
+  validatePhoneNumber()
   {
     //Assuming UK numbers
-    _phoneNumber = _noTextController.text;
+    if(_noTextController.text.startsWith("07"))
+    {
+      _phoneNumberValidated = "+44" + _noTextController.text.substring(1);
+    }
+    else if (_noTextController.text.startsWith("7"))
+    {
+      _phoneNumberValidated = "+44" + _noTextController.text;
+    }
+    else if(!_noTextController.text.startsWith("+44"))
+    {
+      return false;
+    }
+
+    if(_phoneNumberValidated.length != 13)
+    {
+      return false;
+    }
+
+    List<String> validDigits = ["0","1","2","3","4","5","6","7","8","9"];
+    
+    for(int x =1; x < _phoneNumberValidated.length; x++)
+    {
+      if(!validDigits.contains(_phoneNumberValidated[x]))
+      {
+        return false;
+      }
+    }
+
+    return true;
+
+  }
+
+  signIn()
+  {
+    if(!validatePhoneNumber())
+    {
+      return;
+    }
+
+    _phoneNumber = _phoneNumberValidated;
     _noTextController.text = "";
-    if(_phoneNumber.startsWith("07"))
-    {
-      _phoneNumber = "+44" + _phoneNumber.substring(1);
-    }
-    else if (_phoneNumber.startsWith("7"))
-    {
-      _phoneNumber = "+44" + _phoneNumber;
-    }
-    else if(!_phoneNumber.startsWith("+44"))
-    {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Phone number invalid.")));
-    }
+    _sendSMS();
+  }  
+
+  _sendSMS()
+  {
     auth.verifyPhoneNumber(phoneNumber: _phoneNumber, timeout: Duration(seconds: 30), 
       verificationCompleted: verificationCompleted,
       verificationFailed: (AuthException error) 
@@ -191,15 +216,16 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
           _resendCode = resendingToken;
         });
       },
-      codeAutoRetrievalTimeout: (String verificationId){}
+      codeAutoRetrievalTimeout: (String verificationId){},
+      forceResendingToken: _resendCode,
     ).then((x)
     {
       setState(() 
       {
         _isTextSent = true;
       });
-    });   
-  }  
+    }); 
+  }
 
   verificationCompleted(AuthCredential credential)
   {

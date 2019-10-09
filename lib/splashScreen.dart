@@ -121,16 +121,21 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         (
           children: <Widget>
           [
-            Transform.translate
+            Flexible
             (
-              offset: Offset(introAnimationLogo.value, 0),
-              child: Image
+              fit: FlexFit.loose,
+              flex: 1,
+              child: Transform.translate
               (
-                height: 200,
-                width: 200,
-                image: AssetImage
+                offset: Offset(introAnimationLogo.value, 0),
+                child: Image
                 (
-                  'images/logo.png',
+                  height: 200,
+                  width: 200,
+                  image: AssetImage
+                  (
+                    'images/logo.png',
+                  ),
                 ),
               ),
             ),
@@ -151,10 +156,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               ),
               offset: Offset(position,0),
             ),    
-            Expanded
-            (
-              child: Container(),
-            ),
+            Expanded(child: Container(),),
             Transform.translate
             (
               offset: Offset(0, introAnimationContinueButton.value),
@@ -167,7 +169,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   [
                     RaisedButton
                     (
-                      padding: EdgeInsets.all(12),
+                      padding: EdgeInsets.all(14),
                       color: Theme.of(context).primaryColor,
                       child: Container
                       (
@@ -187,7 +189,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                     ),
                   ]
                 ),
-              ),                  
+              ),                           
             ),              
           ],
         )

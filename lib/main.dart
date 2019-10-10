@@ -169,7 +169,7 @@ class _AppState extends State<App>{
         else if(settings.name == "/createAccount")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => CreateAccount(user: settings.arguments, handleAuthStateChangeFunc: handleAuthStateChange,)
+            page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
           );
         }
         else if(settings.name == "/accountDetails")

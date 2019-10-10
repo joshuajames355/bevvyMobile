@@ -236,19 +236,19 @@ class _CreateAccountState extends State<CreateAccount>
     final surname = _surnameController.text;
     final emailAddress = _emailController.text;
 
-    Firestore.instance.collection('users').document(updatedUser.uid).updateData({
+    Firestore.instance.collection('users').document(widget.user.uid).updateData({
       'onboardingStatus': 'onboarded_user',
       'personalDetails': {
-        'firstName': fullName,
-        'lastName': '',
-        'dateOfBirth': dateOfBirth.toIso8601String().substring(0, 9),
+        'firstName': firstName,
+        'lastName': surname,
+        'dateOfBirth': dateOfBirth.toIso8601String().substring(0, 10),
         'emailAddress': emailAddress,
       }
     }).then((_) {
       // Fetch user data doc, this in in turn prompt navigation
-      widget.handleAuthStateChangeFunc();
+      widget.handleAuthStateChangeFunc(widget.user);
     }).catchError((e) {
-      // UI should handle this failure in some manner
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("ERROR"), content: Text("Creating Account Failed, Please try again later.")));
     });
   }
 }

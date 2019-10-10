@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:bevvymobile/globals.dart';
 
 typedef dynamic HandleAuthStateChangeFunc(FirebaseUser updatedUser);
 

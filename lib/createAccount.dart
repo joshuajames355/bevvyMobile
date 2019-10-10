@@ -208,7 +208,5 @@ class _CreateAccountState extends State<CreateAccount>
 
     //TODO: Do onboarding
 
-    Navigator.pushNamed(context, "/home");
-
   }
 }

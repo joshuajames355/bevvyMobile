@@ -97,6 +97,11 @@ class _AppState extends State<App>{
         userDocumentRef.setData({
           'onboardingStatus': 'new_user',
           'roles': ['customer']
+        }).then((_) {
+          handleAuthStateChange(updatedUser);
+        }).catchError((e) {
+          print("Error setting user's initial account document. %{e.error}");
+          return -1;
         });
       }
     }

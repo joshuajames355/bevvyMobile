@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:bevvymobile/globals.dart';
 
+typedef dynamic HandleAuthStateChangeFunc(FirebaseUser updatedUser);
+
 //Initial Screen
 class CreateAccount extends StatefulWidget
 {
-  const CreateAccount({ Key key, this.user}) : super(key: key);
+  const CreateAccount({ Key key, this.user, this.handleAuthStateChangeFunc}) : super(key: key);
 
   final FirebaseUser user;
+  final HandleAuthStateChangeFunc handleAuthStateChangeFunc;
+
 
   @override
   _CreateAccountState createState() => _CreateAccountState();
@@ -25,6 +30,8 @@ class _CreateAccountState extends State<CreateAccount>
   FocusNode _dobNode = FocusNode();
 
   DateTime _dateOfBirth;
+
+  final Firestore store = Firestore();
 
   @override
   void initState() {
@@ -206,7 +213,19 @@ class _CreateAccountState extends State<CreateAccount>
     final fullName = _nameController.text;
     final emailAddress = _emailController.text;
 
-    //TODO: Do onboarding
-
+    Firestore.instance.collection('users').document(updatedUser.uid).updateData({
+      'onboardingStatus': 'onboarded_user',
+      'personalDetails': {
+        'firstName': fullName,
+        'lastName': '',
+        'dateOfBirth': dateOfBirth.toIso8601String().substring(0, 9),
+        'emailAddress': emailAddress,
+      }
+    }).then((_) {
+      // Fetch user data doc, this in in turn prompt navigation
+      widget.handleAuthStateChangeFunc();
+    }).catchError((e) {
+      // UI should handle this failure in some manner
+    });
   }
 }

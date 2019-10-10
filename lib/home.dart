@@ -273,43 +273,6 @@ class _HomeState extends State<Home> {
             ),
           )
         ],
-        bottom: PreferredSize
-        (
-          preferredSize: const Size.fromHeight(60),
-          child: Align
-          (
-            alignment: Alignment.topCenter,
-            child: Container
-            (
-              height: 50,
-              margin: EdgeInsets.all(4),
-              child: ListView
-              (
-                scrollDirection: Axis.horizontal,
-                children: widget.categories.map((String category)
-                {
-                    return Container
-                    (
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      child: RaisedButton
-                      (
-                        child: Text(category),
-                        color: Theme.of(context).backgroundColor,
-                        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.all(Radius.circular(12))),
-                        onPressed: ()
-                        {
-                          setState(() {
-                            currentCategory=widget.categories.indexOf(category); 
-                            currentPage=StorePage.category;
-                          });
-                        },
-                      )
-                    );
-                }).toList()
-              ),
-            )
-          )
-        )
     );
   }
 }

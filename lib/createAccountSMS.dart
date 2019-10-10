@@ -231,6 +231,11 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
   {
     auth.signInWithCredential(credential).then((AuthResult result)
     {
+      // returned is an FIRAuthDataResult
+      // "Helper object that contains the result of a successful sign-in, link and reauthenticate action."
+
+      // result.user is an FIRUser object
+
       if(false) //TODO: If account has completed onboarding
       {
         Navigator.pushNamed(context, "/home");

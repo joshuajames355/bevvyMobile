@@ -19,8 +19,10 @@ class _CreateAccountState extends State<CreateAccount>
 {
 
   TextEditingController _nameController = TextEditingController();
+  TextEditingController _surnameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
 
+  FocusNode _surnameNode = FocusNode();
   FocusNode _emailNode = FocusNode();
   FocusNode _dobNode = FocusNode();
 
@@ -75,7 +77,27 @@ class _CreateAccountState extends State<CreateAccount>
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
-                          labelText: 'Full Name',
+                          labelText: 'First Name',
+                        ),
+                        onSubmitted: (x) =>  _surnameNode.requestFocus(),
+                      )
+                    ),
+                  ),
+                  Card
+                  (
+                    child: Padding
+                    (
+                      padding: EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 0),
+                      child: TextField
+                      (
+                        autofocus: false,
+                        focusNode: _surnameNode,
+                        controller: _surnameController,
+                        textInputAction: TextInputAction.next,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(),
+                          labelText: 'Surname',
                         ),
                         onSubmitted: (x) =>  _emailNode.requestFocus(),
                       )
@@ -203,7 +225,8 @@ class _CreateAccountState extends State<CreateAccount>
     }
 
     final dateOfBirth = _dateOfBirth;
-    final fullName = _nameController.text;
+    final firstName = _nameController.text;
+    final surname = _surnameController.text;
     final emailAddress = _emailController.text;
 
     //TODO: Do onboarding

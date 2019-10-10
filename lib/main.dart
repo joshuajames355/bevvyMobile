@@ -66,27 +66,45 @@ class _AppState extends State<App>{
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
-    auth.currentUser().then((FirebaseUser newUser)
-    {
-      setState(() {
-       user=newUser; 
-      });
-      if(newUser != null)
-      {
-        navKey.currentState.pushNamed("/home");
-      }
-    });
+    auth.currentUser().then(handleAuthStateChange);
 
-    auth.onAuthStateChanged.listen((FirebaseUser newUser)
-    {
-      setState(() {
-       user=newUser; 
-      });
-      if(newUser == null)
-      {
-        navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      }
+    auth.onAuthStateChanged.listen(handleAuthStateChange);
+  }
+
+  handleAuthStateChange(FirebaseUser updatedUser)
+  async {
+    setState(() {
+      user=updatedUser; 
     });
+    if (updatedUser == null) {
+      // Logout
+      navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    } else {
+      var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
+      var ds = await userDocumentRef.get();
+      if (ds.exists) {
+        // User document exists, now to change onboarding status
+        if (ds.data['onboardingStatus'] == 'new_user') {
+          navKey.currentState.pushNamed("/createAccount");
+        } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
+          // Proceed to home
+          navKey.currentState.pushNamed("/home");
+        } else {
+          // Handle error
+        }
+      } else {
+        // User document does not exist, create one
+        userDocumentRef.setData({
+          'onboardingStatus': 'new_user',
+          'roles': ['customer']
+        }).then((_) {
+          handleAuthStateChange(updatedUser);
+        }).catchError((e) {
+          print("Error setting user's initial account document. %{e.error}");
+          return -1;
+        });
+      }
+    }
   }
 
   @override
@@ -151,7 +169,7 @@ class _AppState extends State<App>{
         else if(settings.name == "/createAccount")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => CreateAccount(user: settings.arguments,)
+            page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
           );
         }
         else if(settings.name == "/accountDetails")

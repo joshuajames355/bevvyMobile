@@ -235,15 +235,6 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
       // "Helper object that contains the result of a successful sign-in, link and reauthenticate action."
 
       // result.user is an FIRUser object
-
-      if(false) //TODO: If account has completed onboarding
-      {
-        Navigator.pushNamed(context, "/home");
-      }
-      else
-      {
-        Navigator.pushNamed(context, "/createAccount", arguments: result.user);
-      }
     }).catchError((e)
     {
       if(e.code == "ERROR_INVALID_CREDENTIAL")

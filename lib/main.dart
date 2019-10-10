@@ -72,34 +72,33 @@ class _AppState extends State<App>{
   }
 
   handleAuthStateChange(FirebaseUser updatedUser)
-  {
+  async {
     setState(() {
-      user=newUser; 
+      user=updatedUser; 
     });
     if (updatedUser == null) {
       // Logout
       navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } else {
-      var userDocumentRef = await Firestore.instance.collection('users').document(updatedUser.uid);
-      userDocumentRef.get().then((DocumentSnapshot ds) {
-        if (ds.exists) {
-          // User document exists, now to change onboarding status
-          if (ds.data['onboardingStatus'] == 'new_user') {
-            navKey.currentState.pushNamed("/createAccount");
-          } else if ds.data['onboardingStatus'] == 'onboarded_user') {
-            // Proceed to home
-            navKey.currentState.pushNamed("/home");
-          } else {
-            // Handle error
-          }
+      var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
+      var ds = await userDocumentRef.get();
+      if (ds.exists) {
+        // User document exists, now to change onboarding status
+        if (ds.data['onboardingStatus'] == 'new_user') {
+          navKey.currentState.pushNamed("/createAccount");
+        } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
+          // Proceed to home
+          navKey.currentState.pushNamed("/home");
         } else {
-          // User document does not exist, create one
-          userDocumentRef.setData({
-            'onboardingStatus': 'new_user',
-            'roles': ['customer']
-          });
+          // Handle error
         }
-      });
+      } else {
+        // User document does not exist, create one
+        userDocumentRef.setData({
+          'onboardingStatus': 'new_user',
+          'roles': ['customer']
+        });
+      }
     }
   }
 

@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
-import 'package:bevvymobile/StoreFrontHome.dart';
+import 'package:bevvymobile/storeFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
+import 'package:bevvymobile/categoryView.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -51,73 +50,83 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
-  StorePage currentPage = StorePage.home;
-  int currentCategory;
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  PageController  _pageController = PageController();
 
   @override
   Widget build(BuildContext context) 
   {
-    return Scaffold
+    return WillPopScope
     (
-      key: scaffoldKey,
-      appBar: buildAppBar(context),
-      body: buildBody(context),
-      floatingActionButton: FloatingActionButton
+      onWillPop: ()
+      {
+        _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+      },
+      child: Scaffold
       (
-        child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-        onPressed: ()
-        {
-          Navigator.pushNamed(context, "/basket");
-        },
-      ),
-      drawer: Drawer
-      (
-        child: Column
+        key: scaffoldKey,
+        appBar: buildAppBar(context),
+        body: buildBody(context),
+        floatingActionButton: FloatingActionButton
         (
-          children: 
-          [
-            DrawerHeader
+          child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+          onPressed: ()
+          {
+            Navigator.pushNamed(context, "/basket");
+          },
+        ),
+        drawer: SizedBox
+        (
+          width: 200,
+          child: Drawer
+          (
+            child: Column
             (
-              child: Image
-              (
-                height: 100,
-                width: 100,
-                image: AssetImage
+              children: 
+              [
+                DrawerHeader
                 (
-                  'images/logo.png',
+                  child: Image
+                  (
+                    height: 100,
+                    width: 100,
+                    image: AssetImage
+                    (
+                      'images/logo.png',
+                    ),
+                  ),
                 ),
-              ),
+                ListTile
+                (
+                  title: Text("Home"),
+                  trailing: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
+                  onTap: ()
+                  {
+                    _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                  },
+                ),
+                ListTile
+                (
+                  title: Text("My Account"),
+                  trailing: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
+                  onTap: ()
+                  {
+                    Navigator.popAndPushNamed(context, "/accountDetails");
+                  },
+                ),
+                Expanded(child: Container(),),
+                ListTile
+                (
+                  title: Text("Log out"),
+                  trailing: Icon(IconData(59513, fontFamily: 'MaterialIcons')),
+                  onTap: ()
+                  {
+                    auth.signOut();
+                  },
+                ),
+              ]
             ),
-            ListTile
-            (
-              title: Center(child: Text("Home")),
-              onTap: ()
-              {
-                setState(() {
-                  currentPage=StorePage.home; 
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile
-            (
-              title: Center(child: Text("My Account")),
-              onTap: ()
-              {
-                Navigator.popAndPushNamed(context, "/accountDetails");
-              },
-            ),
-            Expanded(child: Container(),),
-            ListTile
-            (
-              title: Center(child: Text("Log out")),
-              onTap: ()
-              {
-                auth.signOut();
-              },
-            ),
-          ]
+          ),
         ),
       ),
     ); 
@@ -125,154 +134,92 @@ class _HomeState extends State<Home> {
 
   Widget buildBody(BuildContext context)
   {
-    if(currentPage == StorePage.home)
-    {
-      return GestureDetector
+    List<Widget> pages = 
+    [
+      StoreFrontHome
       (
-        child: StoreFrontHome
-          (
-            productListByCategory: widget.productListByCategory,
-            onSelectCategory: (String category)
-            {
-              if(widget.categories.contains(category))
-              {
-                setState(() {
-                  currentCategory=widget.categories.indexOf(category); 
-                  currentPage=StorePage.category;
-                });
-              }
-            },
-            orders: widget.orders,
-        ),
-        onHorizontalDragEnd: (DragEndDetails details)
+        categories: widget.categories,
+        onSelectCategory: (String category)
+        {
+          if(widget.categories.contains(category))
           {
-            if(details.velocity.pixelsPerSecond.dx < -150)
-            {
-              setState(() {
-                currentCategory=0;
-                currentPage=StorePage.category;
-              });
-            }
+            setState(() {
+              _pageController.animateToPage(widget.categories.indexOf(category) + 1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+            });
           }
-          
-      );
-    }
-    else if(currentPage == StorePage.search)
+        },   
+      )
+    ];
+    pages.addAll(widget.categories.map((String x)
     {
-      return WillPopScope
+      return CategoryView
       (
-        child: ProductGridView(productList: widget.productList.where((Product x)
-          {
-            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-          }).toList()
-        ),        
-        onWillPop: () 
-        {
-          setState(() {
-            currentPage=StorePage.home; 
-          });
-        }
+        productList: widget.productListByCategory[x],   
+        category: x,
       );
-    }
-    else
-    {
-      return WillPopScope(
-        child: GestureDetector
-        (
-          child: ProductGridView
-          (
-            productList: widget.productListByCategory[widget.categories[currentCategory]],  
-          ),
-          onHorizontalDragEnd: (DragEndDetails details)
-          {
-            if(details.velocity.pixelsPerSecond.dx > 150)
-            {
-              setState(() {
-                if(currentCategory==0)
-                {
-                  currentPage=StorePage.home;
-                }
-                else
-                {
-                  currentCategory--;
-                }
-              });
-            }
-            else if(details.velocity.pixelsPerSecond.dx < -150)
-            {
-              setState(() {
-                currentCategory=min(currentCategory+1, widget.categories.length-1);
-              });
-            }
-          },
-        ),        
-        onWillPop: () 
-        {
-          setState(() {
-            currentPage=StorePage.home; 
-          });
-        }
-      );
-    }
+    }));
+
+    return PageView
+    (
+      children: pages,
+      controller: _pageController
+    );
   }
 
   AppBar buildAppBar(BuildContext context)
   {
-    return AppBar(
-        leading: FlatButton
+    return AppBar
+    (
+      leading: FlatButton
+      (
+        child: Icon(IconData(58834, fontFamily: 'MaterialIcons')),
+        onPressed: ()
+        {
+          scaffoldKey.currentState.openDrawer();
+        },
+        padding: EdgeInsets.all(2),
+      ),
+      title: TextField
+      (
+        decoration: InputDecoration
+        (
+          border: UnderlineInputBorder(),
+          labelText: 'Search',
+          icon: Icon
           (
-          child: Icon(IconData(58834, fontFamily: 'MaterialIcons')),
+            IconData(59574, fontFamily: 'MaterialIcons'),
+            size: 30
+          ),
+        ),
+        style: TextStyle
+        (
+          fontSize: 24,
+        ),
+        controller: _controller,
+        onChanged: (String currentText)
+        {
+
+        },
+        onSubmitted: (String currentText)
+        {
+
+        },
+      ),
+      actions: 
+      [
+        IconButton
+        (
           onPressed: ()
           {
-            scaffoldKey.currentState.openDrawer();
+            
           },
-          padding: EdgeInsets.all(2),
-        ),
-        title: TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'Search',
-            icon: Icon
-            (
-              IconData(59574, fontFamily: 'MaterialIcons'),
-              size: 30
-            ),
-          ),
-          style: TextStyle
+          icon: Icon
           (
-            fontSize: 24,
+            IconData(57682, fontFamily: 'MaterialIcons'),
+            size: 30
           ),
-          controller: _controller,
-          onChanged: (String currentText)
-          {
-            setState(() {
-              currentPage=StorePage.search;
-            });
-          },
-          onSubmitted: (String currentText)
-          {
-            setState(() {
-              currentPage=StorePage.search;
-            });
-          },
-        ),
-        actions: 
-        [
-          IconButton
-          (
-            onPressed: ()
-            {
-              
-            },
-            icon: Icon
-            (
-              IconData(57682, fontFamily: 'MaterialIcons'),
-              size: 30
-            ),
-          )
-        ],
+        )
+      ],
     );
   }
 }

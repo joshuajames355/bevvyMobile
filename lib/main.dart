@@ -66,27 +66,41 @@ class _AppState extends State<App>{
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
-    auth.currentUser().then((FirebaseUser newUser)
-    {
-      setState(() {
-       user=newUser; 
-      });
-      if(newUser != null)
-      {
-        navKey.currentState.pushNamed("/home");
-      }
-    });
+    auth.currentUser().then(handleAuthStateChange);
 
-    auth.onAuthStateChanged.listen((FirebaseUser newUser)
-    {
-      setState(() {
-       user=newUser; 
-      });
-      if(newUser == null)
-      {
-        navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      }
+    auth.onAuthStateChanged.listen(handleAuthStateChange);
+  }
+
+  handleAuthStateChange(FirebaseUser updatedUser)
+  {
+    setState(() {
+      user=newUser; 
     });
+    if (updatedUser == null) {
+      // Logout
+      navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    } else {
+      var userDocumentRef = await Firestore.instance.collection('users').document(updatedUser.uid);
+      userDocumentRef.get().then((DocumentSnapshot ds) {
+        if (ds.exists) {
+          // User document exists, now to change onboarding status
+          if (ds.data['onboardingStatus'] == 'new_user') {
+            navKey.currentState.pushNamed("/createAccount");
+          } else if ds.data['onboardingStatus'] == 'onboarded_user') {
+            // Proceed to home
+            navKey.currentState.pushNamed("/home");
+          } else {
+            // Handle error
+          }
+        } else {
+          // User document does not exist, create one
+          userDocumentRef.setData({
+            'onboardingStatus': 'new_user',
+            'roles': ['customer']
+          });
+        }
+      });
+    }
   }
 
   @override

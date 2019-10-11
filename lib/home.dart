@@ -52,6 +52,7 @@ class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   PageController  _pageController = PageController();
+  PageController  _pageControllerSearch = PageController(initialPage: 1, keepPage: false);
   bool isSearchEnabled = false;
 
   @override
@@ -141,10 +142,43 @@ class _HomeState extends State<Home> {
   {
     if(isSearchEnabled)
     {
-      return ProductGridView(productList: widget.productList.where((Product x)
+      //Starts animation on next frame.
+      Future.delayed(Duration(milliseconds: 10)).then((_)
+      {
+        _pageControllerSearch.animateToPage(1, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+      });
+      return PageView
+      (
+        controller: _pageControllerSearch,
+        children: 
+        [
+          StoreFrontHome
+          (
+            categories: widget.categories,
+            onSelectCategory: (String category)
+            {
+              if(widget.categories.contains(category))
+              {
+                setState(() {
+                  _pageController.animateToPage(widget.categories.indexOf(category) + 1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                });
+              }
+            },   
+          ),
+          ProductGridView(productList: widget.productList.where((Product x)
+          {
+            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+          }).toList())
+        ],
+        onPageChanged: (int page)
         {
-          return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-        }).toList()
+          if(page == 0)
+          {
+            setState(() {
+              isSearchEnabled = false;
+            });
+          }
+        },
       );      
     }
 

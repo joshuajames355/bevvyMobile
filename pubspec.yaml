@@ -19,10 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.0+2
   shared_preferences: ^0.5.3+4
   cached_network_image: ^1.1.1 
-  intl: ^0.16.0
+  intl: ^0.15.0
+  datetime_picker_formfield: ^0.4.3
 
   firebase_analytics: ^5.0.2
   firebase_core: ^0.4.0+1
@@ -41,7 +41,7 @@ dev_dependencies:
 flutter_icons:
   android: "launcher_icon" 
   ios: true
-  image_path: "images/icon.jpg"
+  image_path: "images/logoBlack.png"
 
 
 # For information on the generic Dart part of this file, see the
@@ -57,9 +57,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/icon.jpg
-  # - images/a_dot_ham.jpeg
-  
+    - images/logo.png
+    - images/logoBlack.png
+    - images/smirnoff.jpg
+    - images/jd.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

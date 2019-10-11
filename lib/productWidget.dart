@@ -10,56 +10,60 @@ class ProductWidget extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return FlatButton
+    return Hero
     (
-      onPressed: ()
-      {
-        Navigator.pushNamed(context, "/product", arguments: product);
-      },
-      padding: EdgeInsets.all(5),
-      
-      child: Container
-      (
-        decoration: BoxDecoration
+      tag: product.id,
+      child: Card(
+        child: 
+        FlatButton
         (
-          borderRadius: new BorderRadius.all(Radius.circular(12)),
-          color: Theme.of(context).primaryColorLight,
-        ),
-        width: imageSize + 50,
-        height: imageSize + 100,
-        child: Column
-        (
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Center
+          onPressed: ()
+          {
+            Navigator.pushNamed(context, "/product", arguments: product);
+          },
+          padding: EdgeInsets.all(5),
+          
+          child: Container
+          (
+            width: imageSize + 50,
+            height: imageSize + 100,
+            child: Column
             (
-              child: Text
-              (
-                product.title,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-
-              ),
-            ),
-            Center
-            (
-              child: Text
-              (
-                product.size + "•" + product.priceCategory + "•" + product.category,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 12),
-              ),
-            ),
-            Expanded(child: product.icon),
-            Container
-            (
-              margin: EdgeInsets.all(5),
-              child: Row
-              (
-                children: [Text("£" + product.price.toStringAsFixed(2), style: TextStyle(fontSize: 12),)]
-              )
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Center
+                (
+                  child: Text
+                  (
+                    product.title,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Center
+                (
+                  child: Text
+                  (
+                    product.size + "•" + product.priceCategory + "•" + product.category,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 12),
+                  ),
+                ),
+                Expanded
+                (
+                  child: product.icon
+                ),
+                Container
+                (
+                  margin: EdgeInsets.all(5),
+                  child: Row
+                  (
+                    children: [Text("£" + product.price.toStringAsFixed(2), style: TextStyle(fontSize: 12),)]
+                  )
+                )
+              ]
             )
-          ]
+          )
         )
       )
     );

@@ -1,10 +1,10 @@
-import 'dart:math';
-
+import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
-import 'package:bevvymobile/StoreFrontHome.dart';
+import 'package:bevvymobile/storeFrontHome.dart';
 import 'package:bevvymobile/productGridView.dart';
+import 'package:bevvymobile/categoryView.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -50,78 +50,98 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
-  StorePage currentPage = StorePage.home;
-  int currentCategory;
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  PageController  _pageController = PageController();
+  PageController  _pageControllerSearch = PageController(initialPage: 1, keepPage: false);
+  bool isSearchEnabled = false;
+  bool goToFirstPage = false;
 
   @override
   Widget build(BuildContext context) 
   {
-    return Scaffold
+    return WillPopScope
     (
-      appBar: buildAppBar(context),
-      body: buildBody(context),
-      floatingActionButton: FloatingActionButton
-      (
-        child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-        onPressed: ()
+      onWillPop: ()
+      {
+        if(scaffoldKey.currentState.isDrawerOpen)
         {
-          Navigator.pushNamed(context, "/basket");
-        },
-      ),
-      bottomNavigationBar: BottomAppBar
+          return Future.value(true);
+        }
+        setState(() {
+          isSearchEnabled = false;
+          goToFirstPage = true;
+        });
+
+        return Future.value(false);
+      },
+      child: Scaffold
       (
-        color: Theme.of(context).backgroundColor,
-        child: FlatButton
+        key: scaffoldKey,
+        appBar: buildAppBar(context),
+        body: buildBody(context),
+        floatingActionButton: FloatingActionButton
         (
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
+          child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
           onPressed: ()
           {
-            showDialog(context: context, builder: (BuildContext context)
-            {
-              return SimpleDialog
-              (
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(12))),
-                title: Center(child: Text("Set Location")),
-                children: <Widget>
-                [
-                  SimpleDialogOption
-                  (
-                    child: Container
-                    (
-                      margin: EdgeInsets.all(15),
-                      child: Row(children: [Text("Use Current Location"),]),
-                    ),
-                    onPressed: ()
-                    {
-                      widget.onSetLocation("Current Location");
-                      Navigator.pop(context);
-                    },
-
-                  ),
-                  SimpleDialogOption
-                  (
-                    child: Container
-                    (
-                      margin: EdgeInsets.all(15),
-                      child: Row(children: [Text("Set Location"),]),
-                    ),
-                    onPressed: ()
-                    {
-                      widget.onSetLocation("Other Location");
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
-              );
-            });
+            Navigator.pushNamed(context, "/basket");
           },
-          color: Theme.of(context).primaryColor,
-          child: Container
+        ),
+        drawer: SizedBox
+        (
+          width: 200,
+          child: Drawer
           (
-            width: double.infinity,
-            padding: EdgeInsets.all(12),
-            child: Text("Delivering To: " + widget.location, style: TextStyle(fontSize: 18),),
-          )
+            child: Column
+            (
+              children: 
+              [
+                DrawerHeader
+                (
+                  child: Image
+                  (
+                    height: 100,
+                    width: 100,
+                    image: AssetImage
+                    (
+                      'images/logo.png',
+                    ),
+                  ),
+                ),
+                ListTile
+                (
+                  title: Text("Home"),
+                  trailing: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
+                  onTap: ()
+                  {
+                    if(!isSearchEnabled) _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                    setState(() {
+                      isSearchEnabled = false; 
+                    });
+                  },
+                ),
+                ListTile
+                (
+                  title: Text("My Account"),
+                  trailing: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
+                  onTap: ()
+                  {
+                    Navigator.popAndPushNamed(context, "/accountDetails");
+                  },
+                ),
+                Expanded(child: Container(),),
+                ListTile
+                (
+                  title: Text("Log out"),
+                  trailing: Icon(IconData(59513, fontFamily: 'MaterialIcons')),
+                  onTap: ()
+                  {
+                    auth.signOut();
+                  },
+                ),
+              ]
+            ),
+          ),
         ),
       ),
     ); 
@@ -129,220 +149,145 @@ class _HomeState extends State<Home> {
 
   Widget buildBody(BuildContext context)
   {
-    if(currentPage == StorePage.home)
+    if(isSearchEnabled)
     {
-      return GestureDetector
+      //Starts animation on next frame.
+      Future.delayed(Duration(milliseconds: 10)).then((_)
+      {
+        _pageControllerSearch.animateToPage(1, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+      });
+      return PageView
       (
-        child: Container
-        (
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child: StoreFrontHome
+        controller: _pageControllerSearch,
+        children: 
+        [
+          StoreFrontHome
           (
-            productListByCategory: widget.productListByCategory,
+            categories: widget.categories,
             onSelectCategory: (String category)
             {
               if(widget.categories.contains(category))
               {
                 setState(() {
-                  currentCategory=widget.categories.indexOf(category); 
-                  currentPage=StorePage.category;
+                  _pageController.animateToPage(widget.categories.indexOf(category) + 1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
                 });
               }
-            },
-            orders: widget.orders,
+            },   
           ),
-        ),
-        onHorizontalDragEnd: (DragEndDetails details)
+          ProductGridView(productList: widget.productList.where((Product x)
           {
-            if(details.velocity.pixelsPerSecond.dx < -150)
-            {
-              setState(() {
-                currentCategory=0;
-                currentPage=StorePage.category;
-              });
-            }
+            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+          }).toList())
+        ],
+        onPageChanged: (int page)
+        {
+          if(page == 0)
+          {
+            setState(() {
+              isSearchEnabled = false;
+            });
           }
-          
-      );
+        },
+      );      
     }
-    else if(currentPage == StorePage.search)
+
+    if(goToFirstPage)
     {
-      return WillPopScope
+      goToFirstPage = false;
+      //Starts animation on next frame.
+      Future.delayed(Duration(milliseconds: 10)).then((_)
+      {
+        _pageController.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+      });
+    }
+
+    List<Widget> pages = 
+    [
+      StoreFrontHome
       (
-        child: Container
-        (
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child:ProductGridView(productList: widget.productList.where((Product x)
-            {
-              return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-            }).toList()
-          ),
-        ),
-        onWillPop: () 
+        categories: widget.categories,
+        onSelectCategory: (String category)
         {
-          setState(() {
-            currentPage=StorePage.home; 
-          });
-        }
-      );
-    }
-    else
+          if(widget.categories.contains(category))
+          {
+            setState(() {
+              _pageController.animateToPage(widget.categories.indexOf(category) + 1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+            });
+          }
+        },   
+      ),      
+    ];
+    pages.addAll(widget.categories.map((String x)
     {
-      return WillPopScope(
-        child: Container
-        (
-          decoration: BoxDecoration(color: Theme.of(context).backgroundColor),
-          child: GestureDetector
-          (
-            child: ProductGridView
-            (
-              productList: widget.productListByCategory[widget.categories[currentCategory]],  
-            ),
-            onHorizontalDragEnd: (DragEndDetails details)
-            {
-              if(details.velocity.pixelsPerSecond.dx > 150)
-              {
-                setState(() {
-                  if(currentCategory==0)
-                  {
-                    currentPage=StorePage.home;
-                  }
-                  else
-                  {
-                    currentCategory--;
-                  }
-                });
-              }
-              else if(details.velocity.pixelsPerSecond.dx < -150)
-              {
-                setState(() {
-                  currentCategory=min(currentCategory+1, widget.categories.length-1);
-                });
-              }
-            },
-          ),
-        ),
-        onWillPop: () 
-        {
-          setState(() {
-            currentPage=StorePage.home; 
-          });
-        }
+      return CategoryView
+      (
+        productList: widget.productListByCategory[x],   
+        category: x,
       );
-    }
+    }));
+
+    return PageView
+    (
+      children: pages,
+      controller: _pageController
+    );
   }
 
   AppBar buildAppBar(BuildContext context)
   {
-    return AppBar(
-        leading: FlatButton
+    return AppBar
+    (
+      leading: FlatButton
+      (
+        child: Icon(IconData(58834, fontFamily: 'MaterialIcons')),
+        onPressed: ()
+        {
+          scaffoldKey.currentState.openDrawer();
+        },
+        padding: EdgeInsets.all(2),
+      ),
+      title: TextField
+      (
+        decoration: InputDecoration
+        (
+          border: UnderlineInputBorder(),
+          labelText: 'Search',
+          icon: Icon
           (
-          child: Image(
-            image: AssetImage
-              (
-                'images/icon.jpg',
-              ),
+            IconData(59574, fontFamily: 'MaterialIcons'),
+            size: 30
           ),
+        ),
+        style: TextStyle
+        (
+          fontSize: 24,
+        ),
+        controller: _controller,
+        onChanged: (String currentText) => showSearchResults(),
+        onSubmitted: (String currentText) => showSearchResults(),
+      ),
+      actions: 
+      [
+        IconButton
+        (
           onPressed: ()
           {
-            setState(() {
-              currentPage=StorePage.home;
-            });
+            
           },
-          padding: EdgeInsets.all(2),
-        ),
-        title: TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.black, width: 5)
-            ),
-            labelText: 'Search',
-            icon: Icon
-            (
-              IconData(59574, fontFamily: 'MaterialIcons'),
-              color: Colors.black,
-              size: 30
-            ),
+          icon: Icon
+          (
+            IconData(57682, fontFamily: 'MaterialIcons'),
+            size: 30
           ),
-          style: TextStyle
-          (
-            fontSize: 24,
-          ),
-          controller: _controller,
-          onChanged: (String currentText)
-          {
-            setState(() {
-              currentPage=StorePage.search;
-            });
-          },
-          onSubmitted: (String currentText)
-          {
-            setState(() {
-              currentPage=StorePage.search;
-            });
-          },
-        ),
-        actions: 
-        [
-          IconButton
-          (
-            onPressed: ()
-            {
-              if(widget.user == null)
-              {
-                Navigator.pushNamed(context, "/login");
-              }
-              else
-              {
-                Navigator.pushNamed(context, "/accountDetails");
-
-              }
-            },
-            icon: Icon
-            (
-              IconData(59475, fontFamily: 'MaterialIcons'),
-              color: Colors.black,
-              size: 30
-            ),
-          )
-        ],
-        bottom: PreferredSize
-        (
-          preferredSize: const Size.fromHeight(60),
-          child: Align
-          (
-            alignment: Alignment.topCenter,
-            child: Container
-            (
-              height: 50,
-              margin: EdgeInsets.all(4),
-              child: ListView
-              (
-                scrollDirection: Axis.horizontal,
-                children: widget.categories.map((String category)
-                {
-                    return Container
-                    (
-                      margin: EdgeInsets.symmetric(horizontal: 4),
-                      child: RaisedButton
-                      (
-                        child: Text(category),
-                        color: Theme.of(context).backgroundColor,
-                        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.all(Radius.circular(12))),
-                        onPressed: ()
-                        {
-                          setState(() {
-                            currentCategory=widget.categories.indexOf(category); 
-                            currentPage=StorePage.category;
-                          });
-                        },
-                      )
-                    );
-                }).toList()
-              ),
-            )
-          )
         )
+      ],
     );
+  }
+
+  showSearchResults()
+  {
+    setState(() {
+     isSearchEnabled = true; 
+    });
   }
 }

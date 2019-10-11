@@ -1,6 +1,5 @@
 import 'package:bevvymobile/changeEmail.dart';
 import 'package:bevvymobile/changePassword.dart';
-import 'package:bevvymobile/globals.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -8,10 +7,9 @@ typedef void VoidFunc();
 
 class AccountDetails extends StatelessWidget
 {
-  const AccountDetails({ Key key, this.user, this.onLogout, this.onUserChange}) : super(key: key);
+  const AccountDetails({ Key key, this.user, this.onUserChange}) : super(key: key);
 
   final FirebaseUser user;
-  final VoidFunc onLogout;
   final VoidFunc onUserChange;
 
   @override
@@ -33,7 +31,6 @@ class AccountDetails extends StatelessWidget
       body: Container
       (
         padding: EdgeInsets.all(25),
-        color: Theme.of(context).backgroundColor,
         child: Column
         (
           children: [
@@ -130,27 +127,6 @@ class AccountDetails extends StatelessWidget
               },
             ),
             Expanded(child: Container()),//Fill space
-            RaisedButton
-            (
-              color: Theme.of(context).primaryColor,
-              child:  Container
-              (
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Center
-                (
-                  child: Text("Logout", style: TextStyle(fontSize: 18),)
-                  ),
-                width: double.infinity,
-              ),
-              onPressed: ()
-              {
-                Navigator.pop(context);
-                auth.signOut().then((x)
-                {
-                  onLogout();
-                });
-              },
-            )
             ]
         )
       )

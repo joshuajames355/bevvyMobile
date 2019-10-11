@@ -1,9 +1,9 @@
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/createAccount.dart';
+import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
-import 'package:bevvymobile/login.dart';
 import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
@@ -18,68 +18,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-int primaryColour = 0XFFB14AED;
+int primaryColour = 0XFF91FFF8;
 Map<int, Color> colorPalette = 
 {
-  50: Color(0xFFC874D9),
-  100: Color(0xFFC874D9),
-  200: Color(0xFFC874D9),
+  50: Color(primaryColour),
+  100: Color(primaryColour),
+  200: Color(primaryColour),
   300: Color(primaryColour),
   400: Color(primaryColour),
   500: Color(primaryColour),
   600: Color(primaryColour),
-  700: Color(0xFF1B1F3B),
-  800: Color(0xFF1B1F3B),
-  900: Color(0xFF1B1F3B),
+  700: Color(primaryColour),
+  800: Color(primaryColour),
+  900: Color(primaryColour),
 };
 
-ThemeData theme1 = ThemeData
+ThemeData darkTheme = ThemeData
 (
-  primarySwatch: MaterialColor(primaryColour, colorPalette),
-  backgroundColor: Color(0xFFE1BBC9),
-);
-
-
-int primaryColour2 = 0XFFE23425;
-Map<int, Color> colorPalette2 = 
-{
-  50: Color(0xFFE24725),
-  100: Color(0xFFE24725),
-  200: Color(0xFFE24725),
-  300: Color(primaryColour2),
-  400: Color(primaryColour2),
-  500: Color(primaryColour2),
-  600: Color(primaryColour2),
-  700: Color(0xFFE22525),
-  800: Color(0xFFE22525),
-  900: Color(0xFFE22525),
-};
-
-ThemeData theme2 = ThemeData
-(
-  primarySwatch: MaterialColor(primaryColour2, colorPalette2),
-  backgroundColor: Color(0xFFF2C1A4),//E26D25
-);
-
-int primaryColour3 = 0XFF910B3E;
-Map<int, Color> colorPalette3 = 
-{
-  50: Color(0xFFC70039),
-  100: Color(0xFFC70039),
-  200: Color(0xFFC70039),
-  300: Color(primaryColour3),
-  400: Color(primaryColour3),
-  500: Color(primaryColour3),
-  600: Color(primaryColour3),
-  700: Color(0xFF571847),
-  800: Color(0xFF571847),
-  900: Color(0xFF571847),
-};
-
-ThemeData theme3 = ThemeData
-(
-  primarySwatch: MaterialColor(primaryColour3, colorPalette3),
-  backgroundColor: Color(0xFFFFA796),
+  brightness: Brightness.dark,
+  accentColor: MaterialColor(primaryColour, colorPalette),
 );
 
 class App extends StatefulWidget {
@@ -109,39 +66,52 @@ class _AppState extends State<App>{
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
-    auth.currentUser().then((FirebaseUser newUser)
-    {
-      setState(() {
-       user=newUser; 
-      });
-      if(newUser != null)
-      {
-        navKey.currentState.pushNamed("/home");
-      }
-    });
+    auth.currentUser().then(handleAuthStateChange);
 
-    auth.onAuthStateChanged.listen((FirebaseUser newUser)
-    {
-      print("change");
-      setState(() {
-       user=newUser; 
-      });
-      if(newUser != null)
-      {
-        navKey.currentState.pushNamed("/home");
-      }
-      else
-      {
-        navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      }
+    auth.onAuthStateChanged.listen(handleAuthStateChange);
+  }
+
+  handleAuthStateChange(FirebaseUser updatedUser)
+  async {
+    setState(() {
+      user=updatedUser; 
     });
+    if (updatedUser == null) {
+      // Logout
+      navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+    } else {
+      var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
+      var ds = await userDocumentRef.get();
+      if (ds.exists) {
+        // User document exists, now to change onboarding status
+        if (ds.data['onboardingStatus'] == 'new_user') {
+          navKey.currentState.pushNamed("/createAccount");
+        } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
+          // Proceed to home
+          navKey.currentState.pushNamed("/home");
+        } else {
+          // Handle error
+        }
+      } else {
+        // User document does not exist, create one
+        userDocumentRef.setData({
+          'onboardingStatus': 'new_user',
+          'roles': ['customer']
+        }).then((_) {
+          handleAuthStateChange(updatedUser);
+        }).catchError((e) {
+          print("Error setting user's initial account document. %{e.error}");
+          return -1;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Bevvy',
-      theme: theme2,
+      title: 'Jovi',
+      theme: darkTheme,
       navigatorKey: navKey,
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
@@ -152,7 +122,7 @@ class _AppState extends State<App>{
         {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
-        if(settings.name == "/home")
+        else if(settings.name == "/home")
         {
           return MaterialPageRoute(builder: (context) => FutureBuilder
           (
@@ -176,30 +146,27 @@ class _AppState extends State<App>{
                   )
                 );
               }
-              return  WillPopScope(
-                  onWillPop: () async => false,
-                  child: Home
-                (
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-                  orders: orders,
-                  location: location,
-                  onSetLocation: setLocation,
-                  user: user,
-                )
+              return  Home
+              (
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                orders: orders,
+                location: location,
+                onSetLocation: setLocation,
+                user: user,                
               );
             }
           ));
         }
-        if(settings.name == "/login")
+        else if(settings.name == "/createAccountSMS")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => LoginPage(email: settings.arguments),
+            page: (BuildContext context) => CreateAccountSMS()
           );
         }
-        if(settings.name == "/createAccount")
+        else if(settings.name == "/createAccount")
         {
           return SlideLeftRoute(          
-            page: (BuildContext context) => CreateAccount(email: settings.arguments,)
+            page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
           );
         }
         else if(settings.name == "/accountDetails")
@@ -209,7 +176,6 @@ class _AppState extends State<App>{
             page: (BuildContext context) => AccountDetails
             (
               user: user,
-              onLogout: onLogout,
               onUserChange: onUserChange,
             ),    
           );
@@ -239,14 +205,12 @@ class _AppState extends State<App>{
         {
           final Product args = settings.arguments;
 
-          return ExpandRoute
-          (
-            page: (BuildContext context) => ProductScreen
+          return MaterialPageRoute(builder: (context) => ProductScreen
             (
               product: args, 
               addToBasket: addToBasket,
             )
-          );  
+          );
         }
         else if(settings.name == "/order")
         {
@@ -304,11 +268,6 @@ class _AppState extends State<App>{
   {
     navKey.currentState.pop();
     showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
-  }
-
-  onLogout()
-  {
-    showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged out.")));
   }
 
   onUserChange()

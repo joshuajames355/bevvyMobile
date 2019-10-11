@@ -79,7 +79,6 @@ class Basket extends StatelessWidget
       body: Container
       (
         padding: EdgeInsets.all(25),
-        color: Theme.of(context).backgroundColor,
         child: Column
         (
           children: [
@@ -111,7 +110,7 @@ class Basket extends StatelessWidget
               {
                 if(checkoutData.length == 0)
                 {
-                  showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least on item to your basket.")));
+                  showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
                 }
                 else
                 {                

@@ -146,16 +146,13 @@ class _AppState extends State<App>{
                   )
                 );
               }
-              return  WillPopScope(
-                  onWillPop: () async => false,
-                  child: Home
-                (
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-                  orders: orders,
-                  location: location,
-                  onSetLocation: setLocation,
-                  user: user,
-                )
+              return  Home
+              (
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                orders: orders,
+                location: location,
+                onSetLocation: setLocation,
+                user: user,                
               );
             }
           ));

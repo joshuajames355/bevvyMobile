@@ -54,6 +54,7 @@ class _HomeState extends State<Home> {
   PageController  _pageController = PageController();
   PageController  _pageControllerSearch = PageController(initialPage: 1, keepPage: false);
   bool isSearchEnabled = false;
+  bool goToFirstPage = false;
 
   @override
   Widget build(BuildContext context) 
@@ -62,7 +63,15 @@ class _HomeState extends State<Home> {
     (
       onWillPop: ()
       {
-        _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+        if(scaffoldKey.currentState.isDrawerOpen)
+        {
+          return Future.value(true);
+        }
+        setState(() {
+          isSearchEnabled = false;
+          goToFirstPage = true;
+        });
+
         return Future.value(false);
       },
       child: Scaffold
@@ -182,6 +191,16 @@ class _HomeState extends State<Home> {
       );      
     }
 
+    if(goToFirstPage)
+    {
+      goToFirstPage = false;
+      //Starts animation on next frame.
+      Future.delayed(Duration(milliseconds: 10)).then((_)
+      {
+        _pageController.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+      });
+    }
+
     List<Widget> pages = 
     [
       StoreFrontHome
@@ -196,7 +215,7 @@ class _HomeState extends State<Home> {
             });
           }
         },   
-      )
+      ),      
     ];
     pages.addAll(widget.categories.map((String x)
     {

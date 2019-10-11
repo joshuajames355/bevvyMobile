@@ -52,6 +52,7 @@ class _HomeState extends State<Home> {
   final TextEditingController _controller = TextEditingController();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   PageController  _pageController = PageController();
+  bool isSearchEnabled = false;
 
   @override
   Widget build(BuildContext context) 
@@ -61,6 +62,7 @@ class _HomeState extends State<Home> {
       onWillPop: ()
       {
         _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+        return Future.value(false);
       },
       child: Scaffold
       (
@@ -102,7 +104,10 @@ class _HomeState extends State<Home> {
                   trailing: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
                   onTap: ()
                   {
-                    _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                    if(!isSearchEnabled) _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
+                    setState(() {
+                      isSearchEnabled = false; 
+                    });
                   },
                 ),
                 ListTile
@@ -134,6 +139,15 @@ class _HomeState extends State<Home> {
 
   Widget buildBody(BuildContext context)
   {
+    if(isSearchEnabled)
+    {
+      return ProductGridView(productList: widget.productList.where((Product x)
+        {
+          return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+        }).toList()
+      );      
+    }
+
     List<Widget> pages = 
     [
       StoreFrontHome
@@ -196,14 +210,8 @@ class _HomeState extends State<Home> {
           fontSize: 24,
         ),
         controller: _controller,
-        onChanged: (String currentText)
-        {
-
-        },
-        onSubmitted: (String currentText)
-        {
-
-        },
+        onChanged: (String currentText) => showSearchResults(),
+        onSubmitted: (String currentText) => showSearchResults(),
       ),
       actions: 
       [
@@ -221,5 +229,12 @@ class _HomeState extends State<Home> {
         )
       ],
     );
+  }
+
+  showSearchResults()
+  {
+    setState(() {
+     isSearchEnabled = true; 
+    });
   }
 }

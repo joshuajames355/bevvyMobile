@@ -80,7 +80,7 @@ class _AppState extends State<App>{
     });
     if (updatedUser == null) {
       // Logout
-      navKey.currentState.pushReplacementNamed('/');
+      navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } else {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
@@ -92,7 +92,7 @@ class _AppState extends State<App>{
           navKey.currentState.pushReplacementNamed("/createAccount");
         } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
           // Proceed to home
-          navKey.currentState.pushReplacementNamed("/home");
+          navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
         } else {
           // Handle error
         }
@@ -150,16 +150,13 @@ class _AppState extends State<App>{
                   )
                 );
               }
-              return  WillPopScope(
-                  onWillPop: () async => false,
-                  child: Home
-                (
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-                  orders: orders,
-                  location: location,
-                  onSetLocation: setLocation,
-                  user: user,
-                )
+              return  Home
+              (
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                orders: orders,
+                location: location,
+                onSetLocation: setLocation,
+                user: user,                
               );
             }
           ));

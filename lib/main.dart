@@ -78,7 +78,7 @@ class _AppState extends State<App>{
     });
     if (updatedUser == null) {
       // Logout
-      navKey.currentState.pushReplacementNamed('/');
+      navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
     } else {
       var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
       var ds = await userDocumentRef.get();
@@ -88,7 +88,7 @@ class _AppState extends State<App>{
           navKey.currentState.pushReplacementNamed("/createAccount");
         } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
           // Proceed to home
-          navKey.currentState.pushReplacementNamed("/home");
+          navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
         } else {
           // Handle error
         }

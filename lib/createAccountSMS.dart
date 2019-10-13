@@ -257,7 +257,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
     var credentials = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _noTextController.text);
     auth.signInWithCredential(credentials).then((AuthResult result)
     {
-      Navigator.pushNamed(context, "/createAccount");
+      // Wait for a callback to main.dart
     }).catchError((e)
     {
       if(e.code == "ERROR_INVALID_CREDENTIAL")

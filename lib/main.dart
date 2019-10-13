@@ -18,6 +18,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 int primaryColour = 0XFF91FFF8;
 Map<int, Color> colorPalette = 

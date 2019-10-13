@@ -85,10 +85,10 @@ class _AppState extends State<App>{
       if (ds.exists) {
         // User document exists, now to change onboarding status
         if (ds.data['onboardingStatus'] == 'new_user') {
-          navKey.currentState.pushNamed("/createAccount");
+          navKey.currentState.pushReplacementNamed("/createAccount");
         } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
           // Proceed to home
-          navKey.currentState.pushNamed("/home");
+          navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
         } else {
           // Handle error
         }

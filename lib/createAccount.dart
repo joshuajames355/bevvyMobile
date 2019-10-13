@@ -54,7 +54,7 @@ class _CreateAccountState extends State<CreateAccount>
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
           onPressed: ()
           {
-            Navigator.pop(context);
+            auth.signOut();
           },
         ),
       ),

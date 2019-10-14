@@ -13,6 +13,7 @@ class Product
   final String category;
   final String size;
   final String priceCategory;
+  final String legalRestriction;
 
   final Widget icon;
   final Widget iconLarge;
@@ -24,7 +25,7 @@ class Product
       height: imageSize) ,iconLarge = Image(image: AssetImage("images/" + iconName),
 
       width: largeImageSize,
-      height: largeImageSize);
+      height: largeImageSize,), legalRestriction = "";
 
 
   Product.fromFireStore({Map<String, dynamic> data}) : 
@@ -62,7 +63,8 @@ class Product
       size = (data["size"] is Map ? (data["size"]["magnitude"] ?? "" ) + (data["size"]["unit"] ?? "" ): ""),
       priceCategory = "\$\$",
       category = data["category"] ?? "None",
-      id = data["id"] ?? ""
+      id = data["id"] ?? "",
+      legalRestriction = data["legal_restriction"] ?? "none"
     ;    
 }
 

@@ -70,7 +70,7 @@ class Basket extends StatelessWidget
     return Scaffold(
       appBar: AppBar
       (
-        title: Text("Basket (" + checkoutData.length.toString() + ")"),
+        title: Center(child: Text("Your Basket")),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -124,6 +124,64 @@ class Basket extends StatelessWidget
               ),
             ),
           ),
+          Padding
+          (
+            padding: EdgeInsets.all(15),
+            child: Column
+            (
+              children: <Widget>
+              [
+                Row
+                (
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: 
+                  [
+                    Text("Subtotal", style: TextStyle(fontSize: 16)),
+                    Text("£" + getTotal(checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                  ]
+                ),
+                Row
+                (
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: 
+                  [
+                    Text("Delivery fee", style: TextStyle(fontSize: 16)),
+                    Container
+                    (
+                      child: Row
+                      (
+                        children: 
+                        [
+                          Padding
+                          (
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            child: IconButton
+                            (
+                              icon: Icon(IconData(59534, fontFamily: 'MaterialIcons')),
+                              onPressed: ()
+                              {
+                                showDialog(context: context, builder: (context) => AlertDialog(title: Text("Delivery fee"), content: Text("Free if you spend more than £25.")));
+                              },
+                            ),
+                          ),
+                          Text(getTotal(checkoutData) > 25 ? "£0.00" : "£3.50", style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+                        ]
+                      )
+                    ),
+                  ]
+                ),
+                Row
+                (
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: 
+                  [
+                    Text("Total", style: TextStyle(fontSize: 16)),
+                    Text("£" + (getTotal(checkoutData) + (getTotal(checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                  ]
+                ),
+              ],
+            ),
+          ),
           RaisedButton
           (
             child:  Container
@@ -131,8 +189,9 @@ class Basket extends StatelessWidget
               padding: EdgeInsets.symmetric(vertical: 15),
               child: Center
               (
-                child: Text("Proceed (£" + getTotal(checkoutData).toStringAsFixed(2) + ")", style: TextStyle(fontSize: 18),)
-                ),
+                child: Text("Go to Checkout", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                )
+              ),
               width: double.infinity,
             ),
             onPressed: ()

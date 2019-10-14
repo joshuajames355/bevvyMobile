@@ -234,22 +234,26 @@ class _AppState extends State<App>{
 
   addToBasket(Product product, int quantity)
   {
+
     setState(() {
-      if(checkoutData.containsKey(product))
+      bool foundItem = false;
+      checkoutData = checkoutData.map((Product index, int value)
       {
-        checkoutData[product] += quantity;
-      }
-      else
-      {
-        checkoutData[product] = quantity;
-      }
+        if(index.id == product.id) 
+        {
+          foundItem = true;
+          return MapEntry(product, value + quantity);
+        }
+        return MapEntry(index, value);
+      });
+      if(!foundItem) checkoutData[product] = quantity;
     });
   }
 
-  removeFromBasket(Product product)
+  removeFromBasket(String productID)
   {
     setState(() {
-      checkoutData.remove(product);
+      checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
     });
   }
 

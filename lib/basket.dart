@@ -2,7 +2,7 @@ import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
 
-typedef void RemoveFromBasketFunc(Product product);
+typedef void RemoveFromBasketFunc(String productID);
 typedef void AddOrder(Order order);
 
 class BasketDataWidget extends StatelessWidget
@@ -19,36 +19,35 @@ class BasketDataWidget extends StatelessWidget
     return Row(
       children: <Widget>
       [
-        Expanded(
-          child: Row(
-            children: <Widget>
-            [
-              Flexible
-              (
-                child:  Text(checkoutData[product].toString() + " X " + this.product.title,
-                  style: TextStyle(fontSize: 18),
-                  overflow: TextOverflow.ellipsis,
-                )
-              ),
-              Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2),style: TextStyle(fontSize: 18),)
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          )          
-        ),
-        Container
+        SizedBox.fromSize
         (
-          margin: EdgeInsets.only(left: 15),
-          child: FloatingActionButton
+          child: product.icon,
+          size: Size(75,75),
+        ),
+        Expanded
+        (
+          child: Padding
           (
-            heroTag: product.title,
-            mini: true,
-            onPressed: ()
-            {
-              removeFromBasket(product);
-            },
-            child: Icon(IconData(57691, fontFamily: 'MaterialIcons')),
-          )
-        )
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Column
+            (
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>
+              [
+                Text(product.title, style: TextStyle( fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
+                Text(checkoutData[product].toString() + "X"),
+              ],
+            )
+          ),
+        ),
+        SizedBox.fromSize
+        (
+          child: Center
+          (
+            child: Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2)),
+          ),
+          size: Size(75,75),
+        ),
       ],
     );
   }
@@ -78,14 +77,45 @@ class Basket extends StatelessWidget
       ),
       body: Container
       (
-        padding: EdgeInsets.all(25),
+        padding: EdgeInsets.all(12),
         child: Column
         (
           children: [
             Expanded
             (
               child: ListView
-              (children: checkoutData.keys.map((Product x) => BasketDataWidget(product: x,checkoutData: checkoutData, removeFromBasket: removeFromBasket,)).toList(),
+              (
+                children: joinBasketElements
+                (
+                  checkoutData.keys.map((Product x) => Dismissible 
+                    (
+                      key: Key(x.id),
+                      child: BasketDataWidget(product: x,checkoutData: checkoutData, removeFromBasket: removeFromBasket,),
+                      onDismissed: (DismissDirection direction)
+                      {
+                        removeFromBasket(x.id);
+                      },
+                      direction: DismissDirection.endToStart,
+                      background: Container
+                      (
+                        decoration: BoxDecoration(color: Colors.red),
+                        child: Row
+                        (
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>
+                          [
+                            Expanded(child: Container(),),
+                            Padding
+                            (
+                              padding: EdgeInsets.all(20),
+                              child: Icon(IconData(58829, fontFamily: 'MaterialIcons')),
+                            ),
+                          ],                        
+                        ),
+                      ),
+                    ),
+                  ).toList(),
+                )
               ),
             ),
             Container
@@ -123,6 +153,17 @@ class Basket extends StatelessWidget
       )
     );
   }
+}
+List<Widget> joinBasketElements(List<Widget> basketElements)
+{
+  if(basketElements.length == 0) return [];
+
+  List<Widget> joinedElements = [basketElements[0]];
+  for(int x = 1; x < basketElements.length; x++) 
+  {
+    joinedElements.addAll([Divider(height: 30, thickness: 2,), basketElements[x]]);
+  }
+  return joinedElements;
 }
 
 double getTotal(Map<Product, int> basket)

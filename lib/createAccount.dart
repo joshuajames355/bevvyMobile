@@ -81,6 +81,7 @@ class _CreateAccountState extends State<CreateAccount>
                         autofocus: false,
                         controller: _nameController,
                         textInputAction: TextInputAction.next,
+                        textCapitalization: TextCapitalization.words,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
@@ -100,6 +101,7 @@ class _CreateAccountState extends State<CreateAccount>
                         autofocus: false,
                         focusNode: _surnameNode,
                         controller: _surnameController,
+                        textCapitalization: TextCapitalization.words,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -121,6 +123,7 @@ class _CreateAccountState extends State<CreateAccount>
                         controller: _emailController,
                         textInputAction: TextInputAction.next,
                         keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
                         decoration: InputDecoration(
                           border: UnderlineInputBorder(),
                           labelText: 'Email',

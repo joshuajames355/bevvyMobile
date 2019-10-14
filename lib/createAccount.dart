@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -26,6 +27,7 @@ class _CreateAccountState extends State<CreateAccount>
   TextEditingController _nameController = TextEditingController();
   TextEditingController _surnameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
+  TextEditingController _dobController = TextEditingController();
 
   FocusNode _surnameNode = FocusNode();
   FocusNode _emailNode = FocusNode();
@@ -37,6 +39,8 @@ class _CreateAccountState extends State<CreateAccount>
 
   @override
   void initState() {
+    _dobNode.addListener(() => onDateSubmit(context));
+
     super.initState();
   }
 
@@ -128,7 +132,7 @@ class _CreateAccountState extends State<CreateAccount>
                           border: UnderlineInputBorder(),
                           labelText: 'Email',
                         ),
-                        onSubmitted: (x) =>  _dobNode.requestFocus(),
+                        onSubmitted: (x) =>  onDateSubmit(context),
                       )
                     ),
                   ),
@@ -137,23 +141,11 @@ class _CreateAccountState extends State<CreateAccount>
                     child: Padding
                     (
                       padding: EdgeInsets.only(left: 12, right: 12, bottom: 12, top: 0),
-                      child: DateTimeField
+                      child: TextField
                       (
                         focusNode: _dobNode,
-                        format: DateFormat("yyyy-MM-dd"),
-                        onShowPicker: (context, currentValue) {
-                          return showDatePicker
-                          (
-                              context: context,
-                              firstDate: DateTime(1900),
-                              initialDate: currentValue ?? DateTime(2000),
-                              lastDate: endDate
-                          ).then((DateTime x)
-                          {
-                            _dateOfBirth = x;
-                            return x;
-                          });
-                        },
+                        controller: _dobController,
+                        readOnly: true,
                         decoration: InputDecoration(
                             border: UnderlineInputBorder(),
                             labelText: 'Date Of Birth',
@@ -192,19 +184,44 @@ class _CreateAccountState extends State<CreateAccount>
     return _dateOfBirth.day.toString().padLeft(2, "0") + "/" + _dateOfBirth.month.toString().padLeft(2, "0") + "/" + _dateOfBirth.year.toString();
   }
 
-  onDateSubmit()
+  onDateSubmit(BuildContext context)
   {
+    //hide keyboard
+    FocusScope.of(context).unfocus();
+
     DateTime endDate = DateTime.now();
     endDate = DateTime(endDate.year - 18, endDate.month, endDate.day);
-    showDatePicker(context: context, initialDate: _dateOfBirth == null ? DateTime(2000) : _dateOfBirth, firstDate: DateTime(1900), lastDate: endDate).then((DateTime value)
-    {
-      if(value != null)
+    showModalBottomSheet
+    (
+      context: context,
+      builder: (BuildContext builder) 
       {
-        setState(() {
-          _dateOfBirth=value;
-        });
+        return Container
+        (
+          height: MediaQuery.of(context).copyWith().size.height / 3,
+          child: Theme
+          (
+            data: Theme.of(context).copyWith(brightness: Brightness.light),
+            child:CupertinoDatePicker
+            (
+              
+              initialDateTime: _dateOfBirth ?? DateTime(2000),
+              onDateTimeChanged: (DateTime newdate) 
+              {
+                setState(() {
+                  _dateOfBirth = newdate;
+                  _dobController.text = DateFormat("yyyy-MM-dd").format(newdate);
+                });
+              },
+              maximumDate: endDate,
+              minimumYear: 1900,
+              maximumYear: endDate.year,
+              mode: CupertinoDatePickerMode.date,
+            )  
+          )                    
+        );
       }
-    });
+    );          
   }
 
   onSubmit()

@@ -16,39 +16,44 @@ class BasketDataWidget extends StatelessWidget
   @override
   Widget build(BuildContext context) 
   {
-    return Row(
-      children: <Widget>
-      [
-        SizedBox.fromSize
-        (
-          child: product.icon,
-          size: Size(75,75),
-        ),
-        Expanded
-        (
-          child: Padding
+    return Padding
+    (
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: Row
+      (
+        children: <Widget>
+        [
+          SizedBox.fromSize
           (
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Column
+            child: product.icon,
+            size: Size(75,75),
+          ),
+          Expanded
+          (
+            child: Padding
             (
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>
-              [
-                Text(product.title, style: TextStyle( fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
-                Text(checkoutData[product].toString() + "X"),
-              ],
-            )
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              child: Column
+              (
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>
+                [
+                  Text(product.title, style: TextStyle( fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
+                  Text(checkoutData[product].toString() + "X",),
+                ],
+              )
+            ),
           ),
-        ),
-        SizedBox.fromSize
-        (
-          child: Center
+          SizedBox.fromSize
           (
-            child: Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2)),
+            child: Center
+            (
+              child: Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
+            ),
+            size: Size(75,75),
           ),
-          size: Size(75,75),
-        ),
-      ],
+        ],
+      )
     );
   }
 }
@@ -65,7 +70,7 @@ class Basket extends StatelessWidget
     return Scaffold(
       appBar: AppBar
       (
-        title: Text("Basket"),
+        title: Text("Basket (" + checkoutData.length.toString() + ")"),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -75,14 +80,14 @@ class Basket extends StatelessWidget
           },
         ),
       ),
-      body: Container
+      body: Column
       (
-        padding: EdgeInsets.all(12),
-        child: Column
-        (
-          children: [
-            Expanded
+        children: [
+          Expanded
+          (
+            child: Padding
             (
+              padding: EdgeInsets.symmetric(vertical: 12),
               child: ListView
               (
                 children: joinBasketElements
@@ -118,38 +123,31 @@ class Basket extends StatelessWidget
                 )
               ),
             ),
-            Container
+          ),
+          RaisedButton
+          (
+            child:  Container
             (
-              margin: EdgeInsets.symmetric(vertical: 12),
-              alignment: Alignment.centerLeft,
-              child: Text("Total: £" + getTotal(checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 18),),
-            ),
-            RaisedButton
-            (
-              color: Theme.of(context).primaryColor,
-              child:  Container
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Center
               (
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Center
-                (
-                  child: Text("Proceed To Checkout", style: TextStyle(fontSize: 18),)
-                  ),
-                width: double.infinity,
-              ),
-              onPressed: ()
+                child: Text("Proceed (£" + getTotal(checkoutData).toStringAsFixed(2) + ")", style: TextStyle(fontSize: 18),)
+                ),
+              width: double.infinity,
+            ),
+            onPressed: ()
+            {
+              if(checkoutData.length == 0)
               {
-                if(checkoutData.length == 0)
-                {
-                  showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
-                }
-                else
-                {                
-                  Navigator.pushNamed(context, "/checkout");
-                }
-              },
-            )
-            ]
-        )
+                showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
+              }
+              else
+              {                
+                Navigator.pushNamed(context, "/checkout");
+              }
+            },
+          )
+        ]
       )
     );
   }

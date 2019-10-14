@@ -20,8 +20,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
-int primaryColour = 0XFF91FFF8;
-Map<int, Color> colorPalette = 
+int accentColour = 0XFF91FFF8;
+Map<int, Color> accentColorPalette = 
+{
+  50: Color(accentColour),
+  100: Color(accentColour),
+  200: Color(accentColour),
+  300: Color(accentColour),
+  400: Color(accentColour),
+  500: Color(accentColour),
+  600: Color(accentColour),
+  700: Color(accentColour),
+  800: Color(accentColour),
+  900: Color(accentColour),
+};
+
+int primaryColour = 0XFFFFA552;
+Map<int, Color> primaryColourPalette = 
 {
   50: Color(primaryColour),
   100: Color(primaryColour),
@@ -38,7 +53,9 @@ Map<int, Color> colorPalette =
 ThemeData darkTheme = ThemeData
 (
   brightness: Brightness.dark,
-  accentColor: MaterialColor(primaryColour, colorPalette),
+  buttonColor: Color(0XFFFFA552),
+  accentColor: MaterialColor(accentColour, accentColorPalette),
+
 );
 
 class App extends StatefulWidget {

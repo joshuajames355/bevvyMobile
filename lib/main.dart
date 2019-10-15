@@ -72,7 +72,6 @@ class App extends StatefulWidget {
 class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
-  String location = "Current Location";
   FirebaseUser user;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
@@ -323,13 +322,6 @@ class _AppState extends State<App>{
     setState(() {
       orders.add(order);
       checkoutData = Map<Product, int>();
-    });
-  }
-
-  setLocation(String newLocation)
-  {
-    setState(() {
-     location=newLocation; 
     });
   }
 

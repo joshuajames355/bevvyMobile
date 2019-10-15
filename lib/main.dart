@@ -5,6 +5,7 @@ import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/orderScreen.dart';
+import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
@@ -242,6 +243,18 @@ class _AppState extends State<App>{
             page: (BuildContext context) => OrderScreen
             (
               order: args,
+            )
+          );  
+        }
+        else if(settings.name == "/search")
+        {
+          final List<Product> args = settings.arguments;
+
+          return SlideDownRoute
+          (
+            page: (BuildContext context) => SearchResults
+            (
+              products: args,
             )
           );  
         }

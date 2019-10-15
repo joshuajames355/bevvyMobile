@@ -56,6 +56,33 @@ class SlideUpRoute extends PageRouteBuilder {
         );
 }
 
+class SlideDownRoute extends PageRouteBuilder {
+  final PageBuilderFunc page;
+
+  SlideDownRoute({this.page})
+      : super(
+          pageBuilder: 
+          (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+          ) => page(context),
+          transitionsBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            Animation<double> secondaryAnimation,
+            Widget child,
+          ) => SlideTransition
+            (
+              position: Tween<Offset>(
+                begin: const Offset(0, -1),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            ),
+        );
+}
+
 class ExpandRoute extends PageRouteBuilder {
   final PageBuilderFunc page;
 

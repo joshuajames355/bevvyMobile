@@ -3,7 +3,6 @@ import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/storeFrontHome.dart';
-import 'package:bevvymobile/productGridView.dart';
 import 'package:bevvymobile/categoryView.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -53,7 +52,6 @@ class _HomeState extends State<Home> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   PageController  _pageController = PageController();
   PageController  _pageControllerSearch = PageController(initialPage: 1, keepPage: false);
-  bool isSearchEnabled = false;
   bool goToFirstPage = false;
 
   @override
@@ -68,7 +66,6 @@ class _HomeState extends State<Home> {
           return Future.value(true);
         }
         setState(() {
-          isSearchEnabled = false;
           goToFirstPage = true;
         });
 
@@ -114,10 +111,7 @@ class _HomeState extends State<Home> {
                   trailing: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
                   onTap: ()
                   {
-                    if(!isSearchEnabled) _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
-                    setState(() {
-                      isSearchEnabled = false; 
-                    });
+                    _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
                   },
                 ),
                 ListTile
@@ -149,48 +143,6 @@ class _HomeState extends State<Home> {
 
   Widget buildBody(BuildContext context)
   {
-    if(isSearchEnabled)
-    {
-      //Starts animation on next frame.
-      Future.delayed(Duration(milliseconds: 10)).then((_)
-      {
-        _pageControllerSearch.animateToPage(1, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
-      });
-      return PageView
-      (
-        controller: _pageControllerSearch,
-        children: 
-        [
-          StoreFrontHome
-          (
-            categories: widget.categories,
-            onSelectCategory: (String category)
-            {
-              if(widget.categories.contains(category))
-              {
-                setState(() {
-                  _pageController.animateToPage(widget.categories.indexOf(category) + 1, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
-                });
-              }
-            },   
-          ),
-          ProductGridView(productList: widget.productList.where((Product x)
-          {
-            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-          }).toList())
-        ],
-        onPageChanged: (int page)
-        {
-          if(page == 0)
-          {
-            setState(() {
-              isSearchEnabled = false;
-            });
-          }
-        },
-      );      
-    }
-
     if(goToFirstPage)
     {
       goToFirstPage = false;
@@ -263,8 +215,10 @@ class _HomeState extends State<Home> {
           fontSize: 24,
         ),
         controller: _controller,
-        onChanged: (String currentText) => showSearchResults(),
-        onSubmitted: (String currentText) => showSearchResults(),
+        onSubmitted: (String currentText) => Navigator.pushNamed(context, "/search", arguments: widget.productList.where((Product x)
+          {
+            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
+          }).toList()),
       ),
       actions: 
       [
@@ -282,12 +236,5 @@ class _HomeState extends State<Home> {
         )
       ],
     );
-  }
-
-  showSearchResults()
-  {
-    setState(() {
-     isSearchEnabled = true; 
-    });
   }
 }

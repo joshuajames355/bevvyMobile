@@ -48,6 +48,14 @@ class _CategoryScrollViewState extends State<CategoryScrollView>
     (
       appBar: HomeAppBar(productList: widget.productList,),
       drawer: HomeDrawer(),
+      floatingActionButton: FloatingActionButton
+      (
+        child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+        onPressed: ()
+        {
+          Navigator.pushNamed(context, "/basket");
+        },
+      ),
       body: PageView
       (
         controller: _pageController,

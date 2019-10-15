@@ -1,15 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-typedef void OnSelectCategory(String category);
-
 //Renders a List of all products, seperated by categories.
 class StoreFrontHome extends StatelessWidget
 {
-  const StoreFrontHome({ Key key, this.categories, this.onSelectCategory}) : super(key: key);
+  const StoreFrontHome({ Key key, this.categories}) : super(key: key);
 
   final List<String> categories;
-  final OnSelectCategory onSelectCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +21,7 @@ class StoreFrontHome extends StatelessWidget
           child: FlatButton
           (
             child: Center(child: Text(x)),
-            onPressed: () => onSelectCategory(x),
+            onPressed: () => Navigator.pushNamed(context, "/category", arguments: x),
           )
         );
       }).toList()

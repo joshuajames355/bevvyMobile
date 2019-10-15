@@ -1,4 +1,5 @@
 import 'package:bevvymobile/basket.dart';
+import 'package:bevvymobile/categoryScrollView.dart';
 import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/createAccountSMS.dart';
@@ -170,11 +171,7 @@ class _AppState extends State<App>{
               }
               return  Home
               (
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-                orders: orders,
-                location: location,
-                onSetLocation: setLocation,
-                user: user,                
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
               );
             }
           ));
@@ -257,6 +254,40 @@ class _AppState extends State<App>{
               products: args,
             )
           );  
+        }
+        else if(settings.name == "/category")
+        {
+          final String args = settings.arguments;
+
+          return MaterialPageRoute(builder: (context) => FutureBuilder
+          (
+            future: catalogue,
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
+            {
+              if(!snapshot.hasData)
+              {
+                return WillPopScope(
+                  onWillPop: () async => false,
+                  child: Container
+                  (
+                    color: Theme.of(context).backgroundColor,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Align
+                    (
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                  )
+                );
+              }
+              return  CategoryScrollView
+              (
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                initialCategory: args,             
+              );
+            }
+          ));
         }
       },
     );

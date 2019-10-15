@@ -1,4 +1,5 @@
 import 'package:bevvymobile/globals.dart';
+import 'package:bevvymobile/homeAppBar.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
@@ -48,10 +49,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final TextEditingController _controller = TextEditingController();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
   PageController  _pageController = PageController();
-  PageController  _pageControllerSearch = PageController(initialPage: 1, keepPage: false);
   bool goToFirstPage = false;
 
   @override
@@ -74,7 +73,7 @@ class _HomeState extends State<Home> {
       child: Scaffold
       (
         key: scaffoldKey,
-        appBar: buildAppBar(context),
+        appBar: HomeAppBar(productList: widget.productList,),
         body: buildBody(context),
         floatingActionButton: FloatingActionButton
         (
@@ -182,59 +181,6 @@ class _HomeState extends State<Home> {
     (
       children: pages,
       controller: _pageController
-    );
-  }
-
-  AppBar buildAppBar(BuildContext context)
-  {
-    return AppBar
-    (
-      leading: FlatButton
-      (
-        child: Icon(IconData(58834, fontFamily: 'MaterialIcons')),
-        onPressed: ()
-        {
-          scaffoldKey.currentState.openDrawer();
-        },
-        padding: EdgeInsets.all(2),
-      ),
-      title: TextField
-      (
-        decoration: InputDecoration
-        (
-          border: UnderlineInputBorder(),
-          labelText: 'Search',
-          icon: Icon
-          (
-            IconData(59574, fontFamily: 'MaterialIcons'),
-            size: 30
-          ),
-        ),
-        style: TextStyle
-        (
-          fontSize: 24,
-        ),
-        controller: _controller,
-        onSubmitted: (String currentText) => Navigator.pushNamed(context, "/search", arguments: widget.productList.where((Product x)
-          {
-            return x.title.toLowerCase().contains(_controller.text.toLowerCase());
-          }).toList()),
-      ),
-      actions: 
-      [
-        IconButton
-        (
-          onPressed: ()
-          {
-            
-          },
-          icon: Icon
-          (
-            IconData(57682, fontFamily: 'MaterialIcons'),
-            size: 30
-          ),
-        )
-      ],
     );
   }
 }

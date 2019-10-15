@@ -22,7 +22,6 @@ dependencies:
   shared_preferences: ^0.5.3+4
   cached_network_image: ^1.1.1 
   intl: ^0.15.0
-  datetime_picker_formfield: ^0.4.3
 
   firebase_analytics: ^5.0.2
   firebase_crashlytics: ^0.1.0+3

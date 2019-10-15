@@ -83,62 +83,9 @@ class _HomeState extends State<Home> {
             Navigator.pushNamed(context, "/basket");
           },
         ),
-        drawer: SizedBox
-        (
-          width: 200,
-          child: Drawer
-          (
-            child: Column
-            (
-              children: 
-              [
-                DrawerHeader
-                (
-                  child: Image
-                  (
-                    height: 100,
-                    width: 100,
-                    image: AssetImage
-                    (
-                      'images/logo.png',
-                    ),
-                  ),
-                ),
-                ListTile
-                (
-                  title: Text("Home"),
-                  trailing: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
-                  onTap: ()
-                  {
-                    _pageController.animateToPage(0, duration: Duration(milliseconds: 600), curve: Curves.easeInOut);
-                  },
-                ),
-                ListTile
-                (
-                  title: Text("My Account"),
-                  trailing: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
-                  onTap: ()
-                  {
-                    Navigator.popAndPushNamed(context, "/accountDetails");
-                  },
-                ),
-                Expanded(child: Container(),),
-                ListTile
-                (
-                  title: Text("Log out"),
-                  trailing: Icon(IconData(59513, fontFamily: 'MaterialIcons')),
-                  onTap: ()
-                  {
-                    auth.signOut();
-                  },
-                ),
-              ]
-            ),
-          ),
-        ),
+        drawer: HomeDrawer()
       ),
     ); 
-  }
 
   Widget buildBody(BuildContext context)
   {

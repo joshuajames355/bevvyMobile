@@ -202,7 +202,7 @@ class Basket extends StatelessWidget
               }
               else
               {                
-                Navigator.pushNamed(context, "/checkout");
+                Navigator.pushNamed(context, "/checkoutLocation");
               }
             },
           )

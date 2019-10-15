@@ -11,6 +11,7 @@ import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
+import 'package:bevvymobile/checkoutLocation.dart';
 
 import 'package:flutter/material.dart';
 
@@ -220,6 +221,13 @@ class _AppState extends State<App>{
               onAddOrder: addOrder,
               checkoutData: checkoutData,
             ), 
+          );   
+        }
+        else if (settings.name == "/checkoutLocation")
+        {
+          return SlideLeftRoute
+          (
+            page: (BuildContext context) => CheckoutLocation(), 
           );   
         }
         else if(settings.name == "/product")

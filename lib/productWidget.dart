@@ -13,59 +13,63 @@ class ProductWidget extends StatelessWidget
     return Hero
     (
       tag: product.id,
-      child: Card(
-        child: 
-        FlatButton
+      child: Card
+      (
+        child: FlatButton
+      (
+        onPressed: ()
+        {
+          Navigator.pushNamed(context, "/product", arguments: product);
+        },
+        padding: EdgeInsets.all(5),
+        
+        child: Padding
         (
-          onPressed: ()
-          {
-            Navigator.pushNamed(context, "/product", arguments: product);
-          },
-          padding: EdgeInsets.all(5),
-          
-          child: Container
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Row
           (
-            width: imageSize + 50,
-            height: imageSize + 100,
-            child: Column
-            (
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Center
+            children: <Widget>
+            [
+              SizedBox.fromSize
+              (
+                child: product.icon,
+                size: Size(75,75),
+              ),
+              Expanded
+              (
+                child: Padding
                 (
-                  child: Text
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Column
                   (
-                    product.title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Center
-                (
-                  child: Text
-                  (
-                    product.size + "•" + product.priceCategory + "•" + product.category,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12),
-                  ),
-                ),
-                Expanded
-                (
-                  child: product.icon
-                ),
-                Container
-                (
-                  margin: EdgeInsets.all(5),
-                  child: Row
-                  (
-                    children: [Text("£" + product.price.toStringAsFixed(2), style: TextStyle(fontSize: 12),)]
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>
+                    [
+                      Text(product.title, style: TextStyle( fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
+                      Row
+                      (
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: 
+                        [
+                          Text(product.size)
+                        ],
+                      )
+                    ],
                   )
-                )
-              ]
-            )
+                ),
+              ),
+              SizedBox.fromSize
+              (
+                child: Center
+                (
+                  child: Text("£"  + product.price.toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
+                ),
+                size: Size(75,75),
+              ),
+            ],
           )
         )
-      )
+      ))
     );
   }
 }

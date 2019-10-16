@@ -72,9 +72,8 @@ class CategoryView extends StatelessWidget
         ),
         Expanded
         ( 
-          child: GridView.count
+          child: ListView
           (
-            crossAxisCount: 2,
             padding: EdgeInsets.symmetric(vertical: 10),
             children: productList.map((Product x) 
             {

@@ -1,6 +1,6 @@
 import 'package:bevvymobile/product.dart';
+import "package:bevvymobile/productWidget.dart";
 import 'package:flutter/material.dart';
-import 'package:bevvymobile/productGridView.dart';
 
 //Renders a List of all products, seperated by categories.
 class SearchResults extends StatelessWidget
@@ -26,10 +26,14 @@ class SearchResults extends StatelessWidget
           },
         ),
       ),
-      body: ProductGridView
+      body: ListView
       (
-        productList: products,
-      ),
+        padding: EdgeInsets.symmetric(vertical: 10),
+        children: products.map((Product x) 
+        {
+          return ProductWidget(product: x, );
+        }).toList()
+      )
     );
   }
 }

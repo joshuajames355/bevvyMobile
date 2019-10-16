@@ -220,6 +220,7 @@ class _AppState extends State<App>{
             (
               onAddOrder: addOrder,
               checkoutData: checkoutData,
+              location: settings.arguments,
             ), 
           );   
         }

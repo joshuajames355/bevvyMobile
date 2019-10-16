@@ -3,15 +3,17 @@ import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/addressDialog.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 typedef void AddOrder(Order order);
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.onAddOrder, this.checkoutData}) : super(key: key);
+  const Checkout({ Key key, this.onAddOrder, this.checkoutData, this.location}) : super(key: key);
 
   final AddOrder onAddOrder;
   final Map<Product, int> checkoutData; //List of products/quantities
+  final LatLng location;
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -31,7 +33,8 @@ class _CheckoutState extends State<Checkout>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold
+    (
       appBar: AppBar
       (
         title: Text("Checkout"),

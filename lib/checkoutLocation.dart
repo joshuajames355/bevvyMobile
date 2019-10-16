@@ -13,12 +13,17 @@ class CheckoutLocation extends StatefulWidget
 class _CheckoutLocationState extends State<CheckoutLocation>
 {
   GoogleMapController _googleController;
+
+  //GPS location
   Location location = Location();
   LocationData lastLocationFix;
+
+  CameraPosition cameraPosition; 
 
   @override
   void initState() {
     getLocation();
+    cameraPosition = CameraPosition(target: lastLocationFix == null ? LatLng(54.7753, -1.5849) : LatLng(lastLocationFix.latitude, lastLocationFix.longitude), zoom: 16);
     super.initState();
   }
 
@@ -39,37 +44,75 @@ class _CheckoutLocationState extends State<CheckoutLocation>
           },
         ),
       ),
-      body: Stack
+      body: Column
       (
         children: 
         [
-          GoogleMap
+          Expanded
           (
-            initialCameraPosition: CameraPosition(target: lastLocationFix == null ? LatLng(54.7753, -1.5849) : LatLng(lastLocationFix.latitude, lastLocationFix.longitude), zoom: 16),
-            onMapCreated: (GoogleMapController controller)
-            {
-              _googleController = controller;
-              if(lastLocationFix != null)
-              {
-                _googleController.animateCamera(CameraUpdate.newLatLng(LatLng(lastLocationFix.latitude, lastLocationFix.longitude)));
-              }
-            },
-          ),
-          Positioned.fill
-          (
-            child: Align
+            child: Stack
             (
-              alignment: Alignment.center,
-              child: Icon(IconData(58716, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
+              children: 
+              [
+                GoogleMap
+                (
+                  initialCameraPosition: cameraPosition,
+                  onCameraMove: (CameraPosition position)
+                  {
+                    cameraPosition = position;
+                  },
+                  onMapCreated: (GoogleMapController controller)
+                  {
+                    _googleController = controller;
+                    if(lastLocationFix != null)
+                    {
+                      _googleController.animateCamera(CameraUpdate.newLatLng(LatLng(lastLocationFix.latitude, lastLocationFix.longitude)));
+                    }
+                  },
+                ),
+                Positioned.fill
+                (
+                  child: Align
+                  (
+                    alignment: Alignment.center,
+                    child: Transform.translate
+                    (
+                      offset: Offset(0, -25),
+                      child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
+                    )
+                  ),
+                )          
+              ]
             ),
-          )          
+          ),
+          RaisedButton
+          (
+            child:  Container
+            (
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Center
+              (
+                child: Text("Confirm Location", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                )
+              ),
+              width: double.infinity,
+            ),
+            onPressed: ()
+            {
+              Navigator.pushNamed(context, "/checkout", arguments: cameraPosition.target);
+            },
+          )
         ]
       ),
-      floatingActionButton: FloatingActionButton
+      floatingActionButton: Padding
       (
-        child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
-        onPressed: getLocation,
-      ),
+        padding: EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton
+        (
+          child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
+          onPressed: getLocation,
+        ),
+      )
     );
   }
 

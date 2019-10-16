@@ -1,5 +1,6 @@
 import 'package:bevvymobile/changeEmail.dart';
 import 'package:bevvymobile/changePassword.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -7,10 +8,11 @@ typedef void VoidFunc();
 
 class AccountDetails extends StatelessWidget
 {
-  const AccountDetails({ Key key, this.user, this.onUserChange}) : super(key: key);
+  const AccountDetails({ Key key, this.user, this.onUserChange, this.userDocument}) : super(key: key);
 
   final FirebaseUser user;
   final VoidFunc onUserChange;
+  final DocumentSnapshot userDocument;
 
   @override
   Widget build(BuildContext context) 
@@ -43,7 +45,7 @@ class AccountDetails extends StatelessWidget
                 children: 
                 [
                   Text("Email:", style: TextStyle(fontSize: 18),),
-                  Text(( user.email ?? "Not Set"), style: TextStyle(fontSize: 18),),
+                  Text((userDocument.data["personalDetails"] == null ? "Not Set"  : (userDocument.data["personalDetails"]["emailAddress"] ?? "Not Set")), style: TextStyle(fontSize: 18),),
                 ]
               ),
               onPressed: ()
@@ -57,42 +59,6 @@ class AccountDetails extends StatelessWidget
                 });
               },
             ),
-            (user.isEmailVerified ? Container() : 
-            Container
-            (
-              margin: EdgeInsets.symmetric(vertical: 12),
-              alignment: Alignment.centerLeft,
-              child: Row
-              (
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: 
-                [ 
-                  Text("Email Not Verified", style: TextStyle(fontSize: 18)),
-                  RaisedButton
-                  (
-                    color: Theme.of(context).primaryColor,
-                    onPressed: ()
-                    {
-                      user.sendEmailVerification().then((x) 
-                      {
-                        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("Email Verification Sent")));
-                      }).catchError((e)
-                      {
-                        if(e.code == "ERROR_TOO_MANY_REQUESTS")
-                        {
-                          showDialog(context: context, builder: (context) => AlertDialog(title: Text("ERROR"), content: Text("Too many requests, please try again later.")));
-                        }
-                        else
-                        {
-                          showDialog(context: context, builder: (context) => AlertDialog(title: Text("ERROR"), content: Text(e.code)));
-                        }
-                      });
-                    },
-                    child: Text("Resend Email"),
-                  )
-                ]
-              )
-            )),
             Container
             (
               margin: EdgeInsets.symmetric(vertical: 12),

@@ -166,13 +166,17 @@ Widget productImage(Product product, BuildContext context) => Hero
     (
       children: 
       [
-        SizedBox
+        Container
         (
-          width: MediaQuery.of(context).size.width,
-          child: FittedBox
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width), //maintain aspect ratio of 1
+          child: SizedBox
           (
-            child: product.iconLarge,
-            fit: BoxFit.fill,
+            width: MediaQuery.of(context).size.width,
+            child: FittedBox
+            (
+              child: product.iconLarge,
+              fit: BoxFit.fill,
+            ),
           ),
         ),
         Positioned

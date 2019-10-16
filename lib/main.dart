@@ -1,10 +1,12 @@
 import 'package:bevvymobile/basket.dart';
+import 'package:bevvymobile/categoryScrollView.dart';
 import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
 import 'package:bevvymobile/orderScreen.dart';
+import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
@@ -71,10 +73,10 @@ class App extends StatefulWidget {
 class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
-  String location = "Current Location";
   FirebaseUser user;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
+  Stream<DocumentSnapshot> userData;
 
   @override
   initState()
@@ -103,7 +105,8 @@ class _AppState extends State<App>{
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
       var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
-      var ds = await userDocumentRef.get();
+      userData = userDocumentRef.snapshots();
+      var ds = await userData.first;
       if (ds.exists) {
         // User document exists, now to change onboarding status
         if (ds.data['onboardingStatus'] == 'new_user') {
@@ -170,11 +173,7 @@ class _AppState extends State<App>{
               }
               return  Home
               (
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
-                orders: orders,
-                location: location,
-                onSetLocation: setLocation,
-                user: user,                
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
               );
             }
           ));
@@ -193,14 +192,36 @@ class _AppState extends State<App>{
         }
         else if(settings.name == "/accountDetails")
         {
-          return SlideLeftRoute
-          (          
-            page: (BuildContext context) => AccountDetails
-            (
-              user: user,
-              onUserChange: onUserChange,
-            ),    
-          );
+          return MaterialPageRoute(builder: (context) => StreamBuilder
+          (
+            stream: userData,
+            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)
+            {
+              if(!snapshot.hasData)
+              {
+                return WillPopScope(
+                  onWillPop: () async => false,
+                  child: Container
+                  (
+                    color: Theme.of(context).backgroundColor,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Align
+                    (
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                  )
+                );
+              }
+              return  AccountDetails
+              (
+                user: user,
+                onUserChange: onUserChange,
+                userDocument: snapshot.data,
+              );
+            }
+          ));
         }
         else if(settings.name == "/basket")
         {
@@ -254,6 +275,52 @@ class _AppState extends State<App>{
             )
           );  
         }
+        else if(settings.name == "/search")
+        {
+          final List<Product> args = settings.arguments;
+
+          return SlideDownRoute
+          (
+            page: (BuildContext context) => SearchResults
+            (
+              products: args,
+            )
+          );  
+        }
+        else if(settings.name == "/category")
+        {
+          final String args = settings.arguments;
+
+          return MaterialPageRoute(builder: (context) => FutureBuilder
+          (
+            future: catalogue,
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
+            {
+              if(!snapshot.hasData)
+              {
+                return WillPopScope(
+                  onWillPop: () async => false,
+                  child: Container
+                  (
+                    color: Theme.of(context).backgroundColor,
+                    width: double.infinity,
+                    height: double.infinity,
+                    child: Align
+                    (
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                  )
+                );
+              }
+              return  CategoryScrollView
+              (
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                initialCategory: args,             
+              );
+            }
+          ));
+        }
       },
     );
   }
@@ -288,13 +355,6 @@ class _AppState extends State<App>{
     setState(() {
       orders.add(order);
       checkoutData = Map<Product, int>();
-    });
-  }
-
-  setLocation(String newLocation)
-  {
-    setState(() {
-     location=newLocation; 
     });
   }
 

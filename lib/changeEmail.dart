@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bevvymobile/reauthenticate.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChangeEmail extends StatefulWidget
@@ -66,43 +66,12 @@ class _ChangeEmailState extends State<ChangeEmail>
 
   changeEmail()
   {
-    widget.user.updateEmail(_newEmailController.text).then((x)
-    {
-      Navigator.pop(context, true);
-    }).catchError((error)
-    {
-      if(error.code == "ERROR_REQUIRES_RECENT_LOGIN")
-      {
-        reauthenticate(context, widget.user).then((x)
-        {
-          widget.user.updateEmail(_newEmailController.text).then((x)
-          {
-            Navigator.pop(context, true);
-          }).catchError((error)
-          {
-            if(error.code == "ERROR_REQUIRES_RECENT_LOGIN")
-            {
-              showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Reauthentication Failed.")));
-            }
-            else if(error.code == "ERROR_INVALID_EMAIL")
-            {
-              showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid Email.")));
-            }
-            else
-            {
-              showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text(error.code)));
-            }
-          });
-        });
-      }
-      else if(error.code == "ERROR_INVALID_EMAIL")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid Email.")));
-      }
-      else
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text(error.code)));
-      }
+    Firestore.instance.collection('users').document(widget.user.uid).updateData({
+      'personalDetails.emailAddress': _newEmailController.text,
+    }).then((_) {
+      Navigator.pop(context);
+    }).catchError((e) {
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("ERROR"), content: Text("Operation Failed, Please try again later.")));
     });
   }
 }

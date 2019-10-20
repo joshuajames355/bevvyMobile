@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/categoryScrollView.dart';
 import 'package:bevvymobile/checkout.dart';
@@ -79,7 +81,9 @@ class _AppState extends State<App>{
   Stream<DocumentSnapshot> userData;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
-  Stream<QuerySnapshot> paymentMethods;
+  Stream<QuerySnapshot> paymentMethodsStream;
+  List<PaymentMethod> paymentMethods = [];
+  PaymentMethod selectedMethod;
 
   @override
   initState()
@@ -94,6 +98,9 @@ class _AppState extends State<App>{
     auth.currentUser().then(handleAuthStateChange);
 
     auth.onAuthStateChanged.listen(handleAuthStateChange);
+
+    StripePayment.setOptions(
+      StripeOptions(publishableKey: "test123", merchantId: "Test", androidPayMode: 'test'));
   }
 
   handleAuthStateChange(FirebaseUser updatedUser)
@@ -111,10 +118,20 @@ class _AppState extends State<App>{
       userData = userDocumentRef.snapshots();
       var ds = await userData.first;
 
-      paymentMethods = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').getDocuments().asStream();
-      paymentMethods.handleError((error)
+      paymentMethodsStream = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').where("json").snapshots();
+      paymentMethodsStream.handleError((error)
       {
         //Crashlytics.
+      });
+      paymentMethodsStream.listen((QuerySnapshot query)
+      {
+        setState(() {
+          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["json"])).toList();
+          if(selectedMethod == null && paymentMethods.length > 0)
+          {
+            selectedMethod = paymentMethods[0];
+          }
+        });
       });
 
       if (ds.exists) {
@@ -275,36 +292,18 @@ class _AppState extends State<App>{
         }
         else if(settings.name == "/paymentMethods")
         {
-          return MaterialPageRoute(builder: (context) => StreamBuilder
-            (
-              stream: paymentMethods,
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>snapshot)
-              {
-                if(!snapshot.hasData)
-                {
-                  return WillPopScope(
-                    onWillPop: () async => false,
-                    child: Container
-                    (
-                      color: Theme.of(context).backgroundColor,
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: Align
-                      (
-                        alignment: Alignment.center,
-                        child: CircularProgressIndicator(),
-                      )
-                    )
-                  );
-                }
-                return  PaymentMethods
-                (
-                  user: user,
-                  paymentMethods: snapshot.data.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data)).toList(),        
-                );
-              }
-            )
-          ); 
+          return MaterialPageRoute(builder: (context) => PaymentMethods
+          (
+            user: user,
+            paymentMethods: paymentMethods,      
+            selectedMethod: selectedMethod,
+            onChangeSelectedMethod: (PaymentMethod method)
+            {
+              setState(() {
+                selectedMethod = method;
+              });
+            },  
+          )); 
         }
         else if(settings.name == "/order")
         {

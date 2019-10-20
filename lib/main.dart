@@ -10,6 +10,7 @@ import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
+import 'package:bevvymobile/paymentMethods.dart';
 import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
@@ -262,6 +263,13 @@ class _AppState extends State<App>{
               addToBasket: addToBasket,
             )
           );
+        }
+        else if(settings.name == "/paymentMethods")
+        {
+          return SlideLeftRoute
+          (
+            page: (BuildContext context) => PaymentMethods(), 
+          );   
         }
         else if(settings.name == "/order")
         {

@@ -19,6 +19,7 @@ import 'package:bevvymobile/checkoutLocation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -75,9 +76,10 @@ class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
   FirebaseUser user;
+  Stream<DocumentSnapshot> userData;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
-  Stream<DocumentSnapshot> userData;
+  Stream<QuerySnapshot> paymentMethods;
 
   @override
   initState()
@@ -108,6 +110,13 @@ class _AppState extends State<App>{
       var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
       userData = userDocumentRef.snapshots();
       var ds = await userData.first;
+
+      paymentMethods = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').getDocuments().asStream();
+      paymentMethods.handleError((error)
+      {
+        //Crashlytics.
+      });
+
       if (ds.exists) {
         // User document exists, now to change onboarding status
         if (ds.data['onboardingStatus'] == 'new_user') {
@@ -266,10 +275,36 @@ class _AppState extends State<App>{
         }
         else if(settings.name == "/paymentMethods")
         {
-          return SlideLeftRoute
-          (
-            page: (BuildContext context) => PaymentMethods(), 
-          );   
+          return MaterialPageRoute(builder: (context) => StreamBuilder
+            (
+              stream: paymentMethods,
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot>snapshot)
+              {
+                if(!snapshot.hasData)
+                {
+                  return WillPopScope(
+                    onWillPop: () async => false,
+                    child: Container
+                    (
+                      color: Theme.of(context).backgroundColor,
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: Align
+                      (
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(),
+                      )
+                    )
+                  );
+                }
+                return  PaymentMethods
+                (
+                  user: user,
+                  paymentMethods: snapshot.data.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data)).toList(),        
+                );
+              }
+            )
+          ); 
         }
         else if(settings.name == "/order")
         {

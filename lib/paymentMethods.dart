@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/reauthenticate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:stripe_payment/stripe_payment.dart';
 
 class PaymentMethods extends StatefulWidget
 {
-  const PaymentMethods({ Key key, this.user}) : super(key: key);
+  const PaymentMethods({ Key key, this.user, this.paymentMethods }) : super(key: key);
+
+  final FirebaseUser user;
+  final List<PaymentMethod> paymentMethods;
 
   @override
   _PaymentMethodsState createState() => _PaymentMethodsState();
@@ -15,10 +22,9 @@ class _PaymentMethodsState extends State<PaymentMethods>
 {
   Future<bool> supportsNative;
 
-  initState()
-  {
-    supportsNative = StripePayment.canMakeNativePayments();
-    super.init
+  initState() {
+    supportsNative = StripePayment.canMakeNativePayPayments([]);
+    super.initState();
   }
 
   @override 
@@ -38,55 +44,14 @@ class _PaymentMethodsState extends State<PaymentMethods>
               leading: FlatButton
               (
                 child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
-                onPressed: ()
-                {
+                onPressed: () {
                   Navigator.pop(context);
                 },
               ),
             ),
             body: Column
             (
-              children:
-              [
-                snapshot.data ? (Theme.of(context).targetPlatform == "ios" ?
-                  RaisedButton
-                  (
-                    child: Container
-                    (
-                      width: double.infinity,
-                      child: Text("Apple pay"),
-                    ),
-                    onpressed: () {}
-                  )
-                :
-                RaisedButton
-                (
-                  child: Container
-                  (
-                    width: double.infinity,
-                    child: Text("Apple pay"),
-                  ),
-                  onpressed: () {}
-                )) : Container(),
-                FlatButton
-                (
-                  child: Container
-                  (
-                    width: double.infinity,
-                    child: Text("Add new Card"),
-                    onpressed: ()
-                    {
-                      StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest()).then((paymentMethod)
-                      {  
-                        Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
-                          'json': paymentMethod.toJson(),
-                          }
-                        })
-                      });
-                    }
-                  )
-                )
-              ]
+              children: getColumnContent(context, snapshot)
             )
           );
         }
@@ -98,5 +63,62 @@ class _PaymentMethodsState extends State<PaymentMethods>
     );
   }
 
+  List<Widget> getColumnContent(BuildContext context, AsyncSnapshot<bool> snapshot)
+  {
+    List<Widget> content = 
+    [
+      snapshot.data ? (Platform.isIOS ?
+        RaisedButton
+        (
+          child: Container
+          (
+            width: double.infinity,
+            child: Text("Apple pay"),
+          ),
+          onPressed: () {}
+        )
+      :
+      RaisedButton
+      (
+        child: Container
+        (
+          width: double.infinity,
+          child: Text("Apple pay"),
+        ),
+        onPressed: () {}
+      )) : Container(),
+    ]
 
+    content.addAll(
+      widget.paymentMethods.map((PaymentMethod method)
+      {
+        return FlatButton
+        (
+          child: Text(method == null ? "" : (method.card == null ? "" : method.card.last4 ?? "")),
+          onPressed: (){},
+        );
+      })
+    );
+
+    content.add
+    (
+      FlatButton
+      (
+        child: Container
+        (
+          width: double.infinity,
+          child: Text("Add a new Card"),
+        ),
+        onPressed: () {
+          StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest()).then((paymentMethod) {
+            Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
+              'json': paymentMethod.toJson(),
+            });
+          });
+        }
+      )
+    );
+
+    return content;
+  }
 }

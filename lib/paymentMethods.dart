@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -21,8 +23,11 @@ class PaymentMethods extends StatefulWidget
 
 class _PaymentMethodsState extends State<PaymentMethods>
 {
+  Future<bool> canMakeNativePay;
+
   @override
   void initState() {
+    canMakeNativePay = StripePayment.canMakeNativePayPayments([]);
     super.initState();
   }
 
@@ -57,7 +62,34 @@ class _PaymentMethodsState extends State<PaymentMethods>
       (
         padding: EdgeInsets.all(10),
         child: Icon(IconData(59553, fontFamily: 'MaterialIcons'), size: 200,),
-      )
+      ),
+      Divider(),
+      FutureBuilder
+      (
+        future: canMakeNativePay,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot)
+        {
+          if(snapshot.hasData && snapshot.data)
+          {
+            if(Platform.isAndroid)
+            {
+              return androidPayButton(context);
+            }
+            else if (Platform.isIOS)
+            {
+              return applePayButton(context);
+            }
+            else
+            {
+              return Container(); 
+            }
+          }
+          else
+          {
+            return Container();
+          }
+        },
+      )      
     ];
 
     content.addAll(
@@ -144,5 +176,89 @@ class _PaymentMethodsState extends State<PaymentMethods>
     );
 
     return content;
+  }
+
+  Widget androidPayButton(BuildContext context)
+  {
+    return Card
+    (
+      child: FlatButton
+      (
+        onPressed: ()
+        {
+          
+        },
+        child: Container
+        (
+          width: double.infinity,
+          child: Row
+          (
+            children:
+            [
+              Padding
+              (
+                child: Image
+                (
+                  height: 35,
+                  width: 35,
+                  image: AssetImage
+                  (
+                    'images/GooglePay_mark_800_gray.png',
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
+              ),
+              Text("Google Pay"),
+              Expanded
+              (
+                child: Container(),
+              ),
+            ]
+          )
+        ),
+      )
+    );
+  }
+
+  Widget applePayButton(BuildContext context)
+  {
+    return Card
+    (
+      child: FlatButton
+      (
+        onPressed: ()
+        {
+          
+        },
+        child: Container
+        (
+          width: double.infinity,
+          child: Row
+          (
+            children:
+            [
+              Padding
+              (
+                child: Image
+                (
+                  height: 35,
+                  width: 35,
+                  image: AssetImage
+                  (
+                    'images/Apple_Pay_Mark_RGB_041619.png',
+                  ),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 7, horizontal: 15),
+              ),
+              Text("Apple Pay"),
+              Expanded
+              (
+                child: Container(),
+              ),
+            ]
+          )
+        ),
+      )
+    );
   }
 }

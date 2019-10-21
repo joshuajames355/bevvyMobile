@@ -38,14 +38,29 @@ class _PaymentMethodsState extends State<PaymentMethods>
     (
       appBar: AppBar
       (
-        title: Text("Payment Methods"),
+        title: Row
+        (
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children:
+          [
+            Text("Payment Methods"),
+            widget.selectedMethod == null ? Container() : IconButton
+            (
+              icon: Icon(const IconData(57693, fontFamily: 'MaterialIcons')),
+              onPressed: ()
+              {
+                Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(widget.selectedMethod.id).delete();
+              },
+            )
+          ]
+        ),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
           onPressed: () {
             Navigator.pop(context);
           },
-        ),
+        ),        
       ),
       body: Column
       (

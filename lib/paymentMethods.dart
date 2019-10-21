@@ -177,7 +177,9 @@ class _PaymentMethodsState extends State<PaymentMethods>
             ),
             onPressed: () async {
               try {
-                PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest());
+                PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(
+                  CardFormPaymentRequest(requiredBillingAddressFields: 'full',
+                                         prefilledInformation: PrefilledInformation(billingAddress: BillingAddress(country: 'GB'))));
                 // Store in user's private Firestore collection, ready to be consumed by Function to attach to customer
                 Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
                   'asJSON': paymentMethod.toJson(),

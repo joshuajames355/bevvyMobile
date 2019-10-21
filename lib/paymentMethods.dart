@@ -44,7 +44,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
           children:
           [
             Text("Payment Methods"),
-            widget.selectedMethod == null ? Container() : IconButton
+            (widget.selectedMethod == null || widget.selectedMethod.type != "card") ? Container() : IconButton
             (
               icon: Icon(const IconData(57693, fontFamily: 'MaterialIcons')),
               onPressed: ()
@@ -112,14 +112,14 @@ class _PaymentMethodsState extends State<PaymentMethods>
       {
         var brand = method.card.brand ?? "";
         brand = brand[0].toUpperCase() + brand.substring(1);
-        return FlatButton
+        return Card
         (
-          onPressed: ()
-          {
-            widget.onChangeSelectedMethod(method);
-          },
-          child: Card
+          child: FlatButton
           (
+            onPressed: ()
+            {
+              widget.onChangeSelectedMethod(method);
+            },
             child: Container
             (
               width: double.infinity,
@@ -130,7 +130,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
                   Padding
                   (
                     child: Icon(IconData(59553, fontFamily: 'MaterialIcons')),
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   ),
                   method.card == null ? Container() : Text(brand + " Ending in " + (method.card.last4 ?? "")),
                   Expanded
@@ -154,9 +154,9 @@ class _PaymentMethodsState extends State<PaymentMethods>
     (
       [
         Divider(),
-        FlatButton
+        Card
         (
-          child: Card
+          child: FlatButton
           (
             child: Container
             (
@@ -168,24 +168,24 @@ class _PaymentMethodsState extends State<PaymentMethods>
                   Padding
                   (
                     child: Icon(IconData(57669, fontFamily: 'MaterialIcons')),
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   ),
                   Text("Add New Card..."),
                 ]
               )
             ),
-          ),
-          onPressed: () {
-            var temp = new CardFormPaymentRequest();
-            StripePayment.paymentRequestWithCardForm(temp).then((PaymentMethod paymentMethod) {
-              Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
-                'json': paymentMethod.toJson(),
+            onPressed: () {
+              var temp = new CardFormPaymentRequest();
+              StripePayment.paymentRequestWithCardForm(temp).then((PaymentMethod paymentMethod) {
+                Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
+                  'json': paymentMethod.toJson(),
+                });
+              }).catchError((error)
+              {
+                print(error);
               });
-            }).catchError((error)
-            {
-              print(error);
-            });
-          }
+            }
+          )
         )
       ]
     );
@@ -201,7 +201,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
       (
         onPressed: ()
         {
-          
+          widget.onChangeSelectedMethod(PaymentMethod(type: "google"));
         },
         child: Container
         (
@@ -228,6 +228,11 @@ class _PaymentMethodsState extends State<PaymentMethods>
               (
                 child: Container(),
               ),
+              widget.selectedMethod.type == "google" ? Padding
+              (
+                child: Icon(const IconData(58826, fontFamily: 'MaterialIcons'), color: Theme.of(context).accentColor,),
+                padding: EdgeInsets.all(12),
+              ) : Container(),
             ]
           )
         ),
@@ -243,7 +248,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
       (
         onPressed: ()
         {
-          
+          widget.onChangeSelectedMethod(PaymentMethod(type: "apple"));
         },
         child: Container
         (
@@ -270,6 +275,11 @@ class _PaymentMethodsState extends State<PaymentMethods>
               (
                 child: Container(),
               ),
+              widget.selectedMethod.type == "ios" ? Padding
+              (
+                child: Icon(const IconData(58826, fontFamily: 'MaterialIcons'), color: Theme.of(context).accentColor,),
+                padding: EdgeInsets.all(12),
+              ) : Container()
             ]
           )
         ),

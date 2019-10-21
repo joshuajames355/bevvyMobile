@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/categoryScrollView.dart';
 import 'package:bevvymobile/checkout.dart';
@@ -19,6 +21,7 @@ import 'package:bevvymobile/checkoutLocation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -75,9 +78,12 @@ class _AppState extends State<App>{
   Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
   FirebaseUser user;
+  Stream<DocumentSnapshot> userData;
   final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
-  Stream<DocumentSnapshot> userData;
+  Stream<QuerySnapshot> paymentMethodsStream;
+  List<PaymentMethod> paymentMethods = [];
+  PaymentMethod selectedMethod;
 
   @override
   initState()
@@ -92,6 +98,9 @@ class _AppState extends State<App>{
     auth.currentUser().then(handleAuthStateChange);
 
     auth.onAuthStateChanged.listen(handleAuthStateChange);
+
+    StripePayment.setOptions(
+      StripeOptions(publishableKey: "test123", merchantId: "Test", androidPayMode: 'test'));
   }
 
   handleAuthStateChange(FirebaseUser updatedUser)
@@ -108,6 +117,23 @@ class _AppState extends State<App>{
       var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
       userData = userDocumentRef.snapshots();
       var ds = await userData.first;
+
+      paymentMethodsStream = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').where("json").snapshots();
+      paymentMethodsStream.handleError((error)
+      {
+        //Crashlytics.
+      });
+      paymentMethodsStream.listen((QuerySnapshot query)
+      {
+        setState(() {
+          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["json"])).toList();
+          if(selectedMethod == null && paymentMethods.length > 0)
+          {
+            selectedMethod = paymentMethods[0];
+          }
+        });
+      });
+
       if (ds.exists) {
         // User document exists, now to change onboarding status
         if (ds.data['onboardingStatus'] == 'new_user') {
@@ -266,10 +292,18 @@ class _AppState extends State<App>{
         }
         else if(settings.name == "/paymentMethods")
         {
-          return SlideLeftRoute
+          return MaterialPageRoute(builder: (context) => PaymentMethods
           (
-            page: (BuildContext context) => PaymentMethods(), 
-          );   
+            user: user,
+            paymentMethods: paymentMethods,      
+            selectedMethod: selectedMethod,
+            onChangeSelectedMethod: (PaymentMethod method)
+            {
+              setState(() {
+                selectedMethod = method;
+              });
+            },  
+          )); 
         }
         else if(settings.name == "/order")
         {

@@ -24,6 +24,7 @@ dependencies:
   intl: ^0.15.0
   google_maps_flutter: ^0.5.21+7
   location: ^2.3.5
+  stripe_payment: ^1.0.4
 
   firebase_analytics: ^5.0.2
   firebase_crashlytics: ^0.1.0+3
@@ -64,6 +65,8 @@ flutter:
     - images/logoBlack.png
     - images/smirnoff.jpg
     - images/jd.jpg
+    - images/GooglePay_mark_800_gray.png
+    - images/Apple_Pay_Mark_RGB_041619.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

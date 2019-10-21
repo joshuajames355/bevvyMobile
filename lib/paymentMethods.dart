@@ -228,7 +228,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
               (
                 child: Container(),
               ),
-              widget.selectedMethod.type == "google" ? Padding
+              widget.selectedMethod != null && widget.selectedMethod.type == "google" ? Padding
               (
                 child: Icon(const IconData(58826, fontFamily: 'MaterialIcons'), color: Theme.of(context).accentColor,),
                 padding: EdgeInsets.all(12),
@@ -275,7 +275,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
               (
                 child: Container(),
               ),
-              widget.selectedMethod.type == "ios" ? Padding
+              (widget.selectedMethod != null && widget.selectedMethod.type == "ios") ? Padding
               (
                 child: Icon(const IconData(58826, fontFamily: 'MaterialIcons'), color: Theme.of(context).accentColor,),
                 padding: EdgeInsets.all(12),

@@ -100,7 +100,9 @@ class _AppState extends State<App>{
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
     StripePayment.setOptions(
-      StripeOptions(publishableKey: "test123", merchantId: "Test", androidPayMode: 'test'));
+      StripeOptions(publishableKey: 'pk_test_VHG8gc7nhstCyG2NFIfvQhUg00kckE4Omt',
+                    merchantId: "Jovi",
+                    androidPayMode: 'test'));
   }
 
   handleAuthStateChange(FirebaseUser updatedUser)

@@ -180,7 +180,8 @@ class _PaymentMethodsState extends State<PaymentMethods>
                 PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest());
                 // Store in user's private Firestore collection, ready to be consumed by Function to attach to customer
                 Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
-                  'json': paymentMethod.toJson(),
+                  'asJSON': paymentMethod.toJson(),
+                  'stripe_status': 'unattached'
                 });
               } on PlatformException catch(exception) {
                 // 'cancelled' operation indicates user has dismissed modal window (iOS only)

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 
 import 'package:stripe_payment/stripe_payment.dart';
 
@@ -174,16 +175,19 @@ class _PaymentMethodsState extends State<PaymentMethods>
                 ]
               )
             ),
-            onPressed: () {
-              var temp = new CardFormPaymentRequest();
-              StripePayment.paymentRequestWithCardForm(temp).then((PaymentMethod paymentMethod) {
+            onPressed: () async {
+              try {
+                PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(CardFormPaymentRequest());
+                // Store in user's private Firestore collection, ready to be consumed by Function to attach to customer
                 Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
                   'json': paymentMethod.toJson(),
                 });
-              }).catchError((error)
-              {
-                print(error);
-              });
+              } on PlatformException catch(exception) {
+                // 'cancelled' operation indicates user has dismissed modal window (iOS only)
+                if (exception.code != 'cancelled') {
+                  rethrow;
+                }
+              }
             }
           )
         )

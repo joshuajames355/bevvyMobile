@@ -94,7 +94,27 @@ class _CheckoutState extends State<Checkout>
             ),
           ]
         ),
-      )
-    );
+  Widget nativePayButton(BuildContext context)
+  {
+    if(Platform.isAndroid)
+    {
+      return InkWell
+      (
+        onTap: ()
+        {
+          //TODO: google pay
+          print("Whatever");
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+        },
+        child: Container
+        (
+          height: 50,
+          child: AndroidView
+          (
+            hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+            viewType: 'GooglePayButton',
+          )   
+        )     
+      );
+    }
   }
-}

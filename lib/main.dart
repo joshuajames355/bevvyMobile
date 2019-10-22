@@ -17,6 +17,7 @@ import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/checkoutLocation.dart';
+import 'package:bevvymobile/config.dart';
 
 import 'package:flutter/material.dart';
 
@@ -79,7 +80,7 @@ class _AppState extends State<App>{
   List<Order> orders;
   FirebaseUser user;
   Stream<DocumentSnapshot> userData;
-  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
   Stream<QuerySnapshot> paymentMethodsStream;
   List<PaymentMethod> paymentMethods = [];
@@ -99,8 +100,13 @@ class _AppState extends State<App>{
 
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
-    StripePayment.setOptions(
-      StripeOptions(publishableKey: "test123", merchantId: "Test", androidPayMode: 'test'));
+    new Future.delayed(Duration.zero, () {
+      var config = AppConfig.of(context);
+      StripePayment.setOptions(
+        StripeOptions(publishableKey: config.stripePublishableKey,
+                      merchantId: config.stripeMerchantId,
+                      androidPayMode: config.stripeAndroidPayMode));
+    });
   }
 
   handleAuthStateChange(FirebaseUser updatedUser)

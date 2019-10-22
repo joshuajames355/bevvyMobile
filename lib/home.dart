@@ -5,15 +5,12 @@ import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/storeFrontHome.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key, this.productList}) : super(key: key)
-  {
+  Home({Key key, this.productList}) : super(key: key) {
     categories = [];
-    productList.forEach((Product x)
-    {
+    productList.forEach((Product x) {
       if(!categories.contains(x.category)) categories.add(x.category);
     });
   }
-
 
   List<Product> productList;
   List<String> categories;
@@ -26,31 +23,20 @@ class _HomeState extends State<Home> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
-  Widget build(BuildContext context) 
-  {
-    return WillPopScope
-    (
-      onWillPop: ()
-      {
-        if(scaffoldKey.currentState.isDrawerOpen)
-        {
-          return Future.value(true);
-        }
-        return Future.value(false);
+  Widget build(BuildContext context)  {
+    return WillPopScope(
+      onWillPop: () {
+        return Future.value(scaffoldKey.currentState.isDrawerOpen);
       },
-      child: Scaffold
-      (
+      child: Scaffold (
         key: scaffoldKey,
         appBar: HomeAppBar(productList: widget.productList,),
-        body: StoreFrontHome
-        (
+        body: StoreFrontHome (
           categories: widget.categories, 
         ),
-        floatingActionButton: FloatingActionButton
-        (
+        floatingActionButton: FloatingActionButton (
           child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-          onPressed: ()
-          {
+          onPressed: () {
             Navigator.pushNamed(context, "/basket");
           },
         ),

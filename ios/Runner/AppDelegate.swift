@@ -11,8 +11,8 @@ import GoogleMaps
     GeneratedPluginRegistrant.register(with: self)
     GMSServices.provideAPIKey("AIzaSyBbaW0SyM9LcEiDPGNeMxmtQB0vK8Hhh-o");
 
-    let controller = window?.rootViewController as! FlutterViewController
-    let applePayButtonFactory = ApplePayButtonFactory(controller);
+//    let controller = window?.rootViewController as! FlutterViewController
+    let applePayButtonFactory = ApplePayButtonFactory()
     registrar(forPlugin: "ApplePayButton").register(applePayButtonFactory, withId: "ApplePayButton")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

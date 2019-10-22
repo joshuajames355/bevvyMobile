@@ -1,20 +1,18 @@
 import Foundation
 import UIKit
+import PassKit
 
-public class MyWebview: NSObject, FlutterPlatformView, WKScriptMessageHandler, WKNavigationDelegate {
-    let channel: FlutterMethodChannel
+public class ApplePayButton: NSObject, FlutterPlatformView {
+    let frame: CGRect
+    let viewId: Int64
     
-    init(channel: FlutterMethodChannel) {
-
-        let button = PKPaymentButton(type: PKPaymentButtonType.Buy, style: PKPaymentButtonStyle.White)
-
-        super.init()
-        
-        channel.setMethodCallHandler({
-            (call: FlutterMethodCall, result: FlutterResult) -> Void in
-        })
+    init(_ frame: CGRect, viewId: Int64, args: Any?) {
+        self.frame = frame
+        self.viewId = viewId
     }
     
     public func view() -> UIView {
-        return self.button
+        return PKPaymentButton.init(paymentButtonType: PKPaymentButtonType.buy,
+                                    paymentButtonStyle: PKPaymentButtonStyle.white)
     }
+}

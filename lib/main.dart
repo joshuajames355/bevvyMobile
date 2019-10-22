@@ -17,6 +17,7 @@ import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/checkoutLocation.dart';
+import 'package:bevvymobile/config.dart';
 
 import 'package:flutter/material.dart';
 
@@ -79,7 +80,7 @@ class _AppState extends State<App>{
   List<Order> orders;
   FirebaseUser user;
   Stream<DocumentSnapshot> userData;
-  final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
   Stream<QuerySnapshot> paymentMethodsStream;
   List<PaymentMethod> paymentMethods = [];
@@ -99,10 +100,13 @@ class _AppState extends State<App>{
 
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
-    StripePayment.setOptions(
-      StripeOptions(publishableKey: 'pk_test_VHG8gc7nhstCyG2NFIfvQhUg00kckE4Omt',
-                    merchantId: "Jovi",
-                    androidPayMode: 'test'));
+    new Future.delayed(Duration.zero, () {
+      var config = AppConfig.of(context);
+      StripePayment.setOptions(
+        StripeOptions(publishableKey: config.stripePublishableKey,
+                      merchantId: config.stripeMerchantId,
+                      androidPayMode: config.stripeAndroidPayMode));
+    });
   }
 
   handleAuthStateChange(FirebaseUser updatedUser)
@@ -417,17 +421,4 @@ class _AppState extends State<App>{
       });
     });  
   }
-}
-
-void main() {
-  // Set `enableInDevMode` to true to see reports while in debug mode
-  // This is only to be used for confirming that reports are being
-  // submitted as expected. It is not intended to be used for everyday
-  // development.
-  Crashlytics.instance.enableInDevMode = true;
-
-  // Pass all uncaught errors from the framework to Crashlytics.
-  FlutterError.onError = Crashlytics.instance.recordFlutterError;
-
-  runApp(App());
 }

@@ -4,16 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:bevvymobile/globals.dart';
 
 //Initial Screen
-class CreateAccountSMS extends StatefulWidget
-{
+class CreateAccountSMS extends StatefulWidget {
   const CreateAccountSMS({ Key key}) : super(key: key);
 
   @override
   _CreateAccountSMSState createState() => _CreateAccountSMSState();
 }
 
-class _CreateAccountSMSState extends State<CreateAccountSMS>
-{
+class _CreateAccountSMSState extends State<CreateAccountSMS> {
 
   TextEditingController _noTextController = TextEditingController();
 
@@ -30,67 +28,46 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
   }
 
   @override
-  Widget build(BuildContext context)
-  {
+  Widget build(BuildContext context) {
     String message = _isTextSent ? "We've sent a verification code to " + _phoneNumber : "We need to send a verification code to your phone number.";
     String textFieldLabel = _isTextSent ? "Your code" : "Phone Number";
     String buttonLabel = _isTextSent ? "Verify" : "Send Code";
 
-    return WillPopScope
-    (
-      onWillPop: ()
-      {
-        if(_isTextSent)
-        {
-          setState(() {
-            _isTextSent = false; 
-          });
-        }
-        else
-        {
+    return WillPopScope(
+      onWillPop: () {
+        if(_isTextSent) {
+          setState(() => _isTextSent = false);
+        } else {
           Navigator.pop(context);
         }
       },
-      child: Scaffold
-      (
-        appBar: AppBar
-        (
+      child: Scaffold(
+        appBar: AppBar(
           title: Text("Verify Phone number"),
-          leading: FlatButton
-          (
+          leading: FlatButton(
             child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
-            onPressed: ()
-            {
+            onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
-        body: Padding
-        (
+        body: Padding(
           padding: EdgeInsets.all(12),
-          child: Column
-          (
-            children: 
-            [
-              Card
-              (
-                child: Padding
-                (
+          child: Column(
+            children: [
+              Card(
+                child: Padding(
                   padding: EdgeInsets.all(12),
-                  child: Container
-                  (
+                  child: Container(
                     width: double.infinity,
                     child: Text(message, style: TextStyle(fontSize: 16),),
                   ),
                 )
               ),
-              Card
-              (
-                child: Padding
-                (
+              Card(
+                child: Padding(
                   padding: EdgeInsets.only(left: 5, right: 5, bottom: 12, top: 0),
-                  child: TextField
-                  (
+                  child: TextField(
                     autofocus: true,
                     controller: _noTextController,
                     textInputAction: TextInputAction.done,
@@ -100,9 +77,8 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                       labelText: textFieldLabel,
                     ),
                     onSubmitted: (x) => signIn(),
-                    onChanged: (x){
-                      if(!_isTextSent)
-                      {
+                    onChanged: (x) {
+                      if(!_isTextSent) {
                         setState(() {
                          _isNumberValid = validatePhoneNumber();
                         });
@@ -111,12 +87,9 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                   )
                 ),
               ),
-              _isTextSent ? Card
-              (
-                child: FlatButton
-                (
-                  child: Container
-                  (
+              _isTextSent ? Card(
+                child: FlatButton(
+                  child: Container(
                     child: Text("Resend"),
                     width: double.infinity,
                   ),
@@ -124,18 +97,15 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
                 ),
               ) : Container(),
               Expanded(child: Container(),),
-              RaisedButton
-              (
+              RaisedButton(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),      
                 padding: EdgeInsets.all(12),
                 color: Theme.of(context).primaryColor,
-                child: Container
-                (
+                child: Container(
                   width: double.infinity,
-                  child: Center
-                  (
+                  child: Center(
                     child: Text(buttonLabel),
                   ),
                 ),
@@ -148,45 +118,35 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
     );
   }
 
-  validatePhoneNumber()
-  {
+  validatePhoneNumber() {
     //Assuming UK numbers
-    if(_noTextController.text.startsWith("07"))
-    {
+    if(_noTextController.text.startsWith("07")) {
       _phoneNumberValidated = "+44" + _noTextController.text.substring(1);
     }
-    else if (_noTextController.text.startsWith("7"))
-    {
+    else if (_noTextController.text.startsWith("7")) {
       _phoneNumberValidated = "+44" + _noTextController.text;
     }
-    else if(!_noTextController.text.startsWith("+44"))
-    {
+    else if(!_noTextController.text.startsWith("+44")) {
       return false;
     }
 
-    if(_phoneNumberValidated.length != 13)
-    {
+    if(_phoneNumberValidated.length != 13) {
       return false;
     }
 
     List<String> validDigits = ["0","1","2","3","4","5","6","7","8","9"];
     
-    for(int x =1; x < _phoneNumberValidated.length; x++)
-    {
-      if(!validDigits.contains(_phoneNumberValidated[x]))
-      {
+    for(int x =1; x < _phoneNumberValidated.length; x++) {
+      if(!validDigits.contains(_phoneNumberValidated[x])) {
         return false;
       }
     }
 
     return true;
-
   }
 
-  signIn()
-  {
-    if(!validatePhoneNumber())
-    {
+  signIn() {
+    if(!validatePhoneNumber()) {
       return;
     }
 
@@ -195,22 +155,17 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
     _sendSMS();
   }  
 
-  _sendSMS()
-  {
+  _sendSMS() {
     auth.verifyPhoneNumber(phoneNumber: _phoneNumber, timeout: Duration(seconds: 30), 
       verificationCompleted: verificationCompleted,
-      verificationFailed: (AuthException error) 
-      {
+      verificationFailed: (AuthException error) {
         showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Verification Failed.")));
-        setState(() 
-        {
+        setState(() {
           _isTextSent = false;
         });
       },
-      codeSent: (String verificationID, [int resendingToken])
-      {
-        setState(() 
-        {
+      codeSent: (String verificationID, [int resendingToken]) {
+        setState(() {
           _isTextSent = true;
           _verificationCode = verificationID;
           _resendCode = resendingToken;
@@ -218,10 +173,8 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
       },
       codeAutoRetrievalTimeout: (String verificationId){},
       forceResendingToken: _resendCode,
-    ).then((x)
-    {
-      setState(() 
-      {
+    ).then((x) {
+      setState(() {
         _isTextSent = true;
       });
     }); 

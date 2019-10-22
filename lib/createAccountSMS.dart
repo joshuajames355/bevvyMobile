@@ -185,7 +185,8 @@ class _CreateAccountSMSState extends State<CreateAccountSMS> {
   }
 
   verify() async {
-    var _ = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _noTextController.text);
+    var credential = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _noTextController.text);
+    await wrapperSignInWithCredential(credential);
   }
 
   wrapperSignInWithCredential(credential) async {

@@ -157,10 +157,32 @@ class _CheckoutState extends State<Checkout>
     {
       return InkWell
       (
-        onTap: ()
+        onTap: () async
         {
-          //TODO: apple pay
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+          try {
+            Token nativePayToken = await StripePayment.paymentRequestWithNativePay(
+              androidPayOptions: AndroidPayPaymentRequest(
+                total_price: "1.20",
+                currency_code: "GBP",
+              ),
+              applePayOptions: ApplePayPaymentOptions(
+                countryCode: 'GB',
+                currencyCode: 'GBP',
+                items: [
+                  ApplePayItem(
+                    label: 'Test',
+                    amount: '13',
+                  )
+                ],
+              ));
+          } on PlatformException catch(exception) {
+            // 'cancelled' operation indicates user has dismissed modal window (iOS only)
+            if (exception.code != 'cancelled') {
+              rethrow;
+            }
+          } catch (e) {
+            print(e);
+          }
         },
         child: Container
         (

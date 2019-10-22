@@ -183,7 +183,8 @@ class _PaymentMethodsState extends State<PaymentMethods>
                 // Store in user's private Firestore collection, ready to be consumed by Function to attach to customer
                 Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
                   'asJSON': paymentMethod.toJson(),
-                  'stripe_status': 'unattached'
+                  'stripe_attachment': 'unattached',
+                  'stripe_message': '',
                 });
               } on PlatformException catch(exception) {
                 // 'cancelled' operation indicates user has dismissed modal window (iOS only)

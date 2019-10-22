@@ -104,7 +104,7 @@ class _CheckoutState extends State<Checkout>
             ),
           ),
           isKeyboardHidden ? Container() : 
-          (widget.paymentMethod != null && (widget.paymentMethod.type == "google" || widget.paymentMethod.type == "apple")) ? nativePayButton(context)
+          (widget.paymentMethod != null && (widget.paymentMethod.type == "googlepay" || widget.paymentMethod.type == "applepay")) ? nativePayButton(context)
           : RaisedButton
           (
             child: Container

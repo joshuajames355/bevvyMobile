@@ -72,14 +72,14 @@ String getLargeUrl(Map<String, dynamic> data)
 {
   try
   {
-    var large_array = data["images"]["large_array"];
-    if (large_array is String)
+    var largeArray = data["images"]["large_array"];
+    if (largeArray is String)
     {
-      return large_array;
+      return largeArray;
     }
-    else if(large_array is List)
+    else if(largeArray is List)
     {
-      return large_array[0];
+      return largeArray[0];
     }
     else
     {

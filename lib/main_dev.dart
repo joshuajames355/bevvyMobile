@@ -9,6 +9,9 @@ void main() {
   var configuredApp = new AppConfig(
     apiBaseUrl: 'http://192.168.1.16/app',
     child: new App(),
+    stripePublishableKey: 'pk_test_VHG8gc7nhstCyG2NFIfvQhUg00kckE4Omt',
+    stripeMerchantId: 'merchant.com.jovi',
+    stripeAndroidPayMode: 'test',
   );
 
   // Set `enableInDevMode` to true to see reports while in debug mode

@@ -8,6 +8,9 @@ void main() {
   var configuredApp = new AppConfig(
     apiBaseUrl: '',
     child: new App(),
+    stripePublishableKey: 'pk_live_gqGEMc8ERbGPQ2VRJGen2sF400ZoN72LDi',
+    stripeMerchantId: 'merchant.com.jovi',
+    stripeAndroidPayMode: 'production',
   );
 
   // Pass all uncaught errors from the framework to Crashlytics.

@@ -27,11 +27,9 @@ import 'package:stripe_payment/stripe_payment.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:firebase_in_app_messaging/firebase_in_app_messaging.dart';
 
 int accentColour = 0XFF91FFF8;
-Map<int, Color> accentColorPalette = 
-{
+Map<int, Color> accentColorPalette = {
   50: Color(accentColour),
   100: Color(accentColour),
   200: Color(accentColour),
@@ -45,8 +43,7 @@ Map<int, Color> accentColorPalette =
 };
 
 int primaryColour = 0XFFFFA552;
-Map<int, Color> primaryColourPalette = 
-{
+Map<int, Color> primaryColourPalette = {
   50: Color(primaryColour),
   100: Color(primaryColour),
   200: Color(primaryColour),
@@ -59,8 +56,7 @@ Map<int, Color> primaryColourPalette =
   900: Color(primaryColour),
 };
 
-ThemeData darkTheme = ThemeData
-(
+ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   buttonColor: Color(0XFFFFA552),
   accentColor: MaterialColor(accentColour, accentColorPalette),
@@ -88,8 +84,7 @@ class _AppState extends State<App>{
   PaymentMethod selectedMethod;
 
   @override
-  initState()
-  {
+  initState() {
     super.initState();
     checkoutData = Map<Product, int>();
     orders = List<Order>();
@@ -98,7 +93,6 @@ class _AppState extends State<App>{
 
     //Used to ensure persistance.
     auth.currentUser().then(handleAuthStateChange);
-
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
     new Future.delayed(Duration.zero, () {
@@ -110,10 +104,9 @@ class _AppState extends State<App>{
     });
   }
 
-  handleAuthStateChange(FirebaseUser updatedUser)
-  async {
+  handleAuthStateChange(FirebaseUser updatedUser) async {
     setState(() {
-      user=updatedUser; 
+      user = updatedUser; 
     });
     if (updatedUser == null) {
       // Logout
@@ -126,31 +119,27 @@ class _AppState extends State<App>{
       var ds = await userData.first;
 
       paymentMethodsStream = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').snapshots();
-      paymentMethodsStream.handleError((error)
-      {
+      paymentMethodsStream.handleError((error) {
         //Crashlytics.
       });
-      paymentMethodsStream.listen((QuerySnapshot query)
-      {
+      paymentMethodsStream.listen((QuerySnapshot query) {
         setState(() {
           paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
-          if(selectedMethod == null && paymentMethods.length > 0)
-          {
+
+          if(selectedMethod == null && paymentMethods.length > 0) selectedMethod = paymentMethods[0];
+
+
+          if(selectedMethod == null && paymentMethods.length > 0) {
             selectedMethod = paymentMethods[0];
           }
-          else if(selectedMethod == null && paymentMethods.length == 0)
-          {
-            StripePayment.canMakeNativePayPayments([]).then((bool canMakeNativePayments)
-            {
-              if(canMakeNativePayments)
-              {
-                if(Platform.isAndroid)
-                {
-                  selectedMethod = PaymentMethod(type: "google");
+          else if(selectedMethod == null && paymentMethods.length == 0) {
+            StripePayment.canMakeNativePayPayments([]).then((bool canMakeNativePayments) {
+              if(canMakeNativePayments) {
+                if(Platform.isAndroid) {
+                  selectedMethod = PaymentMethod(type: "googlepay");
                 }
-                else if (Platform.isIOS)
-                {
-                  selectedMethod = PaymentMethod(type: "ios");
+                else if (Platform.isIOS) {
+                  selectedMethod = PaymentMethod(type: "applepay");
                 }
               }
             });
@@ -192,25 +181,18 @@ class _AppState extends State<App>{
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
-      onGenerateRoute: (RouteSettings settings)
-      {
-        if(settings.name == "/")
-        {
+      onGenerateRoute: (RouteSettings settings) {
+        if(settings.name == "/") {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
-        else if(settings.name == "/home")
-        {
-          return MaterialPageRoute(builder: (context) => FutureBuilder
-          (
+        else if(settings.name == "/home") {
+          return MaterialPageRoute(builder: (context) => FutureBuilder(
             future: catalogue,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
-            {
-              if(!snapshot.hasData)
-              {
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if(!snapshot.hasData) {
                 return WillPopScope(
                   onWillPop: () async => false,
-                  child: Container
-                  (
+                  child: Container(
                     color: Theme.of(context).backgroundColor,
                     width: double.infinity,
                     height: double.infinity,
@@ -222,51 +204,41 @@ class _AppState extends State<App>{
                   )
                 );
               }
-              return  Home
-              (
+              return  Home(
                 productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
               );
             }
           ));
         }
-        else if(settings.name == "/createAccountSMS")
-        {
+        else if(settings.name == "/createAccountSMS") {
           return SlideLeftRoute(          
             page: (BuildContext context) => CreateAccountSMS()
           );
         }
-        else if(settings.name == "/createAccount")
-        {
+        else if(settings.name == "/createAccount") {
           return SlideLeftRoute(          
             page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
           );
         }
-        else if(settings.name == "/accountDetails")
-        {
-          return MaterialPageRoute(builder: (context) => StreamBuilder
-          (
+        else if(settings.name == "/accountDetails") {
+          return MaterialPageRoute(builder: (context) => StreamBuilder(
             stream: userData,
-            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)
-            {
-              if(!snapshot.hasData)
-              {
+            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if(!snapshot.hasData) {
                 return WillPopScope(
                   onWillPop: () async => false,
-                  child: Container
-                  (
+                  child: Container(
                     color: Theme.of(context).backgroundColor,
                     width: double.infinity,
                     height: double.infinity,
-                    child: Align
-                    (
+                    child: Align(
                       alignment: Alignment.center,
                       child: CircularProgressIndicator(),
                     )
                   )
                 );
               }
-              return  AccountDetails
-              (
+              return  AccountDetails(
                 user: user,
                 onUserChange: onUserChange,
                 userDocument: snapshot.data,
@@ -274,32 +246,25 @@ class _AppState extends State<App>{
             }
           ));
         }
-        else if(settings.name == "/basket")
-        {
+        else if(settings.name == "/basket") {
           return ExpandRoute(          
-            page: (BuildContext context) => Basket
-            (
+            page: (BuildContext context) => Basket(
               checkoutData: checkoutData,
               removeFromBasket: removeFromBasket,
             ),
           );
         }
-        else if (settings.name == "/checkout")
-        {
-          return SlideLeftRoute
-          (
-            page: (BuildContext context) => Checkout
-            (
+        else if (settings.name == "/checkout") {
+          return SlideLeftRoute(
+            page: (BuildContext context) => Checkout(
               checkoutData: checkoutData,
               location: settings.arguments,
               paymentMethod: selectedMethod,
             ), 
           );   
         }
-        else if (settings.name == "/checkoutLocation")
-        {
-          return SlideLeftRoute
-          (
+        else if (settings.name == "/checkoutLocation") {
+          return SlideLeftRoute(
             page: (BuildContext context) => CheckoutLocation(), 
           );   
         }
@@ -307,67 +272,54 @@ class _AppState extends State<App>{
         {
           final Product args = settings.arguments;
 
-          return MaterialPageRoute(builder: (context) => ProductScreen
-            (
+          return MaterialPageRoute(builder: (context) => ProductScreen(
               product: args, 
               addToBasket: addToBasket,
             )
           );
         }
-        else if(settings.name == "/paymentMethods")
-        {
-          return MaterialPageRoute(builder: (context) => PaymentMethods
-          (
+        else if(settings.name == "/paymentMethods") {
+          return MaterialPageRoute(builder: (context) => PaymentMethods(
             user: user,
             paymentMethods: paymentMethods,      
             selectedMethod: selectedMethod,
-            onChangeSelectedMethod: (PaymentMethod method)
-            {
+            onChangeSelectedMethod: (PaymentMethod method) {
               setState(() {
                 selectedMethod = method;
               });
             },  
           )); 
         }
-        else if(settings.name == "/order")
-        {
+        else if(settings.name == "/order") {
           final Order args = settings.arguments;
 
-          return ExpandRoute
-          (
+          return ExpandRoute(
             page: (BuildContext context) => OrderScreen
             (
               order: args,
             )
           );  
         }
-        else if(settings.name == "/search")
-        {
+        else if(settings.name == "/search") {
           final List<Product> args = settings.arguments;
 
-          return SlideDownRoute
-          (
+          return SlideDownRoute(
             page: (BuildContext context) => SearchResults
             (
               products: args,
             )
           );  
         }
-        else if(settings.name == "/category")
-        {
+        else if(settings.name == "/category") {
           final String args = settings.arguments;
 
-          return MaterialPageRoute(builder: (context) => FutureBuilder
-          (
+          return MaterialPageRoute(builder: (context) => FutureBuilder(
             future: catalogue,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot)
-            {
-              if(!snapshot.hasData)
-              {
+            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if(!snapshot.hasData) {
                 return WillPopScope(
                   onWillPop: () async => false,
-                  child: Container
-                  (
+                  child: Container(
                     color: Theme.of(context).backgroundColor,
                     width: double.infinity,
                     height: double.infinity,
@@ -379,27 +331,25 @@ class _AppState extends State<App>{
                   )
                 );
               }
-              return  CategoryScrollView
-              (
+              return  CategoryScrollView(
                 productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
                 initialCategory: args,             
               );
             }
           ));
         }
+        else {
+          return MaterialPageRoute(builder: (context) => SplashScreen());
+        }
       },
     );
   }
 
-  addToBasket(Product product, int quantity)
-  {
-
+  addToBasket(Product product, int quantity) {
     setState(() {
       bool foundItem = false;
-      checkoutData = checkoutData.map((Product index, int value)
-      {
-        if(index.id == product.id) 
-        {
+      checkoutData = checkoutData.map((Product index, int value) {
+        if(index.id == product.id)  {
           foundItem = true;
           return MapEntry(product, value + quantity);
         }
@@ -409,23 +359,19 @@ class _AppState extends State<App>{
     });
   }
 
-  removeFromBasket(String productID)
-  {
+  removeFromBasket(String productID) {
     setState(() {
       checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
     });
   }
 
-  onLogin(FirebaseUser newUser)
-  {
+  onLogin(FirebaseUser newUser) {
     navKey.currentState.pop();
     showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
   }
 
-  onUserChange()
-  {
-    auth.currentUser().then((FirebaseUser newUser)
-    {
+  onUserChange() {
+    auth.currentUser().then((FirebaseUser newUser) {
       setState(() {
        user=newUser; 
       });

@@ -104,7 +104,7 @@ class _CheckoutState extends State<Checkout>
             ),
           ),
           isKeyboardHidden ? Container() : 
-          (widget.paymentMethod != null && widget.paymentMethod.type == "google") ? nativePayButton(context)
+          (widget.paymentMethod != null && (widget.paymentMethod.type == "google" || widget.paymentMethod.type == "apple")) ? nativePayButton(context)
           : RaisedButton
           (
             child: Container
@@ -168,7 +168,7 @@ class _CheckoutState extends State<Checkout>
           child: UiKitView
           (
             hitTestBehavior: PlatformViewHitTestBehavior.transparent,
-            viewType: 'GooglePayButton',
+            viewType: 'ApplePayButton',
           )   
         )
       );

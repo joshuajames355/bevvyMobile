@@ -28,7 +28,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
 
   @override
   void initState() {
-    canMakeNativePay = StripePayment.canMakeNativePayPayments({});
+    canMakeNativePay = StripePayment.canMakeNativePayPayments([]);
     super.initState();
   }
 

@@ -1,17 +1,20 @@
+import 'dart:io';
+
 import 'package:bevvymobile/basket.dart';
-import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:stripe_payment/stripe_payment.dart';
 
-typedef void AddOrder(Order order);
+typedef void OnChangeSelectedMethod(PaymentMethod selectedMethod);
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.onAddOrder, this.checkoutData, this.location}) : super(key: key);
+  const Checkout({ Key key, this.checkoutData, this.location, this.paymentMethod}) : super(key: key);
 
-  final AddOrder onAddOrder;
   final Map<Product, int> checkoutData; //List of products/quantities
+  final PaymentMethod paymentMethod;
   final LatLng location;
 
   @override
@@ -22,6 +25,7 @@ class _CheckoutState extends State<Checkout>
 {
   @override
   Widget build(BuildContext context) {
+    bool isKeyboardHidden = MediaQuery.of(context).viewInsets.bottom != 0.0;
     return Scaffold
     (
       appBar: AppBar
@@ -36,14 +40,14 @@ class _CheckoutState extends State<Checkout>
           },
         ),
       ), 
-      body: Container
+      body: Column
       (
-        padding: EdgeInsets.all(15),
-        child: Column
-        (
-          children: 
-          [ 
-            Row
+        children: 
+        [ 
+          Padding
+          (
+            padding: EdgeInsets.only(left: 15, right: 15, top: 30, bottom: 10),
+            child: Row
             (
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: 
@@ -52,48 +56,81 @@ class _CheckoutState extends State<Checkout>
                 Text("£" + (getTotal(widget.checkoutData) + (getTotal(widget.checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
               ]
             ),
-            Padding
+          ),
+          Padding
+          (
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: TextField
             (
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: TextField
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'House Number/Name',
+              ),
+            ),
+          ),
+          Padding
+          (
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: TextField
+            (
+              keyboardType: TextInputType.multiline,
+              maxLines: 2,
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Note to Driver',
+              ),
+            ),
+          ),
+          isKeyboardHidden ? Container() : Expanded(child: Container(),),
+          isKeyboardHidden ? Container() : Padding
+          (
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Card
+            (
+              child: FlatButton
               (
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'House Number/Name',
+                child: Container
+                (
+                  padding: EdgeInsets.all(10),
+                  width: double.infinity,
+                  child: Center(child: Text("Change Payment Method")),
                 ),
-              ),
+                onPressed:  ()
+                {
+                  Navigator.pushNamed(context, '/paymentMethods');
+                },  
+            ),            
             ),
-            Padding
+          ),
+          isKeyboardHidden ? Container() : 
+          (widget.paymentMethod != null && widget.paymentMethod.type == "google") ? nativePayButton(context)
+          : RaisedButton
+          (
+            child: Container
             (
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: TextField
+              padding: EdgeInsets.all(15),
+              width: double.infinity,
+              child:  Row
               (
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-                decoration: InputDecoration(
-                  border: UnderlineInputBorder(),
-                  labelText: 'Note to Driver',
-                ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:
+                [
+                  Text("Buy with ")
+                ]..addAll(getPaymentMethodIndicator())                
               ),
             ),
-            RaisedButton
-            (
-              color: Theme.of(context).primaryColor,
-              padding: EdgeInsets.all(12),
-              child: Container
-              (
-                width: double.infinity,
-                child: Center(child: Text("Continue")),
-              ),
-              onPressed: ()
-              {
-                widget.onAddOrder(new Order(products: Map.from(widget.checkoutData), status: "Pending", arrivalTime: DateTime.now().add(new Duration(minutes: 20))));
-                Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-              },
-            ),
-          ]
-        ),
+            onPressed: widget.paymentMethod == null ? null : ()
+            {
+              //Todo: place an order
+              Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+            },
+          ),
+        ]
+      ),
+    );
+  }
+
   Widget nativePayButton(BuildContext context)
   {
     if(Platform.isAndroid)
@@ -103,7 +140,6 @@ class _CheckoutState extends State<Checkout>
         onTap: ()
         {
           //TODO: google pay
-          print("Whatever");
           Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
         },
         child: Container
@@ -114,7 +150,59 @@ class _CheckoutState extends State<Checkout>
             hitTestBehavior: PlatformViewHitTestBehavior.transparent,
             viewType: 'GooglePayButton',
           )   
-        )     
+        )
+      );
+    }
+    else if(Platform.isIOS)
+    {
+      return InkWell
+      (
+        onTap: ()
+        {
+          //TODO: apple pay
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+        },
+        child: Container
+        (
+          height: 50,
+          child: UiKitView
+          (
+            hitTestBehavior: PlatformViewHitTestBehavior.transparent,
+            viewType: 'GooglePayButton',
+          )   
+        )
       );
     }
   }
+
+  List<Widget> getPaymentMethodIndicator()
+  {
+    if(widget.paymentMethod == null)
+    {
+      return [];
+    }
+    else if(widget.paymentMethod.type == "card")
+    {
+      if(widget.paymentMethod.card == null) return [Text("Invalid Card")];
+
+      //capitalize brand
+      var brand = widget.paymentMethod.card.brand;
+      brand = brand[0].toUpperCase() + brand.substring(1);
+
+      return 
+      [
+        Padding
+        (
+          child: Icon(IconData(59553, fontFamily: 'MaterialIcons')),
+          padding: EdgeInsets.only(left: 20, right: 10),
+        ),
+        Text(brand + " Ending in " + widget.paymentMethod.card.last4)
+      ];
+    }
+    //google pay or apple pay
+    else 
+    {
+      return [Text("Payment Method Invalid")];
+    }
+  }
+}

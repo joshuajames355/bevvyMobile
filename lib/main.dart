@@ -286,9 +286,9 @@ class _AppState extends State<App>{
           (
             page: (BuildContext context) => Checkout
             (
-              onAddOrder: addOrder,
               checkoutData: checkoutData,
               location: settings.arguments,
+              paymentMethod: selectedMethod,
             ), 
           );   
         }
@@ -409,14 +409,6 @@ class _AppState extends State<App>{
   {
     setState(() {
       checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
-    });
-  }
-
-  addOrder(Order order)
-  {
-    setState(() {
-      orders.add(order);
-      checkoutData = Map<Product, int>();
     });
   }
 

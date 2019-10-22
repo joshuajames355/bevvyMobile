@@ -227,51 +227,35 @@ class _CreateAccountSMSState extends State<CreateAccountSMS>
     }); 
   }
 
-  verificationCompleted(AuthCredential credential)
-  {
-    auth.signInWithCredential(credential).then((AuthResult result)
-    {
-      // returned is an FIRAuthDataResult
-      // "Helper object that contains the result of a successful sign-in, link and reauthenticate action."
+  verificationCompleted(AuthCredential credential) async {
+    return wrapperSignInWithCredential(credential);
+  }
 
-      // result.user is an FIRUser object
-    }).catchError((e)
-    {
-      if(e.code == "ERROR_INVALID_CREDENTIAL")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
-      }
-      else if(e.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
-      }
-      else if(e.code == "ERROR_USER_DISABLED")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
-      }
-    });
-  }   
+  verify() async {
+    var _ = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _noTextController.text);
+  }
 
-  verify()
-  {
-    var credentials = PhoneAuthProvider.getCredential(verificationId: _verificationCode, smsCode: _noTextController.text);
-    auth.signInWithCredential(credentials).then((AuthResult result)
-    {
-      // Wait for a callback to main.dart
-    }).catchError((e)
-    {
-      if(e.code == "ERROR_INVALID_CREDENTIAL")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
+  wrapperSignInWithCredential(credential) async {
+    try {
+      AuthResult _ = await auth.signInWithCredential(credential);
+    } catch(e) {
+      switch (e.code) {
+        case "ERROR_INVALID_CREDENTIAL":
+          showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
+          break;
+        case "ERROR_USER_DISABLED":
+          showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
+          break;
+        case "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
+          showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
+          break;
+        case "ERROR_OPERATION_NOT_ALLOWED":
+          break;
+        case "ERROR_INVALID_ACTION_CODE":
+          break;
+        default:
+          throw new UnimplementedError(e.code);
       }
-      else if(e.code == "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
-      }
-      else if(e.code == "ERROR_USER_DISABLED")
-      {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
-      }
-    });
+    }
   }
 }

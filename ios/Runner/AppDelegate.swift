@@ -10,6 +10,10 @@ import GoogleMaps
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
     GMSServices.provideAPIKey("AIzaSyBbaW0SyM9LcEiDPGNeMxmtQB0vK8Hhh-o");
+
+    let controller = window?.rootViewController as! FlutterViewController
+    let applePayButtonFactory = ApplePayButtonFactory(controller);
+    registrar(forPlugin: "ApplePayButton").register(applePayButtonFactory, withId: "ApplePayButton")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

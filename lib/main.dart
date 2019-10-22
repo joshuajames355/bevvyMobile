@@ -72,7 +72,7 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App>{
+class _AppState extends State<App> {
   Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
   FirebaseUser user;
@@ -122,29 +122,21 @@ class _AppState extends State<App>{
       paymentMethodsStream.handleError((error) {
         //Crashlytics.
       });
-      paymentMethodsStream.listen((QuerySnapshot query) {
-        setState(() {
-          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
+      paymentMethodsStream.listen((QuerySnapshot query) async {
+        paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
 
-          if(selectedMethod == null && paymentMethods.length > 0) selectedMethod = paymentMethods[0];
-
-
-          if(selectedMethod == null && paymentMethods.length > 0) {
-            selectedMethod = paymentMethods[0];
+        if (selectedMethod == null && paymentMethods.length > 0) {
+          setState(() => selectedMethod = paymentMethods[0]);
+        } else if (selectedMethod == null && paymentMethods.length == 0) {
+          try {
+            bool canMakeNativePayments = await StripePayment.canMakeNativePayPayments([]);
+            if (canMakeNativePayments) {
+              setState(() => selectedMethod = PaymentMethod(type: (Platform.isIOS ? 'applepay' : 'googlepay')));
+            }
+          } catch (e) {
+            print(e);
           }
-          else if(selectedMethod == null && paymentMethods.length == 0) {
-            StripePayment.canMakeNativePayPayments([]).then((bool canMakeNativePayments) {
-              if(canMakeNativePayments) {
-                if(Platform.isAndroid) {
-                  selectedMethod = PaymentMethod(type: "googlepay");
-                }
-                else if (Platform.isIOS) {
-                  selectedMethod = PaymentMethod(type: "applepay");
-                }
-              }
-            });
-          }
-        });
+        }
       });
 
       if (ds.exists) {
@@ -170,7 +162,7 @@ class _AppState extends State<App>{
         });
       }
     }
-  }
+}
 
   @override
   Widget build(BuildContext context) {

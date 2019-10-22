@@ -124,7 +124,7 @@ class _AppState extends State<App>{
       userData = userDocumentRef.snapshots();
       var ds = await userData.first;
 
-      paymentMethodsStream = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').where("json").snapshots();
+      paymentMethodsStream = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').snapshots();
       paymentMethodsStream.handleError((error)
       {
         //Crashlytics.
@@ -132,7 +132,7 @@ class _AppState extends State<App>{
       paymentMethodsStream.listen((QuerySnapshot query)
       {
         setState(() {
-          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["json"])).toList();
+          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
           if(selectedMethod == null && paymentMethods.length > 0)
           {
             selectedMethod = paymentMethods[0];

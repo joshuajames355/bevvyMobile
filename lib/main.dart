@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/categoryScrollView.dart';
@@ -127,9 +128,28 @@ class _AppState extends State<App>{
       {
         setState(() {
           paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["json"])).toList();
+
+          //Set defaults for selectedMethod
           if(selectedMethod == null && paymentMethods.length > 0)
           {
             selectedMethod = paymentMethods[0];
+          }
+          else if(selectedMethod == null && paymentMethods.length == 0)
+          {
+            StripePayment.canMakeNativePayPayments([]).then((bool canMakeNativePayments)
+            {
+              if(canMakeNativePayments)
+              {
+                if(Platform.isAndroid)
+                {
+                  selectedMethod = PaymentMethod(type: "google");
+                }
+                else if (Platform.isIOS)
+                {
+                  selectedMethod = PaymentMethod(type: "ios");
+                }
+              }
+            });
           }
         });
       });

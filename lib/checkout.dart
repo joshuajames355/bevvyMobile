@@ -320,6 +320,7 @@ class _CheckoutState extends State<Checkout>
         if (isNative) {
           StripePayment.completeNativePayRequest();
         }
+        Navigator.pushNamed(context, '/order');
       } else {
         // Error
         // TODO: error handle

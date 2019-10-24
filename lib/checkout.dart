@@ -1,19 +1,27 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bevvymobile/basket.dart';
+import 'package:bevvymobile/dataStore.dart';
 import 'package:bevvymobile/product.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:stripe_payment/stripe_payment.dart';
+import 'package:flutter/services.dart';
+import 'package:stripe_payment/stripe_payment.dart' as prefix0;
+
 
 typedef void OnChangeSelectedMethod(PaymentMethod selectedMethod);
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.checkoutData, this.location, this.paymentMethod}) : super(key: key);
+  const Checkout({ Key key, this.user, this.dataStore, this.location, this.paymentMethod}) : super(key: key);
 
-  final Map<Product, int> checkoutData; //List of products/quantities
+  final FirebaseUser user;
+  final DataStore dataStore;
   final PaymentMethod paymentMethod;
   final LatLng location;
 
@@ -23,6 +31,7 @@ class Checkout extends StatefulWidget
 
 class _CheckoutState extends State<Checkout> 
 {
+
   @override
   Widget build(BuildContext context) {
     bool isKeyboardHidden = MediaQuery.of(context).viewInsets.bottom != 0.0;
@@ -53,7 +62,7 @@ class _CheckoutState extends State<Checkout>
               children: 
               [
                 Text("Total", style: TextStyle(fontSize: 16)),
-                Text("£" + (getTotal(widget.checkoutData) + (getTotal(widget.checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                Text("£" + (getTotal(widget.dataStore.checkoutData) + (getTotal(widget.dataStore.checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
               ]
             ),
           ),
@@ -94,10 +103,40 @@ class _CheckoutState extends State<Checkout>
                 (
                   padding: EdgeInsets.all(10),
                   width: double.infinity,
+                  child: Center(child: Text((widget.dataStore.orderRef == null ? "Create Firestore Order" : "Update Firestore Order"))),
+                ),
+                onPressed:  () async
+                {
+                  try {
+                    if (widget.dataStore.orderRef == null) {
+                      widget.dataStore.createFirestoreOrder(widget.user.uid);
+                    } else {
+                      widget.dataStore.updateFirestoreOrder();
+                    }
+                  } catch (error) {
+                    print(error);
+                  }
+                },
+            ),            
+            ),
+          ),
+          isKeyboardHidden ? Container() : Padding
+          (
+            padding: EdgeInsets.symmetric(vertical: 10),
+            child: Card
+            (
+              child: FlatButton
+              (
+                child: Container
+                (
+                  padding: EdgeInsets.all(10),
+                  width: double.infinity,
                   child: Center(child: Text("Change Payment Method")),
                 ),
                 onPressed:  ()
                 {
+                  // widget.dataStore.reset();
+                  // widget.dataStore.setOrderRef(Firestore.instance.collection('orders').document('NPQJBT2VMtzbMMTMLe1L'));
                   Navigator.pushNamed(context, '/paymentMethods');
                 },  
             ),            
@@ -116,14 +155,29 @@ class _CheckoutState extends State<Checkout>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children:
                 [
-                  Text("Buy with ")
+                  Text("Buy with")
                 ]..addAll(getPaymentMethodIndicator())                
               ),
             ),
             onPressed: widget.paymentMethod == null ? null : ()
             {
               //Todo: place an order
-              Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+              // Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+              showDialog(context: context,
+                         builder: (context) {
+                           return AlertDialog(
+                             content: Text('Confirm payment of ' + widget.dataStore.orderAmountStringWithCurrency),
+                             actions: <Widget>[
+                               FlatButton(
+                                 child: Text('Close'),
+                                 onPressed: () => Navigator.pop(context),
+                               ),
+                               FlatButton(
+                                 child: Text('Pay'),
+                                 onPressed: () => runExistingCardPayment(),
+                               )
+                             ]);
+                         });
             },
           ),
         ]
@@ -153,7 +207,7 @@ class _CheckoutState extends State<Checkout>
         )
       );
     }
-    else if(Platform.isIOS)
+    else
     {
       return InkWell
       (
@@ -162,26 +216,25 @@ class _CheckoutState extends State<Checkout>
           try {
             Token nativePayToken = await StripePayment.paymentRequestWithNativePay(
               androidPayOptions: AndroidPayPaymentRequest(
-                total_price: "1.20",
+                total_price: widget.dataStore.orderAmountString,
                 currency_code: "GBP",
               ),
               applePayOptions: ApplePayPaymentOptions(
                 countryCode: 'GB',
                 currencyCode: 'GBP',
-                items: [
-                  ApplePayItem(
-                    label: 'Test',
-                    amount: '13',
-                  )
-                ],
+                items: widget.dataStore.basketAsApplePayItems
               ));
+
+              // Send token to backend
+              PaymentMethod nativePayTempPaymentMethod = await StripePayment.createPaymentMethod(PaymentMethodRequest(card: CreditCard(token: nativePayToken.tokenId)));
+              runAllCardPayment(nativePayTempPaymentMethod.id, true);
           } on PlatformException catch(exception) {
             // 'cancelled' operation indicates user has dismissed modal window (iOS only)
             if (exception.code != 'cancelled') {
               rethrow;
             }
-          } catch (e) {
-            print(e);
+          } catch (error) {
+            print(error);
           }
         },
         child: Container
@@ -216,9 +269,9 @@ class _CheckoutState extends State<Checkout>
         Padding
         (
           child: Icon(IconData(59553, fontFamily: 'MaterialIcons')),
-          padding: EdgeInsets.only(left: 20, right: 10),
+          padding: EdgeInsets.only(left: 6, right: 5),
         ),
-        Text(brand + " Ending in " + widget.paymentMethod.card.last4)
+        Text(brand + " ending in " + widget.paymentMethod.card.last4)
       ];
     }
     //google pay or apple pay
@@ -226,5 +279,64 @@ class _CheckoutState extends State<Checkout>
     {
       return [Text("Payment Method Invalid")];
     }
+  }
+
+  void runExistingCardPayment() async {
+    runAllCardPayment(widget.paymentMethod.id, false);
+  }
+
+  void runAllCardPayment(String paymentMethodID, bool isNative) async {
+    try {
+      StripePayment.confirmPaymentIntent(
+        PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
+                      paymentMethodId: paymentMethodID)
+      );
+    } on PlatformException catch(exception) {
+      // Cancel just native pay
+      StripePayment.cancelNativePayRequest();
+
+      // Present error for all cards
+      if (exception.code != 'authenticationFailed') {
+        print(exception.message);
+        // TODO
+        // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
+      } else {
+        rethrow;
+      }
+    } catch (error) {
+      print(error);
+    }
+
+    bool subscriptionCancelled = false;
+    StreamSubscription<DocumentSnapshot> subscription;
+    subscription = widget.dataStore.orderStream.listen((DocumentSnapshot snap) async {
+      if (snap.data['status'] == 'edited_order') {
+        // Payment status hasn't changed
+        return;
+      } else if (snap.data['status'] == 'dispatch_queue') {
+        // Yay! Payment has gone through
+        subscription.cancel();
+        subscriptionCancelled = true;
+        if (isNative) {
+          StripePayment.completeNativePayRequest();
+        }
+      } else {
+        // Error
+        // TODO: error handle
+        subscription.cancel();
+        subscriptionCancelled = true;
+        if (isNative) {
+          StripePayment.cancelNativePayRequest();
+        }
+      }
+    });
+    Future.delayed(Duration(seconds: 10)).then((x) {
+      if (!subscriptionCancelled) {
+        subscription?.cancel()?.then((FutureOr f) => subscriptionCancelled = true);
+      }
+    });
+
+    // TODO
+    // Move to order progress screen and show animation while waiting for WebHook to update and confirm progress
   }
 }

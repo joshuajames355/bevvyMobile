@@ -19,6 +19,7 @@ import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/checkoutLocation.dart';
 import 'package:bevvymobile/config.dart';
+import 'package:bevvymobile/dataStore.dart';
 
 import 'package:flutter/material.dart';
 
@@ -73,7 +74,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  Map<Product, int> checkoutData; //Product ids and quantities.
   List<Order> orders;
   FirebaseUser user;
   Stream<DocumentSnapshot> userData;
@@ -82,12 +82,13 @@ class _AppState extends State<App> {
   Stream<QuerySnapshot> paymentMethodsStream;
   List<PaymentMethod> paymentMethods = [];
   PaymentMethod selectedMethod;
+  DataStore dataStore;
 
   @override
   initState() {
     super.initState();
-    checkoutData = Map<Product, int>();
     orders = List<Order>();
+    dataStore = DataStore();
 
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
@@ -241,7 +242,7 @@ class _AppState extends State<App> {
         else if(settings.name == "/basket") {
           return ExpandRoute(          
             page: (BuildContext context) => Basket(
-              checkoutData: checkoutData,
+              checkoutData: dataStore.checkoutData,
               removeFromBasket: removeFromBasket,
             ),
           );
@@ -249,7 +250,8 @@ class _AppState extends State<App> {
         else if (settings.name == "/checkout") {
           return SlideLeftRoute(
             page: (BuildContext context) => Checkout(
-              checkoutData: checkoutData,
+              user: user,
+              dataStore: dataStore,
               location: settings.arguments,
               paymentMethod: selectedMethod,
             ), 
@@ -338,23 +340,11 @@ class _AppState extends State<App> {
   }
 
   addToBasket(Product product, int quantity) {
-    setState(() {
-      bool foundItem = false;
-      checkoutData = checkoutData.map((Product index, int value) {
-        if(index.id == product.id)  {
-          foundItem = true;
-          return MapEntry(product, value + quantity);
-        }
-        return MapEntry(index, value);
-      });
-      if(!foundItem) checkoutData[product] = quantity;
-    });
+    dataStore.addProduct(product, quantity);
   }
 
   removeFromBasket(String productID) {
-    setState(() {
-      checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
-    });
+    dataStore.removeFromBasket(productID);
   }
 
   onLogin(FirebaseUser newUser) {

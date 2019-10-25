@@ -103,34 +103,6 @@ class _CheckoutState extends State<Checkout>
                 (
                   padding: EdgeInsets.all(10),
                   width: double.infinity,
-                  child: Center(child: Text((widget.dataStore.orderRef == null ? "Create Firestore Order" : "Update Firestore Order"))),
-                ),
-                onPressed:  () async
-                {
-                  try {
-                    if (widget.dataStore.orderRef == null) {
-                      widget.dataStore.createFirestoreOrder(widget.user.uid);
-                    } else {
-                      widget.dataStore.updateFirestoreOrder();
-                    }
-                  } catch (error) {
-                    print(error);
-                  }
-                },
-            ),            
-            ),
-          ),
-          isKeyboardHidden ? Container() : Padding
-          (
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Card
-            (
-              child: FlatButton
-              (
-                child: Container
-                (
-                  padding: EdgeInsets.all(10),
-                  width: double.infinity,
                   child: Center(child: Text("Change Payment Method")),
                 ),
                 onPressed:  ()
@@ -320,7 +292,8 @@ class _CheckoutState extends State<Checkout>
         if (isNative) {
           StripePayment.completeNativePayRequest();
         }
-        Navigator.pushNamed(context, '/order');
+        // Navigator.pushNamed(context, '/order');
+        Navigator.pushNamed(context, '/home');
       } else {
         // Error
         // TODO: error handle

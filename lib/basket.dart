@@ -1,16 +1,17 @@
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
+import 'package:bevvymobile/dataStore.dart';
 
 typedef void RemoveFromBasketFunc(String productID);
 typedef void AddOrder(Order order);
 
 class BasketDataWidget extends StatelessWidget
 {
-  const BasketDataWidget({ Key key, this.product, this.checkoutData, this.removeFromBasket}) : super(key: key);
+  const BasketDataWidget({ Key key, this.product, this.dataStore, this.removeFromBasket}) : super(key: key);
 
   final Product product;
-  final Map<Product, int> checkoutData;
+  final DataStore dataStore;
   final RemoveFromBasketFunc removeFromBasket;
 
   @override
@@ -39,7 +40,7 @@ class BasketDataWidget extends StatelessWidget
                 children: <Widget>
                 [
                   Text(product.title, style: TextStyle( fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
-                  Text(checkoutData[product].toString() + "X",),
+                  Text(dataStore.checkoutData[product].toString() + "X",),
                 ],
               )
             ),
@@ -48,7 +49,7 @@ class BasketDataWidget extends StatelessWidget
           (
             child: Center
             (
-              child: Text("£" + (checkoutData[product] * product.price).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
+              child: Text("£" + (dataStore.checkoutData[product] * product.price).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
             ),
             size: Size(75,75),
           ),
@@ -60,9 +61,9 @@ class BasketDataWidget extends StatelessWidget
 
 class Basket extends StatelessWidget
 {
-  const Basket({ Key key, this.checkoutData, this.removeFromBasket}) : super(key: key);
+  const Basket({ Key key, this.dataStore, this.removeFromBasket}) : super(key: key);
 
-  final Map<Product, int> checkoutData;
+  final DataStore dataStore;
   final RemoveFromBasketFunc removeFromBasket;
 
   @override
@@ -92,10 +93,10 @@ class Basket extends StatelessWidget
               (
                 children: joinBasketElements
                 (
-                  checkoutData.keys.map((Product x) => Dismissible 
+                  dataStore.checkoutData.keys.map((Product x) => Dismissible 
                     (
                       key: Key(x.id),
-                      child: BasketDataWidget(product: x,checkoutData: checkoutData, removeFromBasket: removeFromBasket,),
+                      child: BasketDataWidget(product: x, dataStore: dataStore, removeFromBasket: removeFromBasket,),
                       onDismissed: (DismissDirection direction)
                       {
                         removeFromBasket(x.id);
@@ -137,7 +138,7 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Subtotal", style: TextStyle(fontSize: 16)),
-                    Text("£" + getTotal(checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text("£" + getTotal(dataStore.checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
                 Row
@@ -164,7 +165,7 @@ class Basket extends StatelessWidget
                               },
                             ),
                           ),
-                          Text(getTotal(checkoutData) > 25 ? "£0.00" : "£3.50", style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+                          Text(getTotal(dataStore.checkoutData) > 25 ? "£0.00" : "£3.50", style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
                         ]
                       )
                     ),
@@ -176,7 +177,7 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Total", style: TextStyle(fontSize: 16)),
-                    Text("£" + (getTotal(checkoutData) + (getTotal(checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text("£" + (getTotal(dataStore.checkoutData) + (getTotal(dataStore.checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
               ],
@@ -194,15 +195,17 @@ class Basket extends StatelessWidget
               ),
               width: double.infinity,
             ),
-            onPressed: ()
+            onPressed: () async
             {
-              if(checkoutData.length == 0)
-              {
+              if (dataStore.checkoutData.length == 0) {
                 showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
-              }
-              else
-              {                
-                Navigator.pushNamed(context, "/checkoutLocation");
+              } else {                
+                try {
+                  dataStore.createOrUpdateFirestoreOrder();
+                  Navigator.pushNamed(context, "/checkoutLocation");
+                } catch (error) {
+                  print(error);
+                }
               }
             },
           )

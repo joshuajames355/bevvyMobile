@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/categoryScrollView.dart';
@@ -18,6 +19,7 @@ import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/checkoutLocation.dart';
 import 'package:bevvymobile/config.dart';
+import 'package:bevvymobile/dataStore.dart';
 
 import 'package:flutter/material.dart';
 
@@ -71,8 +73,7 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App>{
-  Map<Product, int> checkoutData; //Product ids and quantities.
+class _AppState extends State<App> {
   List<Order> orders;
   FirebaseUser user;
   Stream<DocumentSnapshot> userData;
@@ -81,12 +82,13 @@ class _AppState extends State<App>{
   Stream<QuerySnapshot> paymentMethodsStream;
   List<PaymentMethod> paymentMethods = [];
   PaymentMethod selectedMethod;
+  DataStore dataStore;
 
   @override
   initState() {
     super.initState();
-    checkoutData = Map<Product, int>();
     orders = List<Order>();
+    dataStore = DataStore();
 
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
@@ -105,7 +107,8 @@ class _AppState extends State<App>{
 
   handleAuthStateChange(FirebaseUser updatedUser) async {
     setState(() {
-      user = updatedUser; 
+      user = updatedUser;
+      dataStore.user = updatedUser;
     });
     if (updatedUser == null) {
       // Logout
@@ -121,11 +124,21 @@ class _AppState extends State<App>{
       paymentMethodsStream.handleError((error) {
         //Crashlytics.
       });
-      paymentMethodsStream.listen((QuerySnapshot query) {
-        setState(() {
-          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
-          if(selectedMethod == null && paymentMethods.length > 0) selectedMethod = paymentMethods[0];
-        });
+      paymentMethodsStream.listen((QuerySnapshot query) async {
+        paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
+
+        if (selectedMethod == null && paymentMethods.length > 0) {
+          setState(() => selectedMethod = paymentMethods[0]);
+        } else if (selectedMethod == null && paymentMethods.length == 0) {
+          try {
+            bool canMakeNativePayments = await StripePayment.canMakeNativePayPayments([]);
+            if (canMakeNativePayments) {
+              setState(() => selectedMethod = PaymentMethod(type: (Platform.isIOS ? 'applepay' : 'googlepay')));
+            }
+          } catch (e) {
+            print(e);
+          }
+        }
       });
 
       if (ds.exists) {
@@ -151,7 +164,7 @@ class _AppState extends State<App>{
         });
       }
     }
-  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -230,7 +243,7 @@ class _AppState extends State<App>{
         else if(settings.name == "/basket") {
           return ExpandRoute(          
             page: (BuildContext context) => Basket(
-              checkoutData: checkoutData,
+              dataStore: dataStore,
               removeFromBasket: removeFromBasket,
             ),
           );
@@ -238,9 +251,10 @@ class _AppState extends State<App>{
         else if (settings.name == "/checkout") {
           return SlideLeftRoute(
             page: (BuildContext context) => Checkout(
-              onAddOrder: addOrder,
-              checkoutData: checkoutData,
+              user: user,
+              dataStore: dataStore,
               location: settings.arguments,
+              paymentMethod: selectedMethod,
             ), 
           );   
         }
@@ -278,6 +292,7 @@ class _AppState extends State<App>{
             page: (BuildContext context) => OrderScreen
             (
               order: args,
+              dataStore: dataStore,
             )
           );  
         }
@@ -327,30 +342,11 @@ class _AppState extends State<App>{
   }
 
   addToBasket(Product product, int quantity) {
-    setState(() {
-      bool foundItem = false;
-      checkoutData = checkoutData.map((Product index, int value) {
-        if(index.id == product.id)  {
-          foundItem = true;
-          return MapEntry(product, value + quantity);
-        }
-        return MapEntry(index, value);
-      });
-      if(!foundItem) checkoutData[product] = quantity;
-    });
+    dataStore.addProduct(product, quantity);
   }
 
   removeFromBasket(String productID) {
-    setState(() {
-      checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
-    });
-  }
-
-  addOrder(Order order) {
-    setState(() {
-      orders.add(order);
-      checkoutData = Map<Product, int>();
-    });
+    dataStore.removeFromBasket(productID);
   }
 
   onLogin(FirebaseUser newUser) {

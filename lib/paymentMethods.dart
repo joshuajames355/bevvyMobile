@@ -28,7 +28,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
 
   @override
   void initState() {
-    canMakeNativePay = StripePayment.canMakeNativePayPayments({});
+    canMakeNativePay = StripePayment.canMakeNativePayPayments([]);
     super.initState();
   }
 
@@ -209,7 +209,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
       (
         onPressed: ()
         {
-          widget.onChangeSelectedMethod(PaymentMethod(type: "google"));
+          widget.onChangeSelectedMethod(PaymentMethod(type: "googlepay"));
         },
         child: Container
         (
@@ -236,7 +236,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
               (
                 child: Container(),
               ),
-              widget.selectedMethod != null && widget.selectedMethod.type == "google" ? Padding
+              widget.selectedMethod != null && widget.selectedMethod.type == "googlepay" ? Padding
               (
                 child: Icon(const IconData(58826, fontFamily: 'MaterialIcons'), color: Theme.of(context).accentColor,),
                 padding: EdgeInsets.all(12),
@@ -256,7 +256,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
       (
         onPressed: ()
         {
-          widget.onChangeSelectedMethod(PaymentMethod(type: "apple"));
+          widget.onChangeSelectedMethod(PaymentMethod(type: "applepay"));
         },
         child: Container
         (
@@ -283,7 +283,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
               (
                 child: Container(),
               ),
-              (widget.selectedMethod != null && widget.selectedMethod.type == "ios") ? Padding
+              (widget.selectedMethod != null && widget.selectedMethod.type == "applepay") ? Padding
               (
                 child: Icon(const IconData(58826, fontFamily: 'MaterialIcons'), color: Theme.of(context).accentColor,),
                 padding: EdgeInsets.all(12),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:collection/collection.dart' show MapEquality;
 import 'package:stripe_payment/stripe_payment.dart';
@@ -8,6 +9,7 @@ class DataStore {
   Stream<DocumentSnapshot> orderStream;
   DocumentSnapshot order;
   DocumentReference orderRef;
+  FirebaseUser user;
 
   DataStore() {
     this.checkoutData = Map<Product, int>();
@@ -29,10 +31,13 @@ class DataStore {
     checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
   }
 
-  void createFirestoreOrder(String uid) async {
+  void createFirestoreOrder() async {
+    if (this.user == null) {
+      throw('User is not logged in (or rather, not store in dataStore)');
+    }
     var orderRef = await Firestore.instance.collection('orders').add({
       'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
-      'customerID': uid,
+      'customerID': this.user.uid,
       'status': 'new_order',
     });
     this.setOrderRef(orderRef);
@@ -46,6 +51,19 @@ class DataStore {
       });
     } else {
       print('basket already in sync');
+    }
+  }
+
+  void createOrUpdateFirestoreOrder() async {
+    try {
+      if (this.orderRef == null) {
+        createFirestoreOrder();
+      } else {
+        updateFirestoreOrder();
+      }
+    } catch (error) {
+      print('err' + error.toString());
+      rethrow;
     }
   }
 
@@ -75,7 +93,7 @@ class DataStore {
     this.checkoutData.forEach((Product k, int quantity){
       total += k.price * quantity;
     });
-    return '£' + total.toStringAsFixed(2);
+    return total.toStringAsFixed(2);
   }
 
   String get orderAmountStringWithCurrency {

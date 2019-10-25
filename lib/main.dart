@@ -107,7 +107,8 @@ class _AppState extends State<App> {
 
   handleAuthStateChange(FirebaseUser updatedUser) async {
     setState(() {
-      user = updatedUser; 
+      user = updatedUser;
+      dataStore.user = updatedUser;
     });
     if (updatedUser == null) {
       // Logout
@@ -242,7 +243,7 @@ class _AppState extends State<App> {
         else if(settings.name == "/basket") {
           return ExpandRoute(          
             page: (BuildContext context) => Basket(
-              checkoutData: dataStore.checkoutData,
+              dataStore: dataStore,
               removeFromBasket: removeFromBasket,
             ),
           );
@@ -291,6 +292,7 @@ class _AppState extends State<App> {
             page: (BuildContext context) => OrderScreen
             (
               order: args,
+              dataStore: dataStore,
             )
           );  
         }

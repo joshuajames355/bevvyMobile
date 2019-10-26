@@ -17,7 +17,6 @@ import 'package:bevvymobile/paymentMethods.dart';
 import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
-import 'package:bevvymobile/checkoutLocation.dart';
 import 'package:bevvymobile/config.dart';
 import 'package:bevvymobile/dataStore.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -243,16 +242,9 @@ class _AppState extends State<App> {
         else if (settings.name == "/checkout") {
           return SlideLeftRoute(
             page: (BuildContext context) => Checkout(
-              user: user,
               dataStore: dataStore,
-              location: settings.arguments,
               paymentMethod: selectedMethod,
             ), 
-          );   
-        }
-        else if (settings.name == "/checkoutLocation") {
-          return SlideLeftRoute(
-            page: (BuildContext context) => CheckoutLocation(), 
           );   
         }
         else if(settings.name == "/product")

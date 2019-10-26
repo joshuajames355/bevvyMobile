@@ -1,45 +1,53 @@
-import 'dart:async';
-import 'dart:io';
+import 'dart:math';
 
-import 'package:bevvymobile/basket.dart';
-import 'package:bevvymobile/dataStore.dart';
-import 'package:bevvymobile/product.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:stripe_payment/stripe_payment.dart';
+import 'package:bevvymobile/dataStore.dart';
+import 'package:flutter/rendering.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
-import 'package:stripe_payment/stripe_payment.dart' as prefix0;
-
-
-typedef void OnChangeSelectedMethod(PaymentMethod selectedMethod);
+import 'dart:io';
+import 'dart:async';
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.user, this.dataStore, this.location, this.paymentMethod}) : super(key: key);
+  const Checkout({ Key key, this.dataStore, this.paymentMethod}) : super(key: key);
 
-  final FirebaseUser user;
   final DataStore dataStore;
   final PaymentMethod paymentMethod;
-  final LatLng location;
 
   @override
   _CheckoutState createState() => _CheckoutState();
 }
 
-class _CheckoutState extends State<Checkout> 
+class _CheckoutState extends State<Checkout>
 {
+  GoogleMapController _googleController;
+  FocusNode _noteToDriver = FocusNode();
+
+  //GPS location
+  Location location = Location();
+  LocationData lastLocationFix;
+
+  CameraPosition cameraPosition; 
 
   @override
-  Widget build(BuildContext context) {
-    bool isKeyboardHidden = MediaQuery.of(context).viewInsets.bottom != 0.0;
+  void initState() {
+    getLocation();
+    cameraPosition = CameraPosition(target: lastLocationFix == null ? LatLng(54.7753, -1.5849) : LatLng(lastLocationFix.latitude, lastLocationFix.longitude), zoom: 16);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context)
+  {
     return Scaffold
     (
       appBar: AppBar
       (
-        title: Text("Checkout"),
+        title: Text("Select Location"),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -48,112 +56,207 @@ class _CheckoutState extends State<Checkout>
             Navigator.pop(context);
           },
         ),
-      ), 
+      ),
       body: Column
       (
         children: 
-        [ 
-          Padding
+        [
+          Expanded
           (
-            padding: EdgeInsets.only(left: 15, right: 15, top: 30, bottom: 10),
-            child: Row
+            child: Stack
             (
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: 
               [
-                Text("Total", style: TextStyle(fontSize: 16)),
-                Text("£" + (getTotal(widget.dataStore.checkoutData) + (getTotal(widget.dataStore.checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                GoogleMap
+                (
+                  initialCameraPosition: cameraPosition,
+                  onCameraMove: (CameraPosition position)
+                  {
+                    cameraPosition = position;
+                  },
+                  onMapCreated: (GoogleMapController controller)
+                  {
+                    _googleController = controller;
+                    if(lastLocationFix != null)
+                    {
+                      _googleController.animateCamera(CameraUpdate.newLatLng(LatLng(lastLocationFix.latitude, lastLocationFix.longitude)));
+                    }
+                  },
+                ),
+                Positioned.fill
+                (
+                  child: Align
+                  (
+                    alignment: Alignment.center,
+                    child: Transform.translate
+                    (
+                      offset: Offset(0, -25),
+                      child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
+                    )
+                  ),
+                )          
               ]
             ),
           ),
-          Padding
+          RaisedButton
           (
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: TextField
+            child:  Container
             (
-              keyboardType: TextInputType.text,
-              decoration: InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'House Number/Name',
-              ),
-            ),
-          ),
-          Padding
-          (
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: TextField
-            (
-              keyboardType: TextInputType.multiline,
-              maxLines: 2,
-              decoration: InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: 'Note to Driver',
-              ),
-            ),
-          ),
-          isKeyboardHidden ? Container() : Expanded(child: Container(),),
-          isKeyboardHidden ? Container() : Padding
-          (
-            padding: EdgeInsets.symmetric(vertical: 10),
-            child: Card
-            (
-              child: FlatButton
+              padding: EdgeInsets.symmetric(vertical: 15),
+              child: Center
               (
-                child: Container
-                (
-                  padding: EdgeInsets.all(10),
-                  width: double.infinity,
-                  child: Center(child: Text("Change Payment Method")),
-                ),
-                onPressed:  ()
-                {
-                  // widget.dataStore.reset();
-                  // widget.dataStore.setOrderRef(Firestore.instance.collection('orders').document('NPQJBT2VMtzbMMTMLe1L'));
-                  Navigator.pushNamed(context, '/paymentMethods');
-                },  
-            ),            
+                child: Text("Confirm Location", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                )
+              ),
+              width: double.infinity,
             ),
+            onPressed: ()
+            {
+              //Navigator.pushNamed(context, "/checkout", arguments: cameraPosition.target);
+              showModalBottomSheet
+              (
+                isScrollControlled: true,
+                context: context, builder: (BuildContext context2) => bottomModal(context2)
+              );
+            },
+          )
+        ]
+      ),
+      floatingActionButton: Padding
+      (
+        padding: EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton
+        (
+          child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
+          onPressed: getLocation,
+        ),
+      )
+    );
+  }
+
+  getLocation()
+  {
+    location.getLocation().then((LocationData data)
+    {
+      if(_googleController != null)
+      {
+        _googleController.animateCamera(CameraUpdate.newLatLng(LatLng(data.latitude, data.longitude)));
+      }
+      lastLocationFix = data;
+    }).catchError((e)
+    {
+      print(e);
+
+    });
+  }
+
+  Widget bottomModal(BuildContext context)
+  {
+    return Column
+    (
+      mainAxisSize: MainAxisSize.min,
+      children: 
+      [ 
+        Padding
+        (
+          padding: EdgeInsets.only(left: 15, right: 15, top: 20),
+          child: Row
+          (
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: 
+            [
+              Text("Total", style: TextStyle(fontSize: 16)),
+              Text(widget.dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+            ]
           ),
-          isKeyboardHidden ? Container() : 
-          (widget.paymentMethod != null && (widget.paymentMethod.type == "googlepay" || widget.paymentMethod.type == "applepay")) ? nativePayButton(context)
-          : RaisedButton
+        ),
+        Padding
+        (
+          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          child: TextField
+          (
+            autofocus: true,
+            keyboardType: TextInputType.text,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'House Number/Name',
+            ),
+            onSubmitted: (_)
+            {
+              _noteToDriver.requestFocus();
+            },
+          ),
+        ),
+        Padding
+        (
+          padding: EdgeInsets.only(bottom: max(10, MediaQuery.of(context).viewInsets.bottom-80), left: 15, right: 15),
+          child: TextField
+          (
+            focusNode: _noteToDriver,
+            keyboardType: TextInputType.text,
+            decoration: InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'Note to Driver',
+            ),
+            onSubmitted: (_)
+            {
+              FocusNode().requestFocus();
+            },
+          ),
+        ),
+        Card
+        (
+          child: FlatButton
           (
             child: Container
             (
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(10),
               width: double.infinity,
-              child:  Row
-              (
-                mainAxisAlignment: MainAxisAlignment.center,
-                children:
-                [
-                  Text("Buy with")
-                ]..addAll(getPaymentMethodIndicator())                
-              ),
+              child: Center(child: Text("Change Payment Method")),
             ),
-            onPressed: widget.paymentMethod == null ? null : ()
+            onPressed:  ()
             {
-              //Todo: place an order
-              // Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-              showDialog(context: context,
-                         builder: (context) {
-                           return AlertDialog(
-                             content: Text('Confirm payment of ' + widget.dataStore.orderAmountStringWithCurrency),
-                             actions: <Widget>[
-                               FlatButton(
-                                 child: Text('Close'),
-                                 onPressed: () => Navigator.pop(context),
-                               ),
-                               FlatButton(
-                                 child: Text('Pay'),
-                                 onPressed: () => runExistingCardPayment(),
-                               )
-                             ]);
-                         });
-            },
+              Navigator.pushNamed(context, '/paymentMethods');
+            },  
+          ),            
+        ),
+        (widget.paymentMethod != null && (widget.paymentMethod.type == "googlepay" || widget.paymentMethod.type == "applepay")) ? nativePayButton(context)
+        : RaisedButton
+        (
+          child: Container
+          (
+            padding: EdgeInsets.all(15),
+            width: double.infinity,
+            child:  Row
+            (
+              mainAxisAlignment: MainAxisAlignment.center,
+              children:
+              [
+                Text("Buy with")
+              ]..addAll(getPaymentMethodIndicator())                
+            ),
           ),
-        ]
-      ),
+          onPressed: widget.paymentMethod == null ? null : ()
+          {
+            showDialog(context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Text('Confirm payment of ' + widget.dataStore.orderAmountStringWithCurrency),
+                            actions: <Widget>[
+                              FlatButton(
+                                child: Text('Close'),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                              FlatButton(
+                                child: Text('Pay'),
+                                onPressed: () => runExistingCardPayment(),
+                              )
+                            ]);
+                        });
+          },
+        ),
+      ]
     );
   }
 
@@ -312,5 +415,11 @@ class _CheckoutState extends State<Checkout>
 
     // TODO
     // Move to order progress screen and show animation while waiting for WebHook to update and confirm progress
+  }
+
+  @override
+  void dispose() {
+    _noteToDriver.dispose();
+    super.dispose();
   }
 }

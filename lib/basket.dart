@@ -27,7 +27,7 @@ class BasketDataWidget extends StatelessWidget
           SizedBox.fromSize
           (
             child: product.icon,
-            size: Size(75,75),
+            size: Size(50,50),
           ),
           Expanded
           (
@@ -51,7 +51,7 @@ class BasketDataWidget extends StatelessWidget
             (
               child: Text("£" + (dataStore.checkoutData[product] * product.price).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
             ),
-            size: Size(75,75),
+            size: Size(50,50),
           ),
         ],
       )
@@ -71,7 +71,7 @@ class Basket extends StatelessWidget
     return Scaffold(
       appBar: AppBar
       (
-        title: Center(child: Text("Your Basket")),
+        title: Text("Your Basket"),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -113,7 +113,7 @@ class Basket extends StatelessWidget
                             Expanded(child: Container(),),
                             Padding
                             (
-                              padding: EdgeInsets.all(20),
+                              padding: EdgeInsets.only(right: 20),
                               child: Icon(IconData(58829, fontFamily: 'MaterialIcons')),
                             ),
                           ],                        
@@ -202,7 +202,7 @@ class Basket extends StatelessWidget
               } else {                
                 try {
                   dataStore.createOrUpdateFirestoreOrder();
-                  Navigator.pushNamed(context, "/checkoutLocation");
+                  Navigator.pushNamed(context, "/checkout");
                 } catch (error) {
                   print(error);
                 }

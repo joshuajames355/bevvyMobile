@@ -342,11 +342,15 @@ class _AppState extends State<App> {
   }
 
   addToBasket(Product product, int quantity) {
-    dataStore.addProduct(product, quantity);
+    setState(() {
+      dataStore.addProduct(product, quantity);
+    });
   }
 
   removeFromBasket(String productID) {
-    dataStore.removeFromBasket(productID);
+    setState(() {
+      dataStore.removeFromBasket(productID);
+    });
   }
 
   onLogin(FirebaseUser newUser) {

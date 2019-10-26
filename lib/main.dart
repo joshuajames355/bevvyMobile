@@ -20,6 +20,7 @@ import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/checkoutLocation.dart';
 import 'package:bevvymobile/config.dart';
 import 'package:bevvymobile/dataStore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
 
@@ -126,18 +127,9 @@ class _AppState extends State<App> {
       });
       paymentMethodsStream.listen((QuerySnapshot query) async {
         paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
-
-        if (selectedMethod == null && paymentMethods.length > 0) {
-          setState(() => selectedMethod = paymentMethods[0]);
-        } else if (selectedMethod == null && paymentMethods.length == 0) {
-          try {
-            bool canMakeNativePayments = await StripePayment.canMakeNativePayPayments([]);
-            if (canMakeNativePayments) {
-              setState(() => selectedMethod = PaymentMethod(type: (Platform.isIOS ? 'applepay' : 'googlepay')));
-            }
-          } catch (e) {
-            print(e);
-          }
+        if(selectedMethod == null)
+        {
+          setInitialPaymentMethod();
         }
       });
 
@@ -278,10 +270,15 @@ class _AppState extends State<App> {
             user: user,
             paymentMethods: paymentMethods,      
             selectedMethod: selectedMethod,
-            onChangeSelectedMethod: (PaymentMethod method) {
+            onChangeSelectedMethod: (PaymentMethod method) async {
               setState(() {
                 selectedMethod = method;
               });
+              String toDisk = method.id;
+              if(method.type == "googlepay") toDisk = "googlepay";
+              if(method.type == "applepay") toDisk = "applepay";
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await prefs.setString("paymentMethods", toDisk);
             },  
           )); 
         }
@@ -364,5 +361,49 @@ class _AppState extends State<App> {
        user=newUser; 
       });
     });  
+  }
+
+  setInitialPaymentMethod() async
+  {
+    //sets paymentMethod to method stored in sharedPreferences, otherwise first card (if it exists), otherwise native pay (if supported).
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String fromDisk;
+    try
+    {
+      fromDisk = prefs.getString("paymentMethods");
+    } catch (e)
+    {
+      fromDisk =" ";
+      print(e);
+    }
+
+    if(fromDisk != "applepay" && fromDisk != "googlepay"){
+      for(int x = 0; x < paymentMethods.length; x++){
+        if(paymentMethods[x].id == fromDisk){
+          selectedMethod = paymentMethods[x];
+          return;
+        }
+      }
+    }
+
+    bool canMakeNativePayments;
+    try {
+      canMakeNativePayments = await StripePayment.canMakeNativePayPayments([]);
+      } catch (e) {
+      print(e);
+    }
+
+    if((fromDisk == "applepay" || fromDisk == "googlepay") && canMakeNativePayments){
+      selectedMethod = PaymentMethod(type: (Platform.isIOS ? 'applepay' : 'googlepay'));
+      return;
+    }
+
+    if (paymentMethods.length > 0) {
+      setState(() => selectedMethod = paymentMethods[0]);
+    } else  {
+        if (canMakeNativePayments) {
+          setState(() => selectedMethod = PaymentMethod(type: (Platform.isIOS ? 'applepay' : 'googlepay')));
+        }
+    }
   }
 }

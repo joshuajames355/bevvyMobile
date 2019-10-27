@@ -37,6 +37,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
   {
     return  Scaffold
     (
+      resizeToAvoidBottomInset: false,
       appBar: AppBar
       (
         title: Row

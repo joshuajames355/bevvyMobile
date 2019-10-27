@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:802264056148:android:e97e502eaf7014f21f48c1",
+        "mobilesdk_app_id": "1:802264056148:android:f9479832f539fa951f48c1",
         "android_client_info": {
-          "package_name": "com.example.bevvymobileDev"
+          "package_name": "co.uk.joviapp.jovicustomer"
         }
       },
       "oauth_client": [
@@ -28,8 +28,12 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "802264056148-df1mvcodcvvbsjjv7bssvfmetb058k23.apps.googleusercontent.com",
-              "client_type": 3
+              "client_id": "802264056148-tmepu7r0g703h81seikcukduc8d1nq03.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.uk.joviapp.jovicustomer",
+                "app_store_id": "1483219573"
+              }
             }
           ]
         }

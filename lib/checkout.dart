@@ -361,6 +361,12 @@ class _CheckoutState extends State<Checkout>
   }
 
   void runAllCardPayment(String paymentMethodID, bool isNative) async {
+    if(widget.dataStore.order.data["status"] == "new_order")
+    {
+      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("A server Error has occured.\nPlease Try Again Later.")));
+      return;
+    }
+
     try {
       StripePayment.confirmPaymentIntent(
         PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],

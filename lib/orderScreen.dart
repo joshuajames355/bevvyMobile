@@ -2,7 +2,6 @@ import 'package:bevvymobile/basket.dart';
 import 'package:flutter/material.dart';
 import "package:bevvymobile/product.dart";
 import "package:bevvymobile/order.dart";
-import 'package:intl/intl.dart';
 import 'package:bevvymobile/dataStore.dart';
 
 class OrderScreen extends StatefulWidget
@@ -17,9 +16,6 @@ class OrderScreen extends StatefulWidget
 }
 
 class _OrderScreenState extends State<OrderScreen>{
-  int count = 1;
-  final DateFormat formatter = DateFormat("HH:mm");
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,14 +71,6 @@ class _OrderScreenState extends State<OrderScreen>{
                   child: Row
                   (
                     children: [Text("Status: " + widget.dataStore.order.data['status'], style: TextStyle(fontSize: 16))]
-                  )
-                ),
-                Container
-                (
-                  margin: EdgeInsets.fromLTRB(25, 20, 25, 25),
-                  child: Row
-                  (
-                    children: [Text("Arriving at: " + formatter.format(widget.dataStore.order.data['status']), style: TextStyle(fontSize: 16),)]
                   )
                 ),
               ]

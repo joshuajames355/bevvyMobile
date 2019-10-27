@@ -1,22 +1,11 @@
-import 'package:bevvymobile/product.dart';
-
 class Order
 {
-  Order({this.status, this.products, this.arrivalTime});
+  Order({this.status, this.products});
 
   final String status;
-  Map<Product, int> products; //Product : Quantity
-  DateTime arrivalTime;
+  Map<String, int> products; //ProductId : Quantity
 
-  String getTimeLeft()
-  {
-    final Duration timeLeft = arrivalTime.difference(DateTime.now());
-    String response = "Arriving in ";
-    if(timeLeft.inHours > 1)
-    {
-      response += timeLeft.inHours.toString() + " Hours";
-    }
-    response += timeLeft.inMinutes.toString() + " Minutes";
-    return response;
-  }
+  Order.fromFirestore({Map<String, dynamic> data}) : 
+    status = data["status"] ?? "",
+    products = data["basket"] ??  Map<String, int>();
 }

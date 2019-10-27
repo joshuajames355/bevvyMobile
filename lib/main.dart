@@ -12,6 +12,7 @@ import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
+import 'package:bevvymobile/newOrder.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/paymentMethods.dart';
 import 'package:bevvymobile/productScreen.dart';
@@ -322,6 +323,16 @@ class _AppState extends State<App> {
               );
             }
           ));
+        }
+        else if(settings.name == "/newOrder")
+        {
+          final bool args = settings.arguments;
+          return MaterialPageRoute(builder: (context) => NewOrder
+            (
+              isNative: args,
+              dataStore: dataStore,
+            )
+          );
         }
         else {
           return MaterialPageRoute(builder: (context) => SplashScreen());

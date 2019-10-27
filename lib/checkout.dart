@@ -388,39 +388,7 @@ class _CheckoutState extends State<Checkout>
       print(error);
     }
 
-    bool subscriptionCancelled = false;
-    StreamSubscription<DocumentSnapshot> subscription;
-    subscription = widget.dataStore.orderStream.listen((DocumentSnapshot snap) async {
-      if (snap.data['status'] == 'edited_order') {
-        // Payment status hasn't changed
-        return;
-      } else if (snap.data['status'] == 'dispatch_queue') {
-        // Yay! Payment has gone through
-        subscription.cancel();
-        subscriptionCancelled = true;
-        if (isNative) {
-          StripePayment.completeNativePayRequest();
-        }
-        // Navigator.pushNamed(context, '/order');
-        Navigator.pushNamed(context, '/home');
-      } else {
-        // Error
-        // TODO: error handle
-        subscription.cancel();
-        subscriptionCancelled = true;
-        if (isNative) {
-          StripePayment.cancelNativePayRequest();
-        }
-      }
-    });
-    Future.delayed(Duration(seconds: 10)).then((x) {
-      if (!subscriptionCancelled) {
-        subscription?.cancel()?.then((FutureOr f) => subscriptionCancelled = true);
-      }
-    });
-
-    // TODO
-    // Move to order progress screen and show animation while waiting for WebHook to update and confirm progress
+    Navigator.pushNamed(context, "/newOrder", arguments: isNative);
   }
 
   @override

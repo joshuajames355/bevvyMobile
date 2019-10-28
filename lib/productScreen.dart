@@ -21,49 +21,44 @@ class _ProductScreenState extends State<ProductScreen>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar
-      (
-        leading: FlatButton
-        (
-          child: Icon(IconData(58820, fontFamily: 'MaterialIcons')),
-          onPressed: ()
-          {
-            Navigator.pop(context);
-          },
-        ),
-      ),
       body: Column
       (
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          productImage(widget.product, context),
-          Padding
-          (
-            padding: EdgeInsets.all(12),
-            child: Column
-            (
-              children: <Widget>
-              [
-                Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
-                Row
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar
                 (
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: 
-                  [
-                    Text(widget.product.category),
-                    Text(widget.product.size),
-                    Text(getAgeRestrictionMessage(widget.product)),
-                  ]
+                  flexibleSpace: ClipRect(child: OverflowBox(
+                    maxHeight: MediaQuery.of(context).size.height,
+                      child: productImage(widget.product, context) 
+                      
+                    ),
+                  ),
+                  expandedHeight: MediaQuery.of(context).size.width,
+                  pinned: true,
+                  floating: true,
                 ),
+                SliverList
+                (
+                  delegate: SliverChildListDelegate.fixed(
+                    [
+                      Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
+                      Row
+                      (
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: 
+                        [
+                          Text(widget.product.category),
+                          Text(widget.product.size),
+                          Text(getAgeRestrictionMessage(widget.product)),
+                        ]
+                      ),
+                      Text(widget.product.description)
+                    ]
+                  )
+                )
               ]
-            ),
-          ),
-          Expanded
-          (
-            child: Padding
-            (
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              child: ListView(children: [Text(widget.product.description)])
             )
           ),
           Padding
@@ -172,6 +167,7 @@ Widget productImage(Product product, BuildContext context) => Hero
           child: SizedBox
           (
             width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.width,
             child: FittedBox
             (
               child: product.iconLarge,

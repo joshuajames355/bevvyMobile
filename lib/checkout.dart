@@ -152,111 +152,113 @@ class _CheckoutState extends State<Checkout>
 
   Widget bottomModal(BuildContext context)
   {
-    return Column
-    (
-      mainAxisSize: MainAxisSize.min,
-      children: 
-      [ 
-        Padding
-        (
-          padding: EdgeInsets.only(left: 15, right: 15, top: 20),
-          child: Row
+    return SafeArea(
+      child: Column
+      (
+        mainAxisSize: MainAxisSize.min,
+        children: 
+        [ 
+          Padding
           (
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: 
-            [
-              Text("Total", style: TextStyle(fontSize: 16)),
-              Text(widget.dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
-            ]
-          ),
-        ),
-        Padding
-        (
-          padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: TextField
-          (
-            autofocus: true,
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.next,
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'House Number/Name',
+            padding: EdgeInsets.only(left: 15, right: 15, top: 20),
+            child: Row
+            (
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: 
+              [
+                Text("Total", style: TextStyle(fontSize: 16)),
+                Text(widget.dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+              ]
             ),
-            onSubmitted: (_)
-            {
-              _noteToDriver.requestFocus();
-            },
           ),
-        ),
-        Padding
-        (
-          padding: EdgeInsets.only(bottom: max(10, MediaQuery.of(context).viewInsets.bottom-80), left: 15, right: 15),
-          child: TextField
+          Padding
           (
-            focusNode: _noteToDriver,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'Note to Driver',
+            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: TextField
+            (
+              autofocus: true,
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'House Number/Name',
+              ),
+              onSubmitted: (_)
+              {
+                _noteToDriver.requestFocus();
+              },
             ),
-            onSubmitted: (_)
-            {
-              FocusNode().requestFocus();
-            },
           ),
-        ),
-        Card
-        (
-          child: FlatButton
+          Padding
+          (
+            padding: EdgeInsets.only(bottom: max(10, MediaQuery.of(context).viewInsets.bottom-80), left: 15, right: 15),
+            child: TextField
+            (
+              focusNode: _noteToDriver,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: 'Note to Driver',
+              ),
+              onSubmitted: (_)
+              {
+                FocusNode().requestFocus();
+              },
+            ),
+          ),
+          Card
+          (
+            child: FlatButton
+            (
+              child: Container
+              (
+                padding: EdgeInsets.all(10),
+                width: double.infinity,
+                child: Center(child: Text("Change Payment Method")),
+              ),
+              onPressed:  ()
+              {
+                Navigator.pushNamed(context, '/paymentMethods');
+              },  
+            ),            
+          ),
+          (widget.paymentMethod != null && (widget.paymentMethod.type == "googlepay" || widget.paymentMethod.type == "applepay")) ? nativePayButton(context)
+          : RaisedButton
           (
             child: Container
             (
-              padding: EdgeInsets.all(10),
+              padding: EdgeInsets.all(15),
               width: double.infinity,
-              child: Center(child: Text("Change Payment Method")),
+              child:  Row
+              (
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:
+                [
+                  Text("Buy with")
+                ]..addAll(getPaymentMethodIndicator())                
+              ),
             ),
-            onPressed:  ()
+            onPressed: widget.paymentMethod == null ? null : ()
             {
-              Navigator.pushNamed(context, '/paymentMethods');
-            },  
-          ),            
-        ),
-        (widget.paymentMethod != null && (widget.paymentMethod.type == "googlepay" || widget.paymentMethod.type == "applepay")) ? nativePayButton(context)
-        : RaisedButton
-        (
-          child: Container
-          (
-            padding: EdgeInsets.all(15),
-            width: double.infinity,
-            child:  Row
-            (
-              mainAxisAlignment: MainAxisAlignment.center,
-              children:
-              [
-                Text("Buy with")
-              ]..addAll(getPaymentMethodIndicator())                
-            ),
+              showDialog(context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              content: Text('Confirm payment of ' + widget.dataStore.orderAmountStringWithCurrency),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text('Close'),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                                FlatButton(
+                                  child: Text('Pay'),
+                                  onPressed: () => runExistingCardPayment(),
+                                )
+                              ]);
+                          });
+            },
           ),
-          onPressed: widget.paymentMethod == null ? null : ()
-          {
-            showDialog(context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            content: Text('Confirm payment of ' + widget.dataStore.orderAmountStringWithCurrency),
-                            actions: <Widget>[
-                              FlatButton(
-                                child: Text('Close'),
-                                onPressed: () => Navigator.pop(context),
-                              ),
-                              FlatButton(
-                                child: Text('Pay'),
-                                onPressed: () => runExistingCardPayment(),
-                              )
-                            ]);
-                        });
-          },
-        ),
-      ]
+        ]
+      ),
     );
   }
 

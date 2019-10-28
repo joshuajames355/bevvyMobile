@@ -78,6 +78,7 @@ class DataStore {
     this.orderRef = null;
     this.orderStream = null;
     this.order = null;
+    this.checkoutData = Map<Product, int>();
   }
 
   void setOrderRef(DocumentReference ref) {

@@ -4,14 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'dart:async';
 
+typedef void OnClearBasket();
 
 //Displayed in the main list views
 class NewOrder extends StatefulWidget
 {
-  const NewOrder({ Key key, this.dataStore, this.isNative}) : super(key: key);
+  const NewOrder({ Key key, this.dataStore, this.isNative, this.onClearBasket}) : super(key: key);
 
   final DataStore dataStore;
   final bool isNative;
+  final OnClearBasket onClearBasket;
 
   @override
   _NewOrderState createState() => _NewOrderState();
@@ -46,7 +48,7 @@ class _NewOrderState extends State<NewOrder>
           StripePayment.completeNativePayRequest();
         }
         Future.delayed(Duration(seconds: 2)).then((x) {
-          Navigator.pushNamed(context, '/home');
+          Navigator.pushNamed(context, '/order', arguments: widget.dataStore.order.documentID);
         });
 
       } else {
@@ -69,6 +71,7 @@ class _NewOrderState extends State<NewOrder>
         });
         subscription?.cancel()?.then((FutureOr f) => subscriptionCancelled = true);
         Future.delayed(Duration(seconds: 2)).then((x) {
+          widget.onClearBasket();
           Navigator.pushNamed(context, '/home');
         });
       }

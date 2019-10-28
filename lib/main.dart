@@ -316,6 +316,11 @@ class _AppState extends State<App> {
             (
               isNative: args,
               dataStore: dataStore,
+              onClearBasket: (){
+                setState(() {
+                  dataStore.reset();
+                });
+              },
             )
           );
         }

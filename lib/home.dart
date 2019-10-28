@@ -7,13 +7,17 @@ import 'package:bevvymobile/storeFrontHome.dart';
 class Home extends StatefulWidget {
   Home({Key key, this.productList}) : super(key: key) {
     categories = [];
+    productListByCategory = Map<String, List<Product>>();
     productList.forEach((Product x) {
       if(!categories.contains(x.category)) categories.add(x.category);
+      if(productListByCategory.containsKey(x.category)) productListByCategory[x.category].add(x);
+      else productListByCategory[x.category] = [x];
     });
   }
 
   List<Product> productList;
   List<String> categories;
+  Map<String, List<Product>> productListByCategory;
 
   @override
   _HomeState createState() => _HomeState();
@@ -32,7 +36,7 @@ class _HomeState extends State<Home> {
         key: scaffoldKey,
         appBar: HomeAppBar(productList: widget.productList,),
         body: StoreFrontHome (
-          categories: widget.categories, 
+          productListByCategory: widget.productListByCategory,
         ),
         floatingActionButton: FloatingActionButton (
           child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),

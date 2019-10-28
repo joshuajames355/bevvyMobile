@@ -8,6 +8,7 @@ import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
+import 'package:bevvymobile/myOrders.dart';
 import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
@@ -175,21 +176,8 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => FutureBuilder(
             future: catalogue,
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if(!snapshot.hasData) {
-                return WillPopScope(
-                  onWillPop: () async => false,
-                  child: Container(
-                    color: Theme.of(context).backgroundColor,
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Align
-                    (
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    )
-                  )
-                );
-              }
+              if(!snapshot.hasData) return placeHolderPage();
+            
               return  Home(
                 productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
               );
@@ -211,18 +199,7 @@ class _AppState extends State<App> {
             stream: userData,
             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
               if(!snapshot.hasData) {
-                return WillPopScope(
-                  onWillPop: () async => false,
-                  child: Container(
-                    color: Theme.of(context).backgroundColor,
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    )
-                  )
-                );
+                return placeHolderPage();
               }
               return  AccountDetails(
                 user: user,
@@ -276,13 +253,34 @@ class _AppState extends State<App> {
           )); 
         }
         else if(settings.name == "/order") {
-          final Order args = settings.arguments;
+          final String orderID = settings.arguments;
 
-          return ExpandRoute(
-            page: (BuildContext context) => OrderScreen
-            (
-              order: args,
-              dataStore: dataStore,
+          return MaterialPageRoute(
+            builder: (BuildContext context) => StreamBuilder(
+              stream: Firestore.instance.collection("orders").document(orderID).snapshots(),
+              builder:  (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if(!snapshot.hasData) return placeHolderPage();
+                  
+                return OrderScreen
+                (
+                  order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
+                );
+              }
+            )
+          );  
+        }
+        else if(settings.name == "/myOrders") {
+          return SlideLeftRoute(
+            page: (BuildContext context) => StreamBuilder(
+              stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
+              builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if(!snapshot.hasData) return placeHolderPage();
+                  
+                return MyOrders
+                (
+                  orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+                );
+              }
             )
           );  
         }
@@ -302,21 +300,8 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => FutureBuilder(
             future: catalogue,
             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if(!snapshot.hasData) {
-                return WillPopScope(
-                  onWillPop: () async => false,
-                  child: Container(
-                    color: Theme.of(context).backgroundColor,
-                    width: double.infinity,
-                    height: double.infinity,
-                    child: Align
-                    (
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    )
-                  )
-                );
-              }
+              if(!snapshot.hasData) return placeHolderPage();
+
               return  CategoryScrollView(
                 productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
                 initialCategory: args,             
@@ -409,4 +394,21 @@ class _AppState extends State<App> {
         }
     }
   }
+}
+
+//Displayed when the page is not ready
+Widget placeHolderPage()
+{
+  return WillPopScope(
+    onWillPop: () async => false,
+    child: Container(
+      width: double.infinity,
+      height: double.infinity,
+      child: Align
+      (
+        alignment: Alignment.center,
+        child: CircularProgressIndicator(),
+      )
+    )
+  );
 }

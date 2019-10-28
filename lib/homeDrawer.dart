@@ -47,6 +47,15 @@ class HomeDrawer extends StatelessWidget
             ),
             ListTile
             (
+              title: Text("My Orders"),
+              trailing: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
+              onTap: ()
+              {
+                Navigator.popAndPushNamed(context, "/myOrders");
+              },
+            ),
+            ListTile
+            (
               title: Text("Payment Methods"),
               trailing: Icon(IconData(59553, fontFamily: 'MaterialIcons')),
               onTap: ()

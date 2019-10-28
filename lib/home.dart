@@ -1,5 +1,6 @@
 import 'package:bevvymobile/homeAppBar.dart';
 import 'package:bevvymobile/homeDrawer.dart';
+import 'package:bevvymobile/homeNavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/storeFrontHome.dart';
@@ -34,7 +35,10 @@ class _HomeState extends State<Home> {
       },
       child: Scaffold (
         key: scaffoldKey,
-        appBar: HomeAppBar(productList: widget.productList,),
+        appBar: AppBar(
+          title: Text("Home"),
+        ),
+        bottomNavigationBar: HomeNavBar(),
         body: StoreFrontHome (
           productListByCategory: widget.productListByCategory,
         ),
@@ -43,8 +47,7 @@ class _HomeState extends State<Home> {
           onPressed: () {
             Navigator.pushNamed(context, "/basket");
           },
-        ),
-        drawer: HomeDrawer()
+        )
       ),
     ); 
   }

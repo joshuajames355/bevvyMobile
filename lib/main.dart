@@ -78,7 +78,6 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   List<Order> orders;
   FirebaseUser user;
-  Stream<DocumentSnapshot> userData;
   final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
   Stream<QuerySnapshot> paymentMethodsStream;
@@ -119,8 +118,7 @@ class _AppState extends State<App> {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
       var userDocumentRef = Firestore.instance.collection('users').document(updatedUser.uid);
-      userData = userDocumentRef.snapshots();
-      var ds = await userData.first;
+      var ds = await userDocumentRef.get();
 
       paymentMethodsStream = Firestore.instance.collection('users').document(updatedUser.uid).collection('payment_methods').snapshots();
       paymentMethodsStream.handleError((error) {
@@ -196,7 +194,7 @@ class _AppState extends State<App> {
         }
         else if(settings.name == "/accountDetails") {
           return MaterialPageRoute(builder: (context) => StreamBuilder(
-            stream: userData,
+            stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
             builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
               if(!snapshot.hasData) {
                 return placeHolderPage();
@@ -210,8 +208,8 @@ class _AppState extends State<App> {
           ));
         }
         else if(settings.name == "/basket") {
-          return ExpandRoute(          
-            page: (BuildContext context) => Basket(
+          return MaterialPageRoute(          
+            builder: (BuildContext context) => Basket(
               dataStore: dataStore,
               removeFromBasket: removeFromBasket,
             ),
@@ -270,8 +268,8 @@ class _AppState extends State<App> {
           );  
         }
         else if(settings.name == "/myOrders") {
-          return SlideLeftRoute(
-            page: (BuildContext context) => StreamBuilder(
+          return MaterialPageRoute(
+            builder: (BuildContext context) => StreamBuilder(
               stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
               builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if(!snapshot.hasData) return placeHolderPage();
@@ -285,12 +283,17 @@ class _AppState extends State<App> {
           );  
         }
         else if(settings.name == "/search") {
-          final List<Product> args = settings.arguments;
-
           return SlideDownRoute(
-            page: (BuildContext context) => SearchResults
-            (
-              products: args,
+            page: (BuildContext context) => FutureBuilder(
+              future: catalogue,
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if(!snapshot.hasData) return placeHolderPage();
+                
+                return SearchResults
+                (
+                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                );
+              }
             )
           );  
         }

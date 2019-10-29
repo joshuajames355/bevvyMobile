@@ -1,5 +1,6 @@
 import 'package:bevvymobile/changeEmail.dart';
 import 'package:bevvymobile/changePassword.dart';
+import 'package:bevvymobile/homeNavBar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,14 +22,9 @@ class AccountDetails extends StatelessWidget
       appBar: AppBar
       (
         title: Text("Account Details"),
-        leading: FlatButton
-        (
-          child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
-          onPressed: ()
-          {
-            Navigator.pop(context);
-          },
-        ),
+      ),
+      bottomNavigationBar: HomeNavBar(
+        currentIndex: 2,
       ),
       body: Container
       (
@@ -91,6 +87,15 @@ class AccountDetails extends StatelessWidget
                   }
                 });
               },
+            ),
+            Card(
+              child: FlatButton(
+                child: Container(
+                  width: double.infinity,
+                  child: Text("Payment Methods")
+                ),
+                onPressed: () => Navigator.pushNamed(context, "/paymentMethods"),
+              ),
             ),
             Expanded(child: Container()),//Fill space
             ]

@@ -46,15 +46,16 @@ class _CategoryScrollViewState extends State<CategoryScrollView>
   Widget build(BuildContext context) {
     return Scaffold
     (
-      appBar: HomeAppBar(productList: widget.productList,),
-      drawer: HomeDrawer(),
-      floatingActionButton: FloatingActionButton
+      appBar: AppBar
       (
-        child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-        onPressed: ()
-        {
-          Navigator.pushNamed(context, "/basket");
-        },
+        leading: FlatButton
+        (
+          child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
+          onPressed: ()
+          {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: PageView
       (

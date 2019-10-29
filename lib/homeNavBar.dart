@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 
 class HomeNavBar extends StatelessWidget 
 {
-  const HomeNavBar({ Key key}) :  super(key: key);
+  const HomeNavBar({ Key key, this.currentIndex}) :  super(key: key);
+
+  final int currentIndex;
   
   @override
   Widget build(BuildContext context)
   {
     return BottomNavigationBar
     (
+      type: BottomNavigationBarType.fixed,
+      selectedItemColor: Theme.of(context).accentColor,
+      currentIndex: currentIndex,
       items: [
         BottomNavigationBarItem
         (
@@ -17,12 +22,17 @@ class HomeNavBar extends StatelessWidget
         ),
         BottomNavigationBarItem
         (
-          title: Text("My Account"),
+          title: Text("Basket"),
+          icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+        ),
+        BottomNavigationBarItem
+        (
+          title: Text("Account"),
           icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
         ),
         BottomNavigationBarItem
         (
-          title: Text("My Orders"),
+          title: Text("Orders"),
           icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
         ),
       ],
@@ -32,9 +42,12 @@ class HomeNavBar extends StatelessWidget
             Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
             return;
           case 1:
-            Navigator.pushNamed(context, "/accountDetails");
+            Navigator.pushNamed(context, "/basket");
             return;
           case 2:
+            Navigator.pushNamed(context, "/accountDetails");
+            return;
+          case 3:
             Navigator.pushNamed(context, "/myOrders");
             return;
         }

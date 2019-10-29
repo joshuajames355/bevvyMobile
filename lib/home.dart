@@ -37,17 +37,22 @@ class _HomeState extends State<Home> {
         key: scaffoldKey,
         appBar: AppBar(
           title: Text("Home"),
+          actions: <Widget>
+          [
+            IconButton(
+              onPressed: (){
+
+              },
+              icon: Icon(IconData(59574, fontFamily: 'MaterialIcons')),
+            )
+          ],
         ),
-        bottomNavigationBar: HomeNavBar(),
+        bottomNavigationBar: HomeNavBar(
+          currentIndex: 0,
+        ),
         body: StoreFrontHome (
           productListByCategory: widget.productListByCategory,
         ),
-        floatingActionButton: FloatingActionButton (
-          child: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-          onPressed: () {
-            Navigator.pushNamed(context, "/basket");
-          },
-        )
       ),
     ); 
   }

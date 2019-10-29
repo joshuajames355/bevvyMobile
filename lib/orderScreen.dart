@@ -30,37 +30,57 @@ class _OrderScreenState extends State<OrderScreen>{
       body: Column
       (
         children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20, bottom: 10),
+            child: Center(child: Text("Items", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),)),
+          ),
+          Divider(),
           Expanded
           (
             child: Container
             (
-              margin: EdgeInsets.all(25),
+              margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               child: ListView
               (
                 children: widget.order.products.keys.map(
-                  (String productID) => Text(
-                    " - " +  productID + " X " + widget.order.products[productID].toString(), 
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 18),)
+                  (String productID) => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children:
+                    [
+                      SizedBox(
+                        width: 300,
+                        child: Text(productID, overflow: TextOverflow.ellipsis)
+                      ),
+                      Text("x " + widget.order.products[productID].toString(), style: TextStyle(color: Theme.of(context).accentColor),) 
+                    ]
+                  )
                 ).toList(),
               )
             ),
           ),        
-          //Get total of order.   
-          /*Container
-          (
-            margin: EdgeInsets.symmetric(horizontal: 25),
-            child: Row
-            (
-              children: [Text("Total: " + widget.dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16))]
-            )
-          ),*/
+          Divider(),
           Container
           (
-            margin: EdgeInsets.fromLTRB(25, 20, 25, 25),
+            margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
             child: Row
             (
-              children: [Text("Status: " + widget.order.status, style: TextStyle(fontSize: 16))]
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Total: "),
+                Text("£0.00", style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+              ]
+            )
+          ),
+          Container
+          (
+            margin: EdgeInsets.fromLTRB(25, 5, 25, 25),
+            child: Row
+            (
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Status: "),
+                Text(widget.order.status, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+              ]
             )
           ),
         ]

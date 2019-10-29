@@ -283,12 +283,17 @@ class _AppState extends State<App> {
           );  
         }
         else if(settings.name == "/search") {
-          final List<Product> args = settings.arguments;
-
           return SlideDownRoute(
-            page: (BuildContext context) => SearchResults
-            (
-              products: args,
+            page: (BuildContext context) => FutureBuilder(
+              future: catalogue,
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if(!snapshot.hasData) return placeHolderPage();
+                
+                return SearchResults
+                (
+                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                );
+              }
             )
           );  
         }

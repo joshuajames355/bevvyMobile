@@ -40,9 +40,7 @@ class _HomeState extends State<Home> {
           actions: <Widget>
           [
             IconButton(
-              onPressed: (){
-
-              },
+              onPressed: () => Navigator.pushNamed(context, "/search"),
               icon: Icon(IconData(59574, fontFamily: 'MaterialIcons')),
             )
           ],

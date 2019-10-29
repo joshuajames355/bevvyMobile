@@ -47,7 +47,8 @@ class _NewOrderState extends State<NewOrder>
         if (widget.isNative) {
           StripePayment.completeNativePayRequest();
         }
-        Future.delayed(Duration(seconds: 2)).then((x) {
+        Future.delayed(Duration(seconds: 1)).then((x) {
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
           Navigator.pushNamed(context, '/order', arguments: widget.dataStore.order.documentID);
         });
 
@@ -62,6 +63,10 @@ class _NewOrderState extends State<NewOrder>
         if (widget.isNative) {
           StripePayment.cancelNativePayRequest();
         }
+        Future.delayed(Duration(seconds: 2)).then((x) {
+          widget.onClearBasket();
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+        });
       }
     });
     Future.delayed(Duration(seconds: 10)).then((x) {
@@ -72,7 +77,7 @@ class _NewOrderState extends State<NewOrder>
         subscription?.cancel()?.then((FutureOr f) => subscriptionCancelled = true);
         Future.delayed(Duration(seconds: 2)).then((x) {
           widget.onClearBasket();
-          Navigator.pushNamed(context, '/home');
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
         });
       }
     });

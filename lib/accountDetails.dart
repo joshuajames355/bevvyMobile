@@ -88,6 +88,15 @@ class AccountDetails extends StatelessWidget
                 });
               },
             ),
+            Card(
+              child: FlatButton(
+                child: Container(
+                  width: double.infinity,
+                  child: Text("Payment Methods")
+                ),
+                onPressed: () => Navigator.pushNamed(context, "/paymentMethods"),
+              ),
+            ),
             Expanded(child: Container()),//Fill space
             ]
         )

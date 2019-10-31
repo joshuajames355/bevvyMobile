@@ -268,11 +268,7 @@ class _CheckoutState extends State<Checkout>
     {
       return InkWell
       (
-        onTap: ()
-        {
-          //TODO: google pay
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-        },
+        onTap: doNativePayment,
         child: Container
         (
           height: 50,
@@ -288,32 +284,7 @@ class _CheckoutState extends State<Checkout>
     {
       return InkWell
       (
-        onTap: () async
-        {
-          try {
-            Token nativePayToken = await StripePayment.paymentRequestWithNativePay(
-              androidPayOptions: AndroidPayPaymentRequest(
-                total_price: widget.dataStore.orderAmountString,
-                currency_code: "GBP",
-              ),
-              applePayOptions: ApplePayPaymentOptions(
-                countryCode: 'GB',
-                currencyCode: 'GBP',
-                items: widget.dataStore.basketAsApplePayItems
-              ));
-
-              // Send token to backend
-              PaymentMethod nativePayTempPaymentMethod = await StripePayment.createPaymentMethod(PaymentMethodRequest(card: CreditCard(token: nativePayToken.tokenId)));
-              runAllCardPayment(nativePayTempPaymentMethod.id, true);
-          } on PlatformException catch(exception) {
-            // 'cancelled' operation indicates user has dismissed modal window (iOS only)
-            if (exception.code != 'cancelled') {
-              rethrow;
-            }
-          } catch (error) {
-            print(error);
-          }
-        },
+        onTap: doNativePayment,
         child: Container
         (
           height: 50,
@@ -324,6 +295,33 @@ class _CheckoutState extends State<Checkout>
           )   
         )
       );
+    }
+  }
+
+  void doNativePayment() async
+  {
+    try {
+      Token nativePayToken = await StripePayment.paymentRequestWithNativePay(
+        androidPayOptions: AndroidPayPaymentRequest(
+          total_price: widget.dataStore.orderAmountString,
+          currency_code: "GBP",
+        ),
+        applePayOptions: ApplePayPaymentOptions(
+          countryCode: 'GB',
+          currencyCode: 'GBP',
+          items: widget.dataStore.basketAsApplePayItems
+        ));
+
+        // Send token to backend
+        PaymentMethod nativePayTempPaymentMethod = await StripePayment.createPaymentMethod(PaymentMethodRequest(card: CreditCard(token: nativePayToken.tokenId)));
+        runAllCardPayment(nativePayTempPaymentMethod.id, true);
+    } on PlatformException catch(exception) {
+      // 'cancelled' operation indicates user has dismissed modal window (iOS only)
+      if (exception.code != 'cancelled') {
+        rethrow;
+      }
+    } catch (error) {
+      print(error);
     }
   }
 

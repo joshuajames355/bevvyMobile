@@ -1,3 +1,4 @@
+import 'package:bevvymobile/dataStore.dart';
 import 'package:flutter/material.dart';
 import "package:bevvymobile/product.dart";
 import "dart:math";
@@ -6,30 +7,30 @@ typedef void AddToBasketFunc(Product product, int quantity);
 
 class ProductScreen extends StatefulWidget
 {
-  const ProductScreen({ Key key, this.product, this.addToBasket}) : super(key: key);
+  const ProductScreen({ Key key, this.product, this.addToBasket, this.dataStore}) : super(key: key);
 
   final Product product;
   final AddToBasketFunc addToBasket;
+  final DataStore dataStore;
 
   @override
   _ProductScreenState createState() => _ProductScreenState();
 }
 
 class _ProductScreenState extends State<ProductScreen> with SingleTickerProviderStateMixin{
-  int count = 1;
   ScrollController _controller = ScrollController();
   double scrollValue = 0;
-  double AppBarOpacity = 0;
+  double appBarOpacity = 0;
   bool isAppBarVisible = false;
 
   AnimationController animationController;
-  Animation<double> AppBarAnimation;
+  Animation<double> appBarAnimation;
 
 
   @override
   void initState() {
     animationController = AnimationController(duration: const Duration(milliseconds: 400), vsync: this);
-    AppBarAnimation = Tween<double>(begin: 0, end: 1).animate
+    appBarAnimation = Tween<double>(begin: 0, end: 1).animate
     (
       CurvedAnimation
       (
@@ -37,9 +38,9 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
         curve: Curves.easeInOutSine,
       )
     );
-    AppBarAnimation.addListener((){
+    appBarAnimation.addListener((){
       setState((){
-        AppBarOpacity = AppBarAnimation.value;
+        appBarOpacity = appBarAnimation.value;
       });
     });
 
@@ -49,7 +50,6 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
         setState(() {
           scrollValue = _controller.offset;
         });
-        print(MediaQuery.of(context).size.width - _controller.offset);
         if(isAppBarVisible && MediaQuery.of(context).size.width - _controller.offset > 100 ) 
         {
           isAppBarVisible = false;
@@ -67,148 +67,83 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
+    int quantity = 0;
+    widget.dataStore.checkoutData.forEach((Product prod, int value)
+    {
+      if(prod.id == widget.product.id) quantity = value;
+    });
     return Scaffold(
-      body: Column
-      (
-        children: [
-          Expanded(
-            child: CustomScrollView(
-              controller: _controller,
-              slivers: [
-                SliverAppBar
-                (
-                  flexibleSpace: Stack(
-                    children:
-                    [
-                      ClipRect(
-                        child: OverflowBox(
-                          maxHeight: MediaQuery.of(context).size.height,
-                            child: productImage(widget.product, context) 
-                          ),
-                      ),
-                      Opacity(
-                        opacity: AppBarOpacity,
-                        child: AppBar(
-                          title: Text(widget.product.title),
-                          leading: FlatButton
-                          (
-                            child: Icon(IconData(58820, fontFamily: 'MaterialIcons')),
-                            onPressed: ()
-                            {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
-                      )
-                    ]
-                  ),
-                  expandedHeight: MediaQuery.of(context).size.width,
-                  pinned: true,
-                  floating: true,
+      floatingActionButton: RaisedButton
+        (
+          shape: RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(8.0)),
+        onPressed: () => widget.addToBasket(widget.product,1),
+        child: Padding
+        (
+          padding: EdgeInsets.all(7),
+          child: Text("Add to Basket" + (quantity == 0 ? "" : (" (" + quantity.toString() + ")"))),
+        ),
+      ),
+      body: CustomScrollView(
+        controller: _controller,
+        slivers: [
+          SliverAppBar
+          (
+            flexibleSpace: Stack(
+              children:
+              [
+                ClipRect(
+                  child: OverflowBox(
+                    maxHeight: MediaQuery.of(context).size.height,
+                      child: productImage(widget.product, context) 
+                    ),
                 ),
-                SliverList
-                (
-                  delegate: SliverChildListDelegate.fixed(
-                    [
-                      Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        child: Row
-                        (
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: 
-                          [
-                            Text(widget.product.category),
-                            Text(widget.product.size),
-                            Text(getAgeRestrictionMessage(widget.product)),
-                          ]
-                        ),
-                      ),
-                      Text(widget.product.description)
-                    ]
-                  )
+                Opacity(
+                  opacity: min(1, max(0, appBarOpacity ?? 0)),
+                  child: AppBar(
+                    title: Text(widget.product.title),
+                    leading: FlatButton
+                    (
+                      child: Icon(IconData(58820, fontFamily: 'MaterialIcons')),
+                      onPressed: ()
+                      {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
                 )
               ]
-            )
+            ),
+            expandedHeight: MediaQuery.of(context).size.width,
+            pinned: true,
+            floating: true,
           ),
-          Padding
+          SliverList
           (
-            padding: EdgeInsets.all(5),
-            child: Row
-            (
-              children: <Widget>
+            delegate: SliverChildListDelegate.fixed(
               [
-                Expanded
-                (
+                Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
                   child: Row
                   (
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: 
                     [
-                      FloatingActionButton
-                      (
-                        heroTag: "btn1",
-                        child: new Icon(IconData(0xe15b, fontFamily: 'MaterialIcons')),
-                        onPressed: () 
-                        {
-                          setState(() 
-                          {
-                            count = max(1, count - 1);
-                          });
-                        }
-                      ),
-                      Text(
-                        count.toString(),
-                        style: TextStyle
-                        (
-                          fontSize: 18
-                        ),
-                      ),
-                      FloatingActionButton
-                      (
-                        heroTag: "btn2",
-                        child: new Icon(Icons.add),
-                        onPressed: () 
-                        {
-                          setState(() 
-                          {
-                            count = count + 1;
-                          });
-                        }
-                      ),  
+                      Text(widget.product.category),
+                      Text(widget.product.size),
+                      Text(getAgeRestrictionMessage(widget.product)),
                     ]
-                  )
+                  ),
                 ),
-                Expanded
-                (
-                  child: RaisedButton
-                  (
-                    shape: RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(8.0)),
-                    onPressed: ()
-                    {
-                      widget.addToBasket(widget.product, count);
-                      Navigator.pop(context);
-                    },
-                    child: Padding
-                    (
-                      padding: EdgeInsets.all(15),
-                      child: Container
-                      (
-                        width: double.infinity,
-                        child: Center(child: Text("Add To Basket",
-                          style: TextStyle(fontSize: 18)),
-                        )
-                      )
-                    ),
-                  )
-                )
+                Text(widget.product.description),
+                Container(height: 100,)
               ]
             )
           )
         ]
-      ), 
-    );    
+      )
+    );
   }
 
   Widget productImage(Product product, BuildContext context)

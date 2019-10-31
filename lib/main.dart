@@ -231,6 +231,7 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => ProductScreen(
               product: args, 
               addToBasket: addToBasket,
+              dataStore: dataStore ,
             )
           );
         }

@@ -1,5 +1,4 @@
 import 'package:bevvymobile/changeEmail.dart';
-import 'package:bevvymobile/changePassword.dart';
 import 'package:bevvymobile/homeNavBar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -68,25 +67,6 @@ class AccountDetails extends StatelessWidget
                   Text(( user.phoneNumber ?? "Not Set"), style: TextStyle(fontSize: 18),),
                 ]
               )            
-            ),
-            (user.providerData.where((UserInfo x) => x.providerId=="password").length == 0) ? Container() :
-            RaisedButton
-            (
-              color: Theme.of(context).primaryColor,
-              child: Container
-              (
-                width: double.infinity,
-                child: Center(child: Text("Change Password"),),
-              ),
-              onPressed: ()
-              {
-                showDialog(context: context, builder: (context) => ChangePassword(user: user)).then((x){
-                  if(x == true)
-                  {
-                    showDialog(context: context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("Your password has been changed.")));
-                  }
-                });
-              },
             ),
             Card(
               child: FlatButton(

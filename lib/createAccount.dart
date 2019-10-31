@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 typedef dynamic HandleAuthStateChangeFunc(FirebaseUser updatedUser);
 
@@ -227,17 +228,17 @@ class _CreateAccountState extends State<CreateAccount>
   {
     if(_nameController.text == "")
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Full Name is required.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Full Name is required.")));
       return;
     }
     if(_emailController.text == "")
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Email Address is required.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Email Address is required.")));
       return;
     }
     if(_dateOfBirth == null)
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Date of birth is required.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Date of birth is required.")));
       return;
     }
 
@@ -246,7 +247,7 @@ class _CreateAccountState extends State<CreateAccount>
       || (currentDatetime.year - _dateOfBirth.year == 18 && currentDatetime.month < _dateOfBirth.month)
       ||  (currentDatetime.year - _dateOfBirth.year == 18 && currentDatetime.month == _dateOfBirth.month && currentDatetime.day < _dateOfBirth.day) )
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("You need to be older than 18.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("You need to be older than 18.")));
       return;
     }
 
@@ -267,7 +268,7 @@ class _CreateAccountState extends State<CreateAccount>
       // Fetch user data doc, this in in turn prompt navigation
       widget.handleAuthStateChangeFunc(widget.user);
     }).catchError((e) {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("ERROR"), content: Text("Creating Account Failed, Please try again later.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("ERROR"), content: Text("Creating Account Failed, Please try again later.")));
     });
   }
 }

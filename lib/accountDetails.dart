@@ -3,6 +3,7 @@ import 'package:bevvymobile/homeNavBar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 typedef void VoidFunc();
 
@@ -45,7 +46,7 @@ class AccountDetails extends StatelessWidget
               ),
               onPressed: ()
               {
-                showDialog(context: context, builder: (context) => ChangeEmail(user: user)).then((var x)
+                showPlatformDialog(context: context, builder: (context) => ChangeEmail(user: user)).then((var x)
                 {
                   if(x == true)
                   {

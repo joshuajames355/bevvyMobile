@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:bevvymobile/globals.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 //Initial Screen
 class CreateAccountSMS extends StatefulWidget {
@@ -159,7 +160,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS> {
     auth.verifyPhoneNumber(phoneNumber: _phoneNumber, timeout: Duration(seconds: 30), 
       verificationCompleted: verificationCompleted,
       verificationFailed: (AuthException error) {
-        showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Verification Failed.")));
+        showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Verification Failed.")));
         setState(() {
           _isTextSent = false;
         });
@@ -195,13 +196,13 @@ class _CreateAccountSMSState extends State<CreateAccountSMS> {
     } catch(e) {
       switch (e.code) {
         case "ERROR_INVALID_CREDENTIAL":
-          showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
+          showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
           break;
         case "ERROR_USER_DISABLED":
-          showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
+          showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
           break;
         case "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
-          showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("Account already exists.")));
+          showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Account already exists.")));
           break;
         case "ERROR_OPERATION_NOT_ALLOWED":
           break;

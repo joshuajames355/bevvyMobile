@@ -3,6 +3,7 @@ import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/dataStore.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 typedef void RemoveFromBasketFunc(String productID);
 typedef void AddOrder(Order order);
@@ -157,7 +158,7 @@ class Basket extends StatelessWidget
                               icon: Icon(IconData(59534, fontFamily: 'MaterialIcons')),
                               onPressed: ()
                               {
-                                showDialog(context: context, builder: (context) => AlertDialog(title: Text("Delivery fee"), content: Text("Free if you spend more than £25.")));
+                                showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Delivery fee"), content: Text("Free if you spend more than £25.")));
                               },
                             ),
                           ),
@@ -194,7 +195,7 @@ class Basket extends StatelessWidget
             onPressed: () async
             {
               if (dataStore.checkoutData.length == 0) {
-                showDialog(context: context, builder: (context) => AlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
+                showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
               } else {                
                 try {
                   dataStore.createOrUpdateFirestoreOrder();

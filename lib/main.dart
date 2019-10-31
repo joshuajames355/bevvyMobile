@@ -30,6 +30,7 @@ import 'package:stripe_payment/stripe_payment.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 int accentColour = 0XFF91FFF8;
 Map<int, Color> accentColorPalette = {
@@ -348,7 +349,7 @@ class _AppState extends State<App> {
 
   onLogin(FirebaseUser newUser) {
     navKey.currentState.pop();
-    showDialog(context: navKey.currentState.overlay.context, builder: (context) => AlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
+    showPlatformDialog(context: navKey.currentState.overlay.context, builder: (context) => PlatformAlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
   }
 
   onUserChange() {

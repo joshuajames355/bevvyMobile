@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class ChangeEmail extends StatefulWidget
 {
@@ -71,7 +72,7 @@ class _ChangeEmailState extends State<ChangeEmail>
     }).then((_) {
       Navigator.pop(context);
     }).catchError((e) {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("ERROR"), content: Text("Operation Failed, Please try again later.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("ERROR"), content: Text("Operation Failed, Please try again later.")));
     });
   }
 }

@@ -24,6 +24,7 @@ dependencies:
   intl: ^0.15.0
   google_maps_flutter: ^0.5.21+7
   location: ^2.3.5
+  flutter_platform_widgets: ^0.20.2
   stripe_payment: ^1.0.4
 
   firebase_analytics: ^5.0.2

@@ -6,10 +6,9 @@ import 'package:location/location.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:bevvymobile/dataStore.dart';
 import 'package:flutter/rendering.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
-import 'dart:async';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class Checkout extends StatefulWidget
 {
@@ -240,9 +239,9 @@ class _CheckoutState extends State<Checkout>
             ),
             onPressed: widget.paymentMethod == null ? null : ()
             {
-              showDialog(context: context,
+              showPlatformDialog(context: context,
                           builder: (context) {
-                            return AlertDialog(
+                            return PlatformAlertDialog(
                               content: Text('Confirm payment of ' + widget.dataStore.orderAmountStringWithCurrency),
                               actions: <Widget>[
                                 FlatButton(
@@ -363,7 +362,7 @@ class _CheckoutState extends State<Checkout>
   void runAllCardPayment(String paymentMethodID, bool isNative) async {
     if(widget.dataStore.order.data["status"] == "new_order")
     {
-      showDialog(context: context, builder: (context) => AlertDialog(title: Text("Error"), content: Text("A server Error has occured.\nPlease Try Again Later.")));
+      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("A server Error has occured.\nPlease Try Again Later.")));
       return;
     }
 

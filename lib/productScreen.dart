@@ -19,17 +19,17 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
   int count = 1;
   ScrollController _controller = ScrollController();
   double scrollValue = 0;
-  double appBarOpacity = 0;
+  double AppBarOpacity = 0;
   bool isAppBarVisible = false;
 
   AnimationController animationController;
-  Animation<double> appBarAnimation;
+  Animation<double> AppBarAnimation;
 
 
   @override
   void initState() {
     animationController = AnimationController(duration: const Duration(milliseconds: 400), vsync: this);
-    appBarAnimation = Tween<double>(begin: 0, end: 1).animate
+    AppBarAnimation = Tween<double>(begin: 0, end: 1).animate
     (
       CurvedAnimation
       (
@@ -37,9 +37,9 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
         curve: Curves.easeInOutSine,
       )
     );
-    appBarAnimation.addListener((){
+    AppBarAnimation.addListener((){
       setState((){
-        appBarOpacity = appBarAnimation.value;
+        AppBarOpacity = AppBarAnimation.value;
       });
     });
 
@@ -87,7 +87,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                           ),
                       ),
                       Opacity(
-                        opacity: appBarOpacity,
+                        opacity: AppBarOpacity,
                         child: AppBar(
                           title: Text(widget.product.title),
                           leading: FlatButton

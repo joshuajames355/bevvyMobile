@@ -25,16 +25,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  GlobalKey<ScaffoldState> ScaffoldKey = GlobalKey();
+  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   @override
   Widget build(BuildContext context)  {
     return WillPopScope(
       onWillPop: () {
-        return Future.value(ScaffoldKey.currentState.isDrawerOpen);
+        return Future.value(scaffoldKey.currentState.isDrawerOpen);
       },
       child: Scaffold (
-        key: ScaffoldKey,
+        key: scaffoldKey,
         appBar: AppBar(
           title: Text("Home"),
           actions: <Widget>

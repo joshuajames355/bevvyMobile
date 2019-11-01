@@ -122,22 +122,29 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
           (
             delegate: SliverChildListDelegate.fixed(
               [
-                Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
                 Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
+                  padding: EdgeInsets.fromLTRB(12,12,12,0),
+                  child: Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(12,12,12,0),
                   child: Row
                   (
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: 
                     [
-                      Text(widget.product.category),
-                      Text(widget.product.size),
-                      Text(getAgeRestrictionMessage(widget.product)),
+                      Text(widget.product.category, style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(widget.product.size, style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(getAgeRestrictionMessage(widget.product), style: TextStyle(fontWeight: FontWeight.bold),),
                     ]
                   ),
                 ),
-                Text(widget.product.description),
-                Container(height: 100,)
+                Divider(height: 20, thickness: 2,),
+                Padding(
+                  child:Text(widget.product.description),
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                ),
+                Container(height: 75,)
               ]
             )
           )

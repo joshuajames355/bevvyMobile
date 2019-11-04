@@ -187,6 +187,28 @@ class _AppState extends State<App> {
             ) : selectedTab == 1 ?Basket(
               dataStore: dataStore,
               removeFromBasket: removeFromBasket,
+            ) : selectedTab == 2 ? StreamBuilder(
+              stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
+              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if(!snapshot.hasData) {
+                  return placeHolderPage();
+                }
+                return  AccountDetails(
+                  user: user,
+                  onUserChange: onUserChange,
+                  userDocument: snapshot.data,
+                );
+              }
+            ) : selectedTab == 3 ? StreamBuilder(
+              stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
+              builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if(!snapshot.hasData) return placeHolderPage();
+                  
+                return MyOrders
+                (
+                  orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+                );
+              }
             ) : Container(),
             bottomNavBar: PlatformNavBar(
               ios: (_) => CupertinoTabBarData(backgroundColor: Theme.of(context).backgroundColor, inactiveColor: Colors.white),
@@ -303,21 +325,6 @@ class _AppState extends State<App> {
                 return OrderScreen
                 (
                   order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
-                );
-              }
-            )
-          );  
-        }
-        else if(settings.name == "/myOrders") {
-          return MaterialPageRoute(
-            builder: (BuildContext context) => StreamBuilder(
-              stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
-              builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-                  
-                return MyOrders
-                (
-                  orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
                 );
               }
             )

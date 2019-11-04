@@ -26,6 +26,7 @@ dependencies:
   location: ^2.3.5
   flutter_platform_widgets: ^0.20.2
   stripe_payment: ^1.0.4
+  edit_distance: ^0.4.1
 
   firebase_analytics: ^5.0.2
   firebase_crashlytics: ^0.1.0+3

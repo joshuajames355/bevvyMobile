@@ -1,5 +1,6 @@
 import 'package:bevvymobile/product.dart';
 import "package:bevvymobile/productWidget.dart";
+import 'package:edit_distance/edit_distance.dart';
 import 'package:flutter/material.dart';
 
 //Renders a List of all products, seperated by categories.
@@ -17,6 +18,7 @@ class _SearchResultsState extends State<SearchResults>
 {
   //Ensures no search results before the user submits a new searchQuery
   String searchQuery = "_zgx@-~|ab23dA[";
+  var fuzzyComp = Damerau();
 
   @override
   Widget build(BuildContext context)
@@ -54,7 +56,9 @@ class _SearchResultsState extends State<SearchResults>
       (
         padding: EdgeInsets.symmetric(vertical: 10),
         children: widget.productList.where((Product x){
-            return x.title.toLowerCase().contains(searchQuery.toLowerCase());
+            return fuzzyComp.distance(x.title.toLowerCase(), searchQuery.toLowerCase()) < 5 || 
+                    x.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                    fuzzyComp.distance(x.category.toLowerCase(), searchQuery.toLowerCase()) < 3;
           }).map((Product x) {
             return ProductWidget(product: x, );
           }).toList()

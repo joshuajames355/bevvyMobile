@@ -189,6 +189,8 @@ class _AppState extends State<App> {
               removeFromBasket: removeFromBasket,
             ) : Container(),
             bottomNavBar: PlatformNavBar(
+              ios: (_) => CupertinoTabBarData(backgroundColor: Theme.of(context).backgroundColor, inactiveColor: Colors.white),
+              android: (_) => MaterialNavBarData(type: BottomNavigationBarType.fixed),
               currentIndex: selectedTab,
               itemChanged: (int index){
                 setState(() {

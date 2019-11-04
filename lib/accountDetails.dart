@@ -1,4 +1,5 @@
 import 'package:bevvymobile/changeEmail.dart';
+import 'package:bevvymobile/globals.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,13 +23,12 @@ class AccountDetails extends StatelessWidget
       (
         title: Text("Account Details"),
       ),
-      body: Container
+      body: Column
       (
-        padding: EdgeInsets.all(25),
-        child: Column
-        (
-          children: [
-            FlatButton
+        children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(10, 25, 10, 0),
+            child: FlatButton
             (
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Row
@@ -51,7 +51,11 @@ class AccountDetails extends StatelessWidget
                 });
               },
             ),
-            Container
+          ),
+          Padding
+          (
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Container
             (
               margin: EdgeInsets.symmetric(vertical: 12),
               alignment: Alignment.centerLeft,
@@ -65,18 +69,27 @@ class AccountDetails extends StatelessWidget
                 ]
               )            
             ),
-            Card(
-              child: FlatButton(
-                child: Container(
-                  width: double.infinity,
-                  child: Text("Payment Methods")
-                ),
-                onPressed: () => Navigator.pushNamed(context, "/paymentMethods"),
+          ),
+          Card(
+            child: FlatButton(
+              child: Container(
+                width: double.infinity,
+                child: Text("Payment Methods")
               ),
+              onPressed: () => Navigator.pushNamed(context, "/paymentMethods"),
             ),
-            Expanded(child: Container()),//Fill space
-            ]
-        )
+          ),
+          Expanded(child: Container()),//Fill space
+          FlatButton(
+            onPressed: (){
+              auth.signOut();
+            },
+            child: Container(
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              child: Text("Log Out"),),
+          )
+        ]
       )
     );
   }

@@ -36,7 +36,7 @@ class Product
         alignment: Alignment.center,
         child: Container
         (
-          child: CircularProgressIndicator(),
+          decoration: BoxDecoration(color: Colors.black),
           height: largeImageSize,
         )
       ),
@@ -50,7 +50,7 @@ class Product
         alignment: Alignment.center,
         child: Container
         (
-          child: CircularProgressIndicator(),
+          decoration: BoxDecoration(color: Colors.black),
           height: largeImageSize,
         )
       ),

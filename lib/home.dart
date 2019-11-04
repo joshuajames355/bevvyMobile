@@ -1,5 +1,4 @@
-import 'package:bevvymobile/homeAppBar.dart';
-import 'package:bevvymobile/homeDrawer.dart';
+
 import 'package:bevvymobile/homeNavBar.dart';
 import 'package:flutter/material.dart';
 import 'package:bevvymobile/product.dart';
@@ -44,9 +43,6 @@ class _HomeState extends State<Home> {
               icon: Icon(IconData(59574, fontFamily: 'MaterialIcons')),
             )
           ],
-        ),
-        bottomNavigationBar: HomeNavBar(
-          currentIndex: 0,
         ),
         body: StoreFrontHome (
           productListByCategory: widget.productListByCategory,

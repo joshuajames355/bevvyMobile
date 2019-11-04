@@ -1,4 +1,3 @@
-import 'package:bevvymobile/homeNavBar.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
@@ -74,9 +73,6 @@ class Basket extends StatelessWidget
       appBar: AppBar
       (
         title: Text("Your Basket"),
-      ),
-      bottomNavigationBar: HomeNavBar(
-        currentIndex: 1,
       ),
       body: Column
       (

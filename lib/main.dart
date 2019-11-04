@@ -85,6 +85,7 @@ class _AppState extends State<App> {
   List<PaymentMethod> paymentMethods = [];
   PaymentMethod selectedMethod;
   DataStore dataStore;
+  int selectedTab = 0;
 
   @override
   initState() {
@@ -172,15 +173,51 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
         else if(settings.name == "/home") {
-          return MaterialPageRoute(builder: (context) => FutureBuilder(
-            future: catalogue,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if(!snapshot.hasData) return placeHolderPage();
-            
-              return  Home(
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
-              );
-            }
+          return MaterialPageRoute(builder: (context) => PlatformScaffold
+          (
+            body: selectedTab == 0 ? FutureBuilder(
+              future: catalogue,
+              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                if(!snapshot.hasData) return placeHolderPage();
+              
+                return  Home(
+                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
+                );
+              }
+            ) : selectedTab == 1 ?Basket(
+              dataStore: dataStore,
+              removeFromBasket: removeFromBasket,
+            ) : Container(),
+            bottomNavBar: PlatformNavBar(
+              currentIndex: selectedTab,
+              itemChanged: (int index){
+                setState(() {
+                  selectedTab = index;
+                });
+              },
+              items: [
+                BottomNavigationBarItem
+                (
+                  title: Text("Home"),
+                  icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
+                ),
+                BottomNavigationBarItem
+                (
+                  title: Text("Basket"),
+                  icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+                ),
+                BottomNavigationBarItem
+                (
+                  title: Text("Account"),
+                  icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
+                ),
+                BottomNavigationBarItem
+                (
+                  title: Text("Orders"),
+                  icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
+                ),
+              ],
+            ),
           ));
         }
         else if(settings.name == "/createAccountSMS") {

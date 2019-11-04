@@ -228,17 +228,17 @@ class _CreateAccountState extends State<CreateAccount>
   {
     if(_nameController.text == "")
     {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Full Name is required.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("Full Name is required.")));
       return;
     }
     if(_emailController.text == "")
     {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Email Address is required.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("Email Address is required.")));
       return;
     }
     if(_dateOfBirth == null)
     {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Date of birth is required.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("Date of birth is required.")));
       return;
     }
 
@@ -247,7 +247,7 @@ class _CreateAccountState extends State<CreateAccount>
       || (currentDatetime.year - _dateOfBirth.year == 18 && currentDatetime.month < _dateOfBirth.month)
       ||  (currentDatetime.year - _dateOfBirth.year == 18 && currentDatetime.month == _dateOfBirth.month && currentDatetime.day < _dateOfBirth.day) )
     {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("You need to be older than 18.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("You need to be older than 18.")));
       return;
     }
 
@@ -268,7 +268,7 @@ class _CreateAccountState extends State<CreateAccount>
       // Fetch user data doc, this in in turn prompt navigation
       widget.handleAuthStateChangeFunc(widget.user);
     }).catchError((e) {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("ERROR"), content: Text("Creating Account Failed, Please try again later.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("ERROR"), content: Text("Creating Account Failed, Please try again later.")));
     });
   }
 }

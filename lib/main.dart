@@ -396,7 +396,7 @@ class _AppState extends State<App> {
 
   onLogin(FirebaseUser newUser) {
     navKey.currentState.pop();
-    showPlatformDialog(context: navKey.currentState.overlay.context, builder: (context) => PlatformAlertDialog(title: Text("Success"), content: Text("You are now logged in.")));
+    showPlatformDialog(androidBarrierDismissible: true,context: navKey.currentState.overlay.context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Success"), content: Text("You are now logged in.")));
   }
 
   onUserChange() {

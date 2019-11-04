@@ -72,7 +72,7 @@ class _ChangeEmailState extends State<ChangeEmail>
     }).then((_) {
       Navigator.pop(context);
     }).catchError((e) {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("ERROR"), content: Text("Operation Failed, Please try again later.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("ERROR"), content: Text("Operation Failed, Please try again later.")));
     });
   }
 }

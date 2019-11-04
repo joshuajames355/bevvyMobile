@@ -42,7 +42,7 @@ class AccountDetails extends StatelessWidget
               ),
               onPressed: ()
               {
-                showPlatformDialog(context: context, builder: (context) => ChangeEmail(user: user)).then((var x)
+                showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => ChangeEmail(user: user)).then((var x)
                 {
                   if(x == true)
                   {

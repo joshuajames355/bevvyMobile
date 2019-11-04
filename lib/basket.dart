@@ -154,7 +154,7 @@ class Basket extends StatelessWidget
                               icon: Icon(IconData(59534, fontFamily: 'MaterialIcons')),
                               onPressed: ()
                               {
-                                showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Delivery fee"), content: Text("Free if you spend more than £25.")));
+                                showPlatformDialog(androidBarrierDismissible: true, context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)], title: Text("Delivery fee"), content: Text("Free if you spend more than £25."),  ios: (_) => CupertinoAlertDialogData(),));
                               },
                             ),
                           ),
@@ -191,7 +191,7 @@ class Basket extends StatelessWidget
             onPressed: () async
             {
               if (dataStore.checkoutData.length == 0) {
-                showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
+                showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
               } else {                
                 try {
                   dataStore.createOrUpdateFirestoreOrder();

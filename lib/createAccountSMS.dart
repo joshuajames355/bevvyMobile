@@ -160,7 +160,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS> {
     auth.verifyPhoneNumber(phoneNumber: _phoneNumber, timeout: Duration(seconds: 30), 
       verificationCompleted: verificationCompleted,
       verificationFailed: (AuthException error) {
-        showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Verification Failed.")));
+        showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("Verification Failed.")));
         setState(() {
           _isTextSent = false;
         });
@@ -196,13 +196,13 @@ class _CreateAccountSMSState extends State<CreateAccountSMS> {
     } catch(e) {
       switch (e.code) {
         case "ERROR_INVALID_CREDENTIAL":
-          showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Invalid SMS Code.")));
+          showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("Invalid SMS Code.")));
           break;
         case "ERROR_USER_DISABLED":
-          showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("This account has been disabled.")));
+          showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("This account has been disabled.")));
           break;
         case "ERROR_ACCOUNT_EXISTS_WITH_DIFFERENT_CREDENTIAL":
-          showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("Account already exists.")));
+          showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("Account already exists.")));
           break;
         case "ERROR_OPERATION_NOT_ALLOWED":
           break;

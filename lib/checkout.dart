@@ -362,7 +362,7 @@ class _CheckoutState extends State<Checkout>
   void runAllCardPayment(String paymentMethodID, bool isNative) async {
     if(widget.dataStore.order.data["status"] == "new_order")
     {
-      showPlatformDialog(context: context, builder: (context) => PlatformAlertDialog(title: Text("Error"), content: Text("A server Error has occured.\nPlease Try Again Later.")));
+      showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("A server Error has occured.\nPlease Try Again Later.")));
       return;
     }
 

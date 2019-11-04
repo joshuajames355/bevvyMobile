@@ -173,7 +173,7 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
         else if(settings.name == "/home") {
-          return MaterialPageRoute(builder: (context) => PlatformScaffold
+          return MaterialPageRoute(builder: (context) => Scaffold
           (
             body: selectedTab == 0 ? FutureBuilder(
               future: catalogue,
@@ -210,11 +210,11 @@ class _AppState extends State<App> {
                 );
               }
             ) : Container(),
-            bottomNavBar: PlatformNavBar(
-              ios: (_) => CupertinoTabBarData(backgroundColor: Theme.of(context).backgroundColor, inactiveColor: Colors.white),
-              android: (_) => MaterialNavBarData(type: BottomNavigationBarType.fixed),
+            bottomNavigationBar: BottomNavigationBar
+            (
+              type: BottomNavigationBarType.fixed,
               currentIndex: selectedTab,
-              itemChanged: (int index){
+              onTap: (int index){
                 setState(() {
                   selectedTab = index;
                 });

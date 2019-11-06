@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:collection/collection.dart' show MapEquality;
 import 'package:stripe_payment/stripe_payment.dart';
+import 'dart:math';
 
 typedef void OrderUpdateEvent(DocumentSnapshot order);
 
@@ -13,7 +14,8 @@ class DataStore {
   DocumentReference orderRef;
   FirebaseUser user;
 
-  List<OrderUpdateEvent> onOrderUpdateEvents = [];
+  Map<int, OrderUpdateEvent> onOrderUpdateEvents = Map<int, OrderUpdateEvent>();
+  Random rand = Random();
 
   DataStore() {
     this.checkoutData = Map<Product, int>();
@@ -85,7 +87,7 @@ class DataStore {
     this.orderStream = null;
     this.order = null;
     this.checkoutData = Map<Product, int>();
-    this.onOrderUpdateEvents = [];
+    this.onOrderUpdateEvents = Map<int, OrderUpdateEvent>();
   }
 
   void setOrderRef(DocumentReference ref) {
@@ -93,19 +95,20 @@ class DataStore {
     this.orderStream = this.orderRef.snapshots();
     this.orderStream.listen((DocumentSnapshot snap) async {
       this.order = snap;
-      this.onOrderUpdateEvents.forEach((OrderUpdateEvent event) => event(snap));
+      this.onOrderUpdateEvents.forEach((int key, OrderUpdateEvent event) => event(snap));
     });
   }
 
   int subscribeToOrderUpdate(OrderUpdateEvent event)
   {
-    this.onOrderUpdateEvents.add(event);
-    return this.onOrderUpdateEvents.length-1;
+    int key = rand.nextInt(1<<32);
+    this.onOrderUpdateEvents[key] = event;
+    return key;
   }
 
   void unsubscribeFromOrderUpdates(int id)
   {
-    if(id < this.onOrderUpdateEvents.length) this.onOrderUpdateEvents.removeAt(id);
+    if(id < this.onOrderUpdateEvents.length) this.onOrderUpdateEvents.remove(id);
   }
 
   String get orderAmountString {

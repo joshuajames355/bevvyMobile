@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "859982213837",
+    "firebase_url": "https://jovi-live.firebaseio.com",
+    "project_id": "jovi-live",
+    "storage_bucket": "jovi-live.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859982213837:android:6c86a92381b459a12d6f84",
+        "android_client_info": {
+          "package_name": "co.uk.joviapp.jovicustomer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "859982213837-7crg0lhq6hnnm4o0agsj1q2rof24tblr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiIlZZtysuotjKcAyOcT7KeuJCOzdpKQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859982213837-7crg0lhq6hnnm4o0agsj1q2rof24tblr.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "859982213837-3ls1mfokttq1uoj1j9qlifl2j69a2q2g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "co.uk.joviapp.jovicustomer",
+                "app_store_id": "1483219573"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

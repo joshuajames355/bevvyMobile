@@ -419,7 +419,7 @@ class _CheckoutState extends State<Checkout>
         Future.delayed(Duration(seconds: 1)).then((x) {
           widget.dataStore.reset();
           Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-          Navigator.pushNamed(context, '/order', arguments: widget.dataStore.order.documentID);
+          Navigator.pushNamed(context, '/order', arguments: snap.documentID);
         });
 
       } else {
@@ -437,6 +437,17 @@ class _CheckoutState extends State<Checkout>
           Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
         });
       }
+    });
+
+    Future.delayed(Duration(seconds: 10)).then((_)
+    {
+      setState(() {
+        orderStatus="timeout";
+      });
+      Future.delayed(Duration(seconds: 5)).then((x) {
+        widget.dataStore.reset();
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+      });
     });
     Navigator.pop(context);
   }

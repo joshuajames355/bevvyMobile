@@ -31,6 +31,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 int accentColour = 0XFF91FFF8;
 Map<int, Color> accentColorPalette = {
@@ -86,6 +87,7 @@ class _AppState extends State<App> {
   PaymentMethod selectedMethod;
   PageController homePageController = PageController();
   DataStore dataStore;
+  RemoteConfig remoteConfig;
 
   @override
   initState() {
@@ -99,12 +101,15 @@ class _AppState extends State<App> {
     auth.currentUser().then(handleAuthStateChange);
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
-    new Future.delayed(Duration.zero, () {
+    new Future.delayed(Duration.zero, () async {
       var config = AppConfig.of(context);
       StripePayment.setOptions(
         StripeOptions(publishableKey: config.stripePublishableKey,
                       merchantId: config.stripeMerchantId,
                       androidPayMode: config.stripeAndroidPayMode));
+
+      remoteConfig = await RemoteConfig.instance;
+      await remoteConfig.fetch();
     });
   }
 

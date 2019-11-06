@@ -66,6 +66,16 @@ android {
            signingConfig signingConfigs.release
        }
    }
+
+   flavorDimensions "default"
+    productFlavors {
+        staging {
+            dimension "default"
+        }
+        live {
+            dimension "default"
+        }
+    }
 }
 
 flutter {

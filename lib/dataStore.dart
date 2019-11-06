@@ -43,6 +43,7 @@ class DataStore {
       'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
       'customerID': this.user.uid,
       'status': 'new_order',
+      'createdByUserAt': FieldValue.serverTimestamp(),
     });
     this.setOrderRef(orderRef);
   }
@@ -52,6 +53,7 @@ class DataStore {
       this.order.reference.updateData({
         'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
         'status': 'edited_order',
+        'updatedLastByUserAt': FieldValue.serverTimestamp(),
       });
     } else {
       print('basket already in sync');

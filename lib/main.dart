@@ -21,6 +21,7 @@ import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/config.dart';
 import 'package:bevvymobile/dataStore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
@@ -84,8 +85,8 @@ class _AppState extends State<App> {
   Stream<QuerySnapshot> paymentMethodsStream;
   List<PaymentMethod> paymentMethods = [];
   PaymentMethod selectedMethod;
+  PageController homePageController = PageController();
   DataStore dataStore;
-  int selectedTab = 0;
 
   @override
   initState() {
@@ -173,74 +174,76 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
         else if(settings.name == "/home") {
-          return MaterialPageRoute(builder: (context) => Scaffold
+          return platformPageRoute(context: context, builder: (context) => PlatformWidget
           (
-            body: selectedTab == 0 ? FutureBuilder(
-              future: catalogue,
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-              
-                return  Home(
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
-                );
-              }
-            ) : selectedTab == 1 ?Basket(
-              dataStore: dataStore,
-              removeFromBasket: removeFromBasket,
-            ) : selectedTab == 2 ? StreamBuilder(
-              stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if(!snapshot.hasData) {
-                  return placeHolderPage();
-                }
-                return  AccountDetails(
-                  user: user,
-                  onUserChange: onUserChange,
-                  userDocument: snapshot.data,
-                );
-              }
-            ) : selectedTab == 3 ? StreamBuilder(
-              stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
-              builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-                  
-                return MyOrders
-                (
-                  orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
-                );
-              }
-            ) : Container(),
-            bottomNavigationBar: BottomNavigationBar
+            android: (_) => Scaffold
             (
-              type: BottomNavigationBarType.fixed,
-              currentIndex: selectedTab,
-              onTap: (int index){
-                setState(() {
-                  selectedTab = index;
-                });
-              },
-              items: [
-                BottomNavigationBarItem
-                (
-                  title: Text("Home"),
-                  icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
-                ),
-                BottomNavigationBarItem
-                (
-                  title: Text("Basket"),
-                  icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-                ),
-                BottomNavigationBarItem
-                (
-                  title: Text("Account"),
-                  icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
-                ),
-                BottomNavigationBarItem
-                (
-                  title: Text("Orders"),
-                  icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
-                ),
-              ],
+              body: PageView.builder(
+                controller: homePageController,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: 4,
+                itemBuilder: getCurrentTabHomePage
+              ),
+              bottomNavigationBar: BottomNavigationBar
+              (
+                type: BottomNavigationBarType.fixed,
+                currentIndex: homePageController.hasClients ? (homePageController.page ?? 0).round() : 0,
+                onTap: (int index){
+                //setState triggers a rerender to update the currentIndex after animation completes
+                homePageController.animateToPage(index, duration: Duration(milliseconds: 150), curve: Curves.easeInOut).then((_) => setState((){}));
+                },
+                items: [
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Home"),
+                    icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
+                  ),
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Basket"),
+                    icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+                  ),
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Account"),
+                    icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
+                  ),
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Orders"),
+                    icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
+                  ),
+                ]
+              ),
+            ),
+            ios: (_) => CupertinoTabScaffold(
+              tabBuilder: getCurrentTabHomePage,
+              tabBar: CupertinoTabBar(
+                backgroundColor: Theme.of(context).backgroundColor, 
+                inactiveColor: Colors.white,
+                items: [
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Home"),
+                    icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
+                  ),
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Basket"),
+                    icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
+                  ),
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Account"),
+                    icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
+                  ),
+                  BottomNavigationBarItem
+                  (
+                    title: Text("Orders"),
+                    icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
+                  ),
+                ],
+              ),
             ),
           ));
         }
@@ -449,6 +452,48 @@ class _AppState extends State<App> {
           setState(() => selectedMethod = PaymentMethod(type: (Platform.isIOS ? 'applepay' : 'googlepay')));
         }
     }
+  }
+
+  Widget getCurrentTabHomePage(BuildContext context, int selectedTab)
+  {
+    return selectedTab == 0 ? FutureBuilder(
+      future: catalogue,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if(!snapshot.hasData) return placeHolderPage();
+      
+        return  Home(
+          productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
+        );
+      }
+    )
+    : selectedTab == 1 ? Basket(
+      dataStore: dataStore,
+      removeFromBasket: removeFromBasket,
+    )
+    : selectedTab == 2 ? StreamBuilder(
+      stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if(!snapshot.hasData) {
+          return placeHolderPage();
+        }
+        return  AccountDetails(
+          user: user,
+          onUserChange: onUserChange,
+          userDocument: snapshot.data,
+        );
+      }
+    )
+    : selectedTab == 3 ? StreamBuilder(
+      stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
+      builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if(!snapshot.hasData) return placeHolderPage();
+          
+        return MyOrders
+        (
+          orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+        );
+      }
+    ) : Container();
   }
 }
 

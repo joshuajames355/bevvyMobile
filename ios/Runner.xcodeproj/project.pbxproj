@@ -20,8 +20,7 @@
 		FA765FD9235F6F18004CB449 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA765FD6235F6F18004CB449 /* AppDelegate.swift */; };
 		FA765FDA235F6F18004CB449 /* ApplePayButtonFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA765FD7235F6F18004CB449 /* ApplePayButtonFactory.swift */; };
 		FA765FDB235F6F18004CB449 /* ApplePayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA765FD8235F6F18004CB449 /* ApplePayButton.swift */; };
-		FAEDBAEC2371E07C001127BD /* env-live in Resources */ = {isa = PBXBuildFile; fileRef = FAEDBAEA2371E07C001127BD /* env-live */; };
-		FAEDBAED2371E07C001127BD /* env-staging in Resources */ = {isa = PBXBuildFile; fileRef = FAEDBAEB2371E07C001127BD /* env-staging */; };
+		FAEDBB2D2372FEED001127BD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FAEDBB2C2372FEED001127BD /* GoogleService-Info.plist */; };
 		FAEE0D9D2357CBCE0033B4CB /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAEE0D9C2357CBCE0033B4CB /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -292,9 +291,13 @@
 		110E1BF3179535E0A5266873 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
+		1F6D810464388DB3F06D94C3 /* Pods-Runner.release-staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-staging.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-staging.xcconfig"; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		3B80C3931E831B6300D905FE /* App.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = App.framework; path = Flutter/App.framework; sourceTree = "<group>"; };
+		6AC9B6F4E263D0CAA3045720 /* Pods-Runner.debug-staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-staging.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-staging.xcconfig"; sourceTree = "<group>"; };
+		71BF7D4FD0FEDED3B6BF71A9 /* Pods-Runner.profile-live.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-live.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-live.xcconfig"; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
+		92FB2E7B420408F316267377 /* Pods-Runner.profile-staging.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile-staging.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile-staging.xcconfig"; sourceTree = "<group>"; };
 		9740EEB21CF90195004384FC /* Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Debug.xcconfig; path = Flutter/Debug.xcconfig; sourceTree = "<group>"; };
 		9740EEB31CF90195004384FC /* Generated.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; name = Generated.xcconfig; path = Flutter/Generated.xcconfig; sourceTree = "<group>"; };
 		9740EEBA1CF902C7004384FC /* Flutter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Flutter.framework; path = Flutter/Flutter.framework; sourceTree = "<group>"; };
@@ -306,14 +309,15 @@
 		A2EFFA4DFF27D04030DBD312 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDD3B1F2B69BEE2FA6501D1 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		B8E3FBC2363C5DF1BB95DF0A /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
+		CD8258C1627C5011F611C457 /* Pods-Runner.debug-live.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-live.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-live.xcconfig"; sourceTree = "<group>"; };
+		E675AE480B8CF891CBB8D2D5 /* Pods-Runner.release-live.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release-live.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release-live.xcconfig"; sourceTree = "<group>"; };
 		FA329733234E2AD800E41027 /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		FA765FD6235F6F18004CB449 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FA765FD7235F6F18004CB449 /* ApplePayButtonFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplePayButtonFactory.swift; sourceTree = "<group>"; };
 		FA765FD8235F6F18004CB449 /* ApplePayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplePayButton.swift; sourceTree = "<group>"; };
 		FA765FDC235F6F1C004CB449 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		FAB470992361E8FB00FC6926 /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Pods.xcodeproj; sourceTree = "<group>"; };
-		FAEDBAEA2371E07C001127BD /* env-live */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "env-live"; sourceTree = "<group>"; };
-		FAEDBAEB2371E07C001127BD /* env-staging */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "env-staging"; sourceTree = "<group>"; };
+		FAEDBB2C2372FEED001127BD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FAEE0D9C2357CBCE0033B4CB /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -339,6 +343,12 @@
 				B8E3FBC2363C5DF1BB95DF0A /* Pods-Runner.debug.xcconfig */,
 				ACDD3B1F2B69BEE2FA6501D1 /* Pods-Runner.release.xcconfig */,
 				110E1BF3179535E0A5266873 /* Pods-Runner.profile.xcconfig */,
+				CD8258C1627C5011F611C457 /* Pods-Runner.debug-live.xcconfig */,
+				6AC9B6F4E263D0CAA3045720 /* Pods-Runner.debug-staging.xcconfig */,
+				E675AE480B8CF891CBB8D2D5 /* Pods-Runner.release-live.xcconfig */,
+				1F6D810464388DB3F06D94C3 /* Pods-Runner.release-staging.xcconfig */,
+				71BF7D4FD0FEDED3B6BF71A9 /* Pods-Runner.profile-live.xcconfig */,
+				92FB2E7B420408F316267377 /* Pods-Runner.profile-staging.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -378,11 +388,10 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				FAEDBB2C2372FEED001127BD /* GoogleService-Info.plist */,
 				FA329733234E2AD800E41027 /* Runner.entitlements */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
-				FAEDBAEA2371E07C001127BD /* env-live */,
-				FAEDBAEB2371E07C001127BD /* env-staging */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
 				97C147021CF9000F007C117D /* Info.plist */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
@@ -768,11 +777,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FAEDBAEC2371E07C001127BD /* env-live in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
+				FAEDBB2D2372FEED001127BD /* GoogleService-Info.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
-				FAEDBAED2371E07C001127BD /* env-staging in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

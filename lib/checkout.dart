@@ -87,17 +87,20 @@ class _CheckoutState extends State<Checkout>
                     }
                   },
                 ),
-                Positioned.fill
+                PlatformWidget
                 (
-                  child: Align
+                  android: (_) => Positioned.fill
                   (
-                    alignment: Alignment.center,
-                    child: Transform.translate
+                    child: Align
                     (
-                      offset: Offset(0, -25),
-                      child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
-                    )
-                  ),
+                      alignment: Alignment.center,
+                      child: Transform.translate
+                      (
+                        offset: Offset(0, -25),
+                        child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
+                      )
+                    ),
+                  )
                 )          
               ]
             ),

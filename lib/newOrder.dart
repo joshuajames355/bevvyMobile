@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import "package:bevvymobile/dataStore.dart";
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:stripe_payment/stripe_payment.dart';
-import 'dart:async';
-
-typedef void OnClearBasket();
 
 //Displayed in the main list views
 class NewOrder extends StatefulWidget
 {
-  const NewOrder({ Key key, this.dataStore, this.isNative, this.onClearBasket}) : super(key: key);
+  const NewOrder({ Key key, this.orderStatus, this.dataStore }) : super(key: key);
 
+  final String orderStatus;
   final DataStore dataStore;
-  final bool isNative;
-  final OnClearBasket onClearBasket;
 
   @override
   _NewOrderState createState() => _NewOrderState();
@@ -21,75 +15,20 @@ class NewOrder extends StatefulWidget
 
 class _NewOrderState extends State<NewOrder>
 {
-  StreamSubscription<DocumentSnapshot> subscription;
-  String orderState = 'edited_order';
-  bool subscriptionCancelled = false;
 
   @override
   void initState() {
-    postOrderHooks();
     super.initState();
   }
 
-  void postOrderHooks()
-  {
-    subscription = widget.dataStore.orderStream.listen((DocumentSnapshot snap) async {
-      if (snap.data['status'] == 'edited_order') {
-        // Payment status hasn't changed
-        return;
-      } else if (snap.data['status'] == 'dispatch_queue') {
-        // Yay! Payment has gone through
-        subscription.cancel();
-        subscriptionCancelled = true;
-        setState(() {
-          orderState = 'dispatch_queue';
-        });
-        if (widget.isNative) {
-          StripePayment.completeNativePayRequest();
-        }
-        Future.delayed(Duration(seconds: 1)).then((x) {
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-          Navigator.pushNamed(context, '/order', arguments: widget.dataStore.order.documentID);
-        });
-
-      } else {
-        // Error
-        // TODO: error handle
-        setState(() {
-          orderState = 'error';
-        });
-        subscription.cancel();
-        subscriptionCancelled = true;
-        if (widget.isNative) {
-          StripePayment.cancelNativePayRequest();
-        }
-        Future.delayed(Duration(seconds: 2)).then((x) {
-          widget.onClearBasket();
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-        });
-      }
-    });
-    Future.delayed(Duration(seconds: 10)).then((x) {
-      if (!subscriptionCancelled) {
-        setState(() {
-          orderState = 'timeout';
-        });
-        subscription?.cancel()?.then((FutureOr f) => subscriptionCancelled = true);
-        Future.delayed(Duration(seconds: 2)).then((x) {
-          widget.onClearBasket();
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-        });
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     String message;
-    if(orderState == "edited_order") message = "Waiting For Server...";
-    else if(orderState == "dispatch_queue") message = "Order Confirmed!";
-    else if(orderState == "error") message = "An Unkown Error occured.";
-    else if(orderState == "timeout") message = "The connection timed out.";
+    if(widget.orderStatus == "edited_order") message = "Waiting For Server...";
+    else if(widget.orderStatus == "dispatch_queue") message = "Order Confirmed!";
+    else if(widget.orderStatus == "error") message = "An Unkown Error occured.";
+    else if(widget.orderStatus == "timeout") message = "The connection timed out.";
     
     return Scaffold
     (

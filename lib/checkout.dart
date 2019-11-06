@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:bevvymobile/newOrder.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
@@ -31,6 +33,9 @@ class _CheckoutState extends State<Checkout>
   LocationData lastLocationFix;
 
   CameraPosition cameraPosition; 
+  int orderUpdateEventID = -1;
+
+  String orderStatus = "pending";
 
   @override
   void initState() {
@@ -42,7 +47,7 @@ class _CheckoutState extends State<Checkout>
   @override
   Widget build(BuildContext context)
   {
-    return Scaffold
+    return orderStatus == "pending" ? Scaffold
     (
       appBar: AppBar
       (
@@ -130,7 +135,7 @@ class _CheckoutState extends State<Checkout>
           onPressed: getLocation,
         ),
       )
-    );
+    ) : NewOrder(dataStore: widget.dataStore, orderStatus: orderStatus,);
   }
 
   getLocation()
@@ -250,7 +255,10 @@ class _CheckoutState extends State<Checkout>
                                 ),
                                 FlatButton(
                                   child: Text('Pay'),
-                                  onPressed: () => runExistingCardPayment(),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    runExistingCardPayment();
+                                  },
                                 )
                               ]);
                           });
@@ -366,6 +374,10 @@ class _CheckoutState extends State<Checkout>
       return;
     }
 
+    setState(() {
+     orderStatus = "edited_order" ;
+    });
+
     try {
       StripePayment.confirmPaymentIntent(
         PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
@@ -387,12 +399,49 @@ class _CheckoutState extends State<Checkout>
       print(error);
     }
 
-    Navigator.pushNamed(context, "/newOrder", arguments: isNative);
+    orderUpdateEventID = widget.dataStore.subscribeToOrderUpdate((DocumentSnapshot snap) async {
+      if (snap.data['status'] == 'edited_order') {
+        // Payment status hasn't changed
+        return;
+      } else if (snap.data['status'] == 'dispatch_queue') {
+        // Yay! Payment has gone through
+
+        setState(() {
+          orderStatus = 'dispatch_queue';
+        });
+
+        if (isNative) {
+          StripePayment.completeNativePayRequest();
+        }
+        Future.delayed(Duration(seconds: 1)).then((x) {
+          widget.dataStore.reset();
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+          Navigator.pushNamed(context, '/order', arguments: widget.dataStore.order.documentID);
+        });
+
+      } else {
+
+        // Error
+        // TODO: error handle
+        setState(() {
+          orderStatus = 'error';
+        });
+
+        if (isNative) {
+          StripePayment.cancelNativePayRequest();
+        }
+        Future.delayed(Duration(seconds: 2)).then((x) {
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+        });
+      }
+    });
+    Navigator.pop(context);
   }
 
   @override
   void dispose() {
     _noteToDriver.dispose();
+    if(orderUpdateEventID != -1) widget.dataStore.unsubscribeFromOrderUpdates(orderUpdateEventID);
     super.dispose();
   }
 }

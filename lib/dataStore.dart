@@ -4,12 +4,16 @@ import 'package:bevvymobile/product.dart';
 import 'package:collection/collection.dart' show MapEquality;
 import 'package:stripe_payment/stripe_payment.dart';
 
+typedef void OrderUpdateEvent(DocumentSnapshot order);
+
 class DataStore {
   Map<Product, int> checkoutData;
   Stream<DocumentSnapshot> orderStream;
   DocumentSnapshot order;
   DocumentReference orderRef;
   FirebaseUser user;
+
+  List<OrderUpdateEvent> onOrderUpdateEvents = [];
 
   DataStore() {
     this.checkoutData = Map<Product, int>();
@@ -79,6 +83,7 @@ class DataStore {
     this.orderStream = null;
     this.order = null;
     this.checkoutData = Map<Product, int>();
+    this.onOrderUpdateEvents = [];
   }
 
   void setOrderRef(DocumentReference ref) {
@@ -86,7 +91,19 @@ class DataStore {
     this.orderStream = this.orderRef.snapshots();
     this.orderStream.listen((DocumentSnapshot snap) async {
       this.order = snap;
+      this.onOrderUpdateEvents.forEach((OrderUpdateEvent event) => event(snap));
     });
+  }
+
+  int subscribeToOrderUpdate(OrderUpdateEvent event)
+  {
+    this.onOrderUpdateEvents.add(event);
+    return this.onOrderUpdateEvents.length-1;
+  }
+
+  void unsubscribeFromOrderUpdates(int id)
+  {
+    if(id < this.onOrderUpdateEvents.length) this.onOrderUpdateEvents.removeAt(id);
   }
 
   String get orderAmountString {

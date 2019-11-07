@@ -7,6 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:bevvymobile/dataStore.dart';
+import 'package:bevvymobile/utils.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -14,10 +15,14 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.dataStore, this.paymentMethod}) : super(key: key);
+  const Checkout({ Key key, this.dataStore, this.paymentMethod, this.deliveryCenterLat, this.deliveryCenterLon, this.deliveryRadius}) : super(key: key);
 
   final DataStore dataStore;
   final PaymentMethod paymentMethod;
+
+  final double deliveryRadius;
+  final double deliveryCenterLat;
+  final double deliveryCenterLon;
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -120,11 +125,20 @@ class _CheckoutState extends State<Checkout>
             onPressed: ()
             {
               //Navigator.pushNamed(context, "/checkout", arguments: cameraPosition.target);
-              showModalBottomSheet
-              (
-                isScrollControlled: true,
-                context: context, builder: (BuildContext context2) => bottomModal(context2)
-              );
+              double distance = distBetweenPoints(widget.deliveryCenterLat, widget.deliveryCenterLon, cameraPosition.target.latitude, cameraPosition.target.longitude);
+              print(distance);
+              if(distance < widget.deliveryRadius * 1000)
+              {
+                showModalBottomSheet
+                (
+                  isScrollControlled: true,
+                  context: context, builder: (BuildContext context2) => bottomModal(context2)
+                );
+              }
+              else
+              {
+                showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("We do not deliver to that location.")));
+              }
             },
           )
         ]

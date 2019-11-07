@@ -110,8 +110,9 @@ class _AppState extends State<App> {
                       androidPayMode: config.stripeAndroidPayMode));
 
       remoteConfig = await RemoteConfig.instance;
-      remoteConfig.activateFetched();
+      await remoteConfig.setDefaults({"delivery_center_lon" : -1.5849, "delivery_center_lat" : 54.7753, "delivery_radius" : 5});
       await remoteConfig.fetch();
+      remoteConfig.activateFetched();
     });
 
     SharedPreferences.getInstance().then((SharedPreferences prefs)
@@ -304,6 +305,9 @@ class _AppState extends State<App> {
             page: (BuildContext context) => Checkout(
               dataStore: dataStore,
               paymentMethod: selectedMethod,
+              deliveryCenterLat: remoteConfig.getDouble("delivery_center_lat"),
+              deliveryCenterLon: remoteConfig.getDouble("delivery_center_lon"),
+              deliveryRadius: remoteConfig.getDouble("delivery_radius"),
             ), 
           );   
         }

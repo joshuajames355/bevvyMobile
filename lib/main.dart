@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/categoryScrollView.dart';
@@ -109,6 +110,7 @@ class _AppState extends State<App> {
                       androidPayMode: config.stripeAndroidPayMode));
 
       remoteConfig = await RemoteConfig.instance;
+      remoteConfig.activateFetched();
       await remoteConfig.fetch();
     });
   }
@@ -473,10 +475,11 @@ class _AppState extends State<App> {
       stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
       builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if(!snapshot.hasData) return placeHolderPage();
-          
+        
         return MyOrders
         (
           orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+          statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
         );
       }
     ) : Container();

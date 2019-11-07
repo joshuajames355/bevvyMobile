@@ -113,6 +113,14 @@ class _AppState extends State<App> {
       remoteConfig.activateFetched();
       await remoteConfig.fetch();
     });
+
+    SharedPreferences.getInstance().then((SharedPreferences prefs)
+    {
+      if(prefs.getBool("logged_in") ?? false)
+      {
+        navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+      }
+    });
   }
 
   handleAuthStateChange(FirebaseUser updatedUser) async {
@@ -123,6 +131,8 @@ class _AppState extends State<App> {
     if (updatedUser == null) {
       // Logout
       navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("logged_in", false);
     } else {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
@@ -140,6 +150,9 @@ class _AppState extends State<App> {
           setInitialPaymentMethod();
         }
       });
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("logged_in", true);
 
       if (ds.exists) {
         // User document exists, now to change onboarding status
@@ -193,7 +206,7 @@ class _AppState extends State<App> {
               bottomNavigationBar: BottomNavigationBar
               (
                 type: BottomNavigationBarType.fixed,
-                currentIndex: homePageController.hasClients ? (homePageController.page ?? 0).round() : 0,
+                currentIndex: (homePageController.hasClients && homePageController.positions.length == 1) ? (homePageController.page ?? 0).round() : 0,
                 onTap: (int index){
                 //setState triggers a rerender to update the currentIndex after animation completes
                 homePageController.animateToPage(index, duration: Duration(milliseconds: 150), curve: Curves.easeInOut).then((_) => setState((){}));

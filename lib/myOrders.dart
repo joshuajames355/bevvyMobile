@@ -1,5 +1,5 @@
 import 'package:bevvymobile/order.dart';
-import 'package:intl/intl.dart';
+import 'package:bevvymobile/utils.dart';
 import 'package:flutter/material.dart';
 
 class MyOrders extends StatefulWidget
@@ -62,7 +62,7 @@ class _MyOrdersState extends State<MyOrders>
                 {
                   setState(() {
                     hasToggledOldOrders = true;
-                    currentlyDisplayedItems = widget.orders.where((Order order) => !["dispatch_queue", "delayed_queue", "out_for_delivery"].contains(order.status)).toList();
+                    currentlyDisplayedItems = widget.orders.where((Order order) => !["dispatch_queue", "delayed_queue", "out_for_delivery", "new_order", "synced_editing_order"].contains(order.status)).toList();
                   });
                 }
               },
@@ -144,19 +144,4 @@ class OrderWidget extends StatelessWidget
       ),
     );
   }
-}
-
-String getDateText(DateTime date)
-{
-  DateTime now = DateTime.now();
-  if(now.year == date.year && now.month == date.month && now.day == date.day) //If Today
-  {
-    return DateFormat("jm").format(date); 
-  }
-  now = now.subtract(Duration(days: 1));
-  if(now.year == date.year && now.month == date.month && now.day == date.day) //If Today
-  {
-    return "Yesterday"; 
-  }
-  return DateFormat("yyyy-MM-dd").format(date);
 }

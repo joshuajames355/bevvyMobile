@@ -13,7 +13,7 @@ String getDateText(DateTime date)
   {
     return "Yesterday"; 
   }
-  return DateFormat("dd-MM-yyyyy").format(date);
+  return DateFormat("dd-MM-yyyy").format(date);
 }
 
 double degToRad(double deg)

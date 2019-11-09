@@ -239,7 +239,7 @@ class _AppState extends State<App> {
             ios: (_) => CupertinoTabScaffold(
               tabBuilder: getCurrentTabHomePage,
               tabBar: CupertinoTabBar(
-                backgroundColor: Theme.of(context).backgroundColor, 
+                backgroundColor: Color(0xFF222222), 
                 inactiveColor: Colors.white,
                 items: [
                   BottomNavigationBarItem

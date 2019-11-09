@@ -92,21 +92,15 @@ class _CheckoutState extends State<Checkout>
                     }
                   },
                 ),
-                PlatformWidget
+                Align
                 (
-                  android: (_) => Positioned.fill
+                  alignment: Alignment.center,
+                  child: Transform.translate
                   (
-                    child: Align
-                    (
-                      alignment: Alignment.center,
-                      child: Transform.translate
-                      (
-                        offset: Offset(0, -25),
-                        child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
-                      )
-                    ),
+                    offset: Offset(0, -25),
+                    child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
                   )
-                )          
+                ),     
               ]
             ),
           ),
@@ -124,9 +118,7 @@ class _CheckoutState extends State<Checkout>
             ),
             onPressed: ()
             {
-              //Navigator.pushNamed(context, "/checkout", arguments: cameraPosition.target);
               double distance = distBetweenPoints(widget.deliveryCenterLat, widget.deliveryCenterLon, cameraPosition.target.latitude, cameraPosition.target.longitude);
-              print(distance);
               if(distance < widget.deliveryRadius * 1000)
               {
                 showModalBottomSheet
@@ -143,14 +135,17 @@ class _CheckoutState extends State<Checkout>
           )
         ]
       ),
-      floatingActionButton: Padding
+      floatingActionButton: PlatformWidget
       (
-        padding: EdgeInsets.only(bottom: 50),
-        child: FloatingActionButton
+        android: (_) => Padding
         (
-          child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
-          onPressed: getLocation,
-        ),
+          padding: EdgeInsets.only(bottom: 50),
+          child: FloatingActionButton
+          (
+            child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
+            onPressed: getLocation,
+          ),
+        )
       )
     ) : NewOrder(dataStore: widget.dataStore, orderStatus: orderStatus,);
   }

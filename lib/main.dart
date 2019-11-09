@@ -350,6 +350,7 @@ class _AppState extends State<App> {
                   
                 return OrderScreen
                 (
+                  statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
                   order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
                 );
               }

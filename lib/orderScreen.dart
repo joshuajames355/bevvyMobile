@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import "package:bevvymobile/order.dart";
+import "package:bevvymobile/utils.dart";
 
 class OrderScreen extends StatefulWidget
 {
-  const OrderScreen({ Key key, this.order}) : super(key: key);
+  const OrderScreen({ Key key, this.order, this.statusNames}) : super(key: key);
 
   final Order order;
+  final Map<String, String> statusNames;
 
   @override
   _OrderScreenState createState() => _OrderScreenState();
@@ -17,7 +19,6 @@ class _OrderScreenState extends State<OrderScreen>{
     return Scaffold(
       appBar: AppBar
       (
-        title: Text("Order: " + widget.order.orderID),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -25,7 +26,7 @@ class _OrderScreenState extends State<OrderScreen>{
           {
             Navigator.pop(context);
           },
-          ),
+        ),
       ),
       body: Column
       (
@@ -34,7 +35,7 @@ class _OrderScreenState extends State<OrderScreen>{
             padding: EdgeInsets.only(top: 20, bottom: 10),
             child: Center(child: Text("Items", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),)),
           ),
-          Divider(),
+          Divider(thickness: 2,),
           Expanded
           (
             child: Container
@@ -58,7 +59,7 @@ class _OrderScreenState extends State<OrderScreen>{
               )
             ),
           ),        
-          Divider(),
+          Divider(thickness: 2,),
           Container
           (
             margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
@@ -67,7 +68,31 @@ class _OrderScreenState extends State<OrderScreen>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Total: "),
-                Text("£0.00", style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+                Text(widget.order.price, style: TextStyle(color: Theme.of(context).accentColor))
+              ]
+            )
+          ),
+          Container
+          (
+            margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
+            child: Row
+            (
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Order placed:"),
+                Text(getDateText(widget.order.date)?? "", style: TextStyle(color: Theme.of(context).accentColor))
+              ]
+            )
+          ),
+          Container
+          (
+            margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
+            child: Row
+            (
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Status: "),
+                Text(widget.statusNames[widget.order.status] ?? "", )
               ]
             )
           ),
@@ -78,11 +103,21 @@ class _OrderScreenState extends State<OrderScreen>{
             (
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Status: "),
-                Text(widget.order.status, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+                Text("ID: "),
+                Text(widget.order.orderID ?? "", )
               ]
             )
           ),
+          RaisedButton(
+            onPressed: (){
+
+            },
+            child: Container(
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              child: Center(child: Text("Order Again")),
+            )
+          )
         ]
       ),
     );    

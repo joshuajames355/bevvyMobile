@@ -14,12 +14,24 @@ class StoreFrontHome extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    return ListView
-    (
-      children: joinElements(productListByCategory.keys.toList().map((String category)
-      {
-        return makeSection(category, productListByCategory[category].map((Product product) =>  ProductWidgetSquare(product: product,)).toList(), context);
-      }).toList())
+    return Scaffold (
+      appBar: AppBar(
+        title: Text("Home"),
+        actions: <Widget>
+        [
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, "/search"),
+            icon: Icon(IconData(59574, fontFamily: 'MaterialIcons')),
+          )
+        ],
+      ),
+      body: ListView
+      (
+        children: joinElements(productListByCategory.keys.toList().map((String category)
+        {
+          return makeSection(category, productListByCategory[category].map((Product product) =>  ProductWidgetSquare(product: product,)).toList(), context);
+        }).toList())
+      )
     );
   }
 

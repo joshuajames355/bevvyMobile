@@ -2,12 +2,15 @@ import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/utils.dart';
 import 'package:flutter/material.dart';
 
+typedef void OnOrderAgain(Order order);
+
 class MyOrders extends StatefulWidget
 {
-  const MyOrders({Key key, this.orders, this.statusNames}) : super(key: key);
+  const MyOrders({Key key, this.orders, this.statusNames, this.onOrderAgain}) : super(key: key);
 
   final List<Order> orders;
   final Map<String, String> statusNames;
+  final OnOrderAgain onOrderAgain;
 
   @override
   _MyOrdersState createState() => _MyOrdersState();
@@ -45,7 +48,7 @@ class _MyOrdersState extends State<MyOrders>
               child: Text("No Orders Found.", style: TextStyle(fontSize: 28),)
             )
             :ListView(
-              children: currentlyDisplayedItems.map<Widget>((Order order) => OrderWidget(order: order, statusNames: widget.statusNames,)).toList()
+              children: currentlyDisplayedItems.map<Widget>((Order order) => OrderWidget(order: order, statusNames: widget.statusNames, onOrderAgain: widget.onOrderAgain,)).toList()
             )
           ),
           isInProgressOrders ? Card(
@@ -81,10 +84,11 @@ class _MyOrdersState extends State<MyOrders>
 
 class OrderWidget extends StatelessWidget
 {
-    const OrderWidget({Key key, this.order, this.statusNames}) : super(key: key);
+    const OrderWidget({Key key, this.order, this.statusNames, this.onOrderAgain}) : super(key: key);
 
     final Order order;
     final Map<String, String> statusNames;
+    final OnOrderAgain onOrderAgain;
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +133,7 @@ class OrderWidget extends StatelessWidget
                 ),
               ),
               RaisedButton(
-                onPressed: (){
-
-                },
+                onPressed: () => onOrderAgain(order),
                 child: Container(
                   padding: EdgeInsets.all(12),
                   width: double.infinity,

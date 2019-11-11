@@ -9,7 +9,6 @@ import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
-import 'package:bevvymobile/myOrders.dart';
 import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
@@ -66,7 +65,6 @@ ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   buttonColor: Color(0XFFFFA552),
   accentColor: MaterialColor(accentColour, accentColorPalette),
-
 );
 
 class App extends StatefulWidget {
@@ -79,21 +77,19 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  List<Order> orders;
   FirebaseUser user;
   final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
   Stream<QuerySnapshot> paymentMethodsStream;
   List<PaymentMethod> paymentMethods = [];
   PaymentMethod selectedMethod;
-  PageController homePageController = PageController();
   DataStore dataStore;
   RemoteConfig remoteConfig;
+  int initialPage = 0;
 
   @override
   initState() {
     super.initState();
-    orders = List<Order>();
     dataStore = DataStore();
 
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
@@ -194,78 +190,18 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
         else if(settings.name == "/home") {
-          return platformPageRoute(context: context, builder: (context) => PlatformWidget
-          (
-            android: (_) => Scaffold
+          return platformPageRoute(context: context, builder: (BuildContext _) => Home
             (
-              body: PageView.builder(
-                controller: homePageController,
-                physics: NeverScrollableScrollPhysics(),
-                itemCount: 4,
-                itemBuilder: getCurrentTabHomePage
-              ),
-              bottomNavigationBar: BottomNavigationBar
-              (
-                type: BottomNavigationBarType.fixed,
-                currentIndex: (homePageController.hasClients && homePageController.positions.length == 1) ? (homePageController.page ?? 0).round() : 0,
-                onTap: (int index){
-                //setState triggers a rerender to update the currentIndex after animation completes
-                homePageController.animateToPage(index, duration: Duration(milliseconds: 150), curve: Curves.easeInOut).then((_) => setState((){}));
-                },
-                items: [
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Home"),
-                    icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
-                  ),
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Basket"),
-                    icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-                  ),
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Account"),
-                    icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
-                  ),
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Orders"),
-                    icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
-                  ),
-                ]
-              ),
-            ),
-            ios: (_) => CupertinoTabScaffold(
-              tabBuilder: getCurrentTabHomePage,
-              tabBar: CupertinoTabBar(
-                backgroundColor: Color(0xFF222222), 
-                inactiveColor: Colors.white,
-                items: [
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Home"),
-                    icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
-                  ),
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Basket"),
-                    icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-                  ),
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Account"),
-                    icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
-                  ),
-                  BottomNavigationBarItem
-                  (
-                    title: Text("Orders"),
-                    icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
-                  ),
-                ],
-              ),
-            ),
-          ));
+              statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
+              catalogue: catalogue,
+              user: user,
+              onUserChange: onUserChange,
+              onOrderAgain: orderAgain,
+              removeFromBasket: removeFromBasket,
+              dataStore: dataStore,
+              initialPage: initialPage,
+            )
+          );
         }
         else if(settings.name == "/createAccountSMS") {
           return SlideLeftRoute(          
@@ -352,6 +288,7 @@ class _AppState extends State<App> {
                 (
                   statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
                   order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
+                  onOrderAgain: orderAgain,
                 );
               }
             )
@@ -460,63 +397,24 @@ class _AppState extends State<App> {
     }
   }
 
-  Widget getCurrentTabHomePage(BuildContext context, int selectedTab)
+  void orderAgain(Order order)
   {
-    return selectedTab == 0 ? FutureBuilder(
-      future: catalogue,
-      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if(!snapshot.hasData) return placeHolderPage();
-      
-        return  Home(
-          productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
-        );
-      }
-    )
-    : selectedTab == 1 ? Basket(
-      dataStore: dataStore,
-      removeFromBasket: removeFromBasket,
-    )
-    : selectedTab == 2 ? StreamBuilder(
-      stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-        if(!snapshot.hasData) {
-          return placeHolderPage();
-        }
-        return  AccountDetails(
-          user: user,
-          onUserChange: onUserChange,
-          userDocument: snapshot.data,
-        );
-      }
-    )
-    : selectedTab == 3 ? StreamBuilder(
-      stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
-      builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        if(!snapshot.hasData) return placeHolderPage();
-        
-        return MyOrders
-        (
-          orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
-          statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
-        );
-      }
-    ) : Container();
-  }
-}
+    dataStore.reset();
+    catalogue.then((QuerySnapshot snap)
+    {
+      var products = snap.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList();
 
-//Displayed when the page is not ready
-Widget placeHolderPage()
-{
-  return WillPopScope(
-    onWillPop: () async => false,
-    child: Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: Align
-      (
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      )
-    )
-  );
+      for(int x = 0; x< products.length; x++)
+      {
+        if(order.products.containsKey(products[x].id))
+        {
+          dataStore.addProduct(products[x], order.products[products[x].id]);
+        }
+      }
+    });
+
+
+    initialPage = 1;
+    navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+  }
 }

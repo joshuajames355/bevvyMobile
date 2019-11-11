@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import "package:bevvymobile/order.dart";
 import "package:bevvymobile/utils.dart";
 
+typedef void OnOrderAgain(Order order);
+
 class OrderScreen extends StatefulWidget
 {
-  const OrderScreen({ Key key, this.order, this.statusNames}) : super(key: key);
+  const OrderScreen({ Key key, this.order, this.statusNames, this.onOrderAgain}) : super(key: key);
 
   final Order order;
   final Map<String, String> statusNames;
+  final OnOrderAgain onOrderAgain;
 
   @override
   _OrderScreenState createState() => _OrderScreenState();
@@ -109,9 +112,7 @@ class _OrderScreenState extends State<OrderScreen>{
             )
           ),
           RaisedButton(
-            onPressed: (){
-
-            },
+            onPressed: () => widget.onOrderAgain(widget.order),
             child: Container(
               padding: EdgeInsets.all(12),
               width: double.infinity,

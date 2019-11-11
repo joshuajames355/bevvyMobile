@@ -140,8 +140,23 @@ class _HomeState extends State<Home> {
           onWillPop: () {
             return Future.value(scaffoldKey.currentState.isDrawerOpen);
           },
-          child: StoreFrontHome(
-            productListByCategory: productListByCategory,
+          child:  StreamBuilder(
+            stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: widget.user.uid).snapshots(),
+            builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if(!snapshot.hasData) return placeHolderPage();
+        
+              return StoreFrontHome(
+                  gotoMyOrders: ()
+                  {
+                    if(isMaterial(context)) homePageController.animateToPage(4, duration: Duration(milliseconds: 150), curve: Curves.easeInOut).then((_) => setState((){}));
+                    else homePageControllerIOS.index=4;
+                  },
+                  statusNames: widget.statusNames,
+                  productListByCategory: productListByCategory,
+                  onOrderAgain: widget.onOrderAgain,
+                  orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+              );
+            }
           )
         );
       }

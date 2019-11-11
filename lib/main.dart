@@ -213,29 +213,6 @@ class _AppState extends State<App> {
             page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
           );
         }
-        else if(settings.name == "/accountDetails") {
-          return MaterialPageRoute(builder: (context) => StreamBuilder(
-            stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if(!snapshot.hasData) {
-                return placeHolderPage();
-              }
-              return  AccountDetails(
-                user: user,
-                onUserChange: onUserChange,
-                userDocument: snapshot.data,
-              );
-            }
-          ));
-        }
-        else if(settings.name == "/basket") {
-          return MaterialPageRoute(          
-            builder: (BuildContext context) => Basket(
-              dataStore: dataStore,
-              removeFromBasket: removeFromBasket,
-            ),
-          );
-        }
         else if (settings.name == "/checkout") {
           return SlideLeftRoute(
             page: (BuildContext context) => Checkout(

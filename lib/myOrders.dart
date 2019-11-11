@@ -65,7 +65,7 @@ class _MyOrdersState extends State<MyOrders>
                 {
                   setState(() {
                     hasToggledOldOrders = true;
-                    currentlyDisplayedItems = widget.orders.where((Order order) => !["dispatch_queue", "delayed_queue", "out_for_delivery", "new_order", "synced_editing_order"].contains(order.status)).toList();
+                    currentlyDisplayedItems = widget.orders.where((Order order) => !["dispatch_queue", "delayed_queue", "out_for_delivery", "new_order", "synced_editing_order", "stripe_paymentintent_payment_failed"].contains(order.status)).toList();
                   });
                 }
               },

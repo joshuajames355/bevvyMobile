@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 //Displayed in the main list views
 class NewOrder extends StatefulWidget
@@ -42,7 +43,7 @@ class _NewOrderState extends State<NewOrder>
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>
         [
-          CircularProgressIndicator(),
+          PlatformCircularProgressIndicator(ios: (_) => CupertinoProgressIndicatorData(radius: 20),),
           Padding
           (
             padding: EdgeInsets.all(50),

@@ -208,7 +208,7 @@ Widget placeHolderPage()
       child: Align
       (
         alignment: Alignment.center,
-        child: CircularProgressIndicator(),
+        child: PlatformCircularProgressIndicator(ios: (_) => CupertinoProgressIndicatorData(radius: 20),),
       )
     )
   );

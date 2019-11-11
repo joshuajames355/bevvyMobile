@@ -442,22 +442,9 @@ class _CheckoutState extends State<Checkout>
         if (isNative) {
           StripePayment.cancelNativePayRequest();
         }
-        Future.delayed(Duration(seconds: 2)).then((x) {
-          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-        });
       }
     });
 
-    Future.delayed(Duration(seconds: 10)).then((_)
-    {
-      setState(() {
-        orderStatus="timeout";
-      });
-      Future.delayed(Duration(seconds: 5)).then((x) {
-        widget.dataStore.reset();
-        Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
-      });
-    });
     Navigator.pop(context);
   }
 

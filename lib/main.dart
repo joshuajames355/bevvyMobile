@@ -223,6 +223,7 @@ class _AppState extends State<App> {
               deliveryCenterLat: remoteConfig.getDouble("delivery_center_lat"),
               deliveryCenterLon: remoteConfig.getDouble("delivery_center_lon"),
               deliveryRadius: remoteConfig.getDouble("delivery_radius"),
+              statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
             ), 
           );   
         }

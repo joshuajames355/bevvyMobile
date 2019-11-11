@@ -15,7 +15,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.dataStore, this.paymentMethod, this.deliveryCenterLat, this.deliveryCenterLon, this.deliveryRadius}) : super(key: key);
+  const Checkout({ Key key, this.dataStore, this.paymentMethod, this.deliveryCenterLat, this.deliveryCenterLon, this.deliveryRadius, this.statusNames}) : super(key: key);
 
   final DataStore dataStore;
   final PaymentMethod paymentMethod;
@@ -23,6 +23,7 @@ class Checkout extends StatefulWidget
   final double deliveryRadius;
   final double deliveryCenterLat;
   final double deliveryCenterLon;
+  final Map<String, String> statusNames;
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -147,7 +148,7 @@ class _CheckoutState extends State<Checkout>
           ),
         )
       )
-    ) : NewOrder(dataStore: widget.dataStore, orderStatus: orderStatus,);
+    ) : NewOrder(orderStatus: orderStatus, statusNames: widget.statusNames, orderID: widget.dataStore.order.documentID,);
   }
 
   getLocation()
@@ -390,26 +391,36 @@ class _CheckoutState extends State<Checkout>
      orderStatus = "edited_order" ;
     });
 
-    try {
-      StripePayment.confirmPaymentIntent(
-        PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
-                      paymentMethodId: paymentMethodID)
-      );
-    } on PlatformException catch(exception) {
-      // Cancel just native pay
+    
+    StripePayment.confirmPaymentIntent(
+      PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
+                    paymentMethodId: paymentMethodID)
+    ).catchError((error){
+      print(error);
+
+      setState(() {
+        orderStatus = "error";
+      });
+
       StripePayment.cancelNativePayRequest();
 
-      // Present error for all cards
-      if (exception.code != 'authenticationFailed') {
-        print(exception.message);
-        // TODO
-        // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
-      } else {
-        rethrow;
+      if(error is PlatformException)
+      {
+        //3D secured cancelled - PlatformException(failed, failed, null)
+        if (error.code != 'authenticationFailed') {
+          if(error.code == "api") // stripe failure
+          {
+            if(error.message == "Your card was declined.")
+            setState(() {
+              orderStatus = "error_card_declined";
+            });
+          }
+          print(error.message);
+          // TODO
+          // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
+        }
       }
-    } catch (error) {
-      print(error);
-    }
+    });
 
     orderUpdateEventID = widget.dataStore.subscribeToOrderUpdate((DocumentSnapshot snap) async {
       if (snap.data['status'] == 'edited_order') {
@@ -435,9 +446,12 @@ class _CheckoutState extends State<Checkout>
 
         // Error
         // TODO: error handle
-        setState(() {
-          orderStatus = 'error';
-        });
+        // Again, need to reset basket / payment intent if we want to allow the user to retry.
+        if(!orderStatus.startsWith("error")){
+          setState(() {
+            orderStatus = 'error';
+          });
+        }
 
         if (isNative) {
           StripePayment.cancelNativePayRequest();

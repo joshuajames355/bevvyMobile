@@ -141,7 +141,9 @@ class _AppState extends State<App> {
         //Crashlytics.
       });
       paymentMethodsStream.listen((QuerySnapshot query) async {
-        paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
+        setState(() {
+          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
+        });
         if(selectedMethod == null)
         {
           setInitialPaymentMethod();

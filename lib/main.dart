@@ -106,7 +106,7 @@ class _AppState extends State<App> {
                       androidPayMode: config.stripeAndroidPayMode));
 
       remoteConfig = await RemoteConfig.instance;
-      await remoteConfig.setDefaults({"delivery_center_lon" : -1.5849, "delivery_center_lat" : 54.7753, "delivery_radius" : 5});
+      await remoteConfig.setDefaults({"delivery_center_lon" : -1.5849, "delivery_center_lat" : 54.7753, "delivery_radius" : 5, "delivery_fee" : 350, "delivery_free_after" : 2500});
       await remoteConfig.fetch();
       remoteConfig.activateFetched();
     });
@@ -202,6 +202,8 @@ class _AppState extends State<App> {
               removeFromBasket: removeFromBasket,
               dataStore: dataStore,
               initialPage: initialPage,
+              deliveryFee: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? remoteConfig.getInt("delivery_fee")/100 : 3.50,
+              freeDeliveryMinimun: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? remoteConfig.getInt("delivery_free_after")/100 : 25.00,
             )
           );
         }

@@ -13,7 +13,7 @@ import 'package:bevvymobile/storeFrontHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
-  const Home({Key key, this.catalogue, this.user, this.dataStore, this.onUserChange, this.onOrderAgain, this.statusNames, this.removeFromBasket, this.initialPage}) : super(key: key);
+  const Home({Key key, this.catalogue, this.user, this.dataStore, this.onUserChange, this.onOrderAgain, this.statusNames, this.removeFromBasket, this.initialPage, this.deliveryFee, this.freeDeliveryMinimun}) : super(key: key);
 
   final Future<QuerySnapshot> catalogue;
   final FirebaseUser user;
@@ -23,6 +23,8 @@ class Home extends StatefulWidget {
   final Map<String, String> statusNames;
   final RemoveFromBasketFunc removeFromBasket;
   final int initialPage;
+  final double deliveryFee;
+  final double freeDeliveryMinimun;
 
   @override
   _HomeState createState() => _HomeState();
@@ -147,6 +149,8 @@ class _HomeState extends State<Home> {
     : selectedTab == 1 ? Basket(
       dataStore: widget.dataStore,
       removeFromBasket: widget.removeFromBasket,
+      deliveryFee: widget.deliveryFee,
+      freeDeliveryMinimun: widget.freeDeliveryMinimun,
     )
     : selectedTab == 2 ? StreamBuilder(
       stream: Firestore.instance.collection('users').document(widget.user.uid).snapshots(),

@@ -66,6 +66,10 @@ class _CategoryScrollViewState extends State<CategoryScrollView>
             productList: productListByCategory[x],   
             categories: categories,
             currentCategory: categories.indexOf(x),
+            onSelectCategory: (int category)
+            {
+              _pageController.animateToPage(category, duration: Duration(milliseconds: 250), curve: Curves.easeInOut);
+            },
           );
         }).toList()
       ),

@@ -149,7 +149,7 @@ class _HomeState extends State<Home> {
                   gotoMyOrders: ()
                   {
                     if(isMaterial(context)) homePageController.animateToPage(4, duration: Duration(milliseconds: 150), curve: Curves.easeInOut).then((_) => setState((){}));
-                    else homePageControllerIOS.index=4;
+                    homePageControllerIOS.index=3;
                   },
                   statusNames: widget.statusNames,
                   productListByCategory: productListByCategory,

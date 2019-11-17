@@ -40,6 +40,7 @@ class DataStore {
       'customerID': this.user.uid,
       'status': 'new_order',
       'createdByUserAt': FieldValue.serverTimestamp(),
+      'updatedLastByUserAt': FieldValue.serverTimestamp(),
     });
     this.setOrderRef(orderRef);
   }

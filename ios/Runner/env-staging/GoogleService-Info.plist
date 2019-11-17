@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>802264056148-tmepu7r0g703h81seikcukduc8d1nq03.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.802264056148-tmepu7r0g703h81seikcukduc8d1nq03</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>802264056148-m0faj9pihalc01ff7vqq3c3cu28o15b1.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDWf8gSgjdXh66X9nV5tcuUKlcil1EjSog</string>
+	<key>GCM_SENDER_ID</key>
+	<string>802264056148</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>co.uk.joviapp.jovicustomer</string>
+	<key>PROJECT_ID</key>
+	<string>bevvy-dev</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bevvy-dev.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:802264056148:ios:c44a24736c58b2da1f48c1</string>
+	<key>DATABASE_URL</key>
+	<string>https://bevvy-dev.firebaseio.com</string>
+</dict>
+</plist>

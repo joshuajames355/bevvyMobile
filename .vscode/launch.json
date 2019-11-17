@@ -5,25 +5,51 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Dev",
+            "name": "Debug-Staging",
             "request": "launch",
             "type": "dart",
+            "args": ["--flavor","staging"],
             "program" : "lib/main_dev.dart"
         },
         {
-            "name": "Profiling",
+            "name": "Profiling-Staging",
             "request": "launch",
             "type": "dart",
+            "args": ["--flavor","staging"],
             "program" : "lib/main_dev.dart",
             "flutterMode": "profile"
-        }
-        ,
+        },
         {
-            "name": "Release",
+            "name": "Release-Staging",
             "request": "launch",
             "type": "dart",
+            "args": ["--flavor","staging"],
+            "program" : "lib/main_dev.dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Release-Live",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--flavor","live"],
             "program" : "lib/main_prod.dart",
             "flutterMode": "release"
+        },
+        {
+            "name": "Debug-Live",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--flavor","live"],
+            "program" : "lib/main_prod.dart",
+            "flutterMode": "debug"
+        },
+        {
+            "name": "Profiling-Live",
+            "request": "launch",
+            "type": "dart",
+            "args": ["--flavor","live"],
+            "program" : "lib/main_prod.dart",
+            "flutterMode": "profile"
         }
     ]
 }

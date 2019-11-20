@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bevvymobile/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -178,7 +179,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
                 [
                   Padding
                   (
-                    child: Icon(IconData(59553, fontFamily: 'MaterialIcons')),
+                    child: getCardBrandIcon(brand),
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   ),
                   method.card == null ? Container() : Text(brand + " Ending in " + (method.card.last4 ?? "")),

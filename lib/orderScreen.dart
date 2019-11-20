@@ -31,7 +31,7 @@ class _OrderScreenState extends State<OrderScreen>{
           },
         ),
       ),
-      body: Column
+      body: ListView
       (
         children: [
           Center
@@ -70,7 +70,7 @@ class _OrderScreenState extends State<OrderScreen>{
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text("Placed At", style: TextStyle(fontWeight: FontWeight.w300),),
+                            Text("Placed", style: TextStyle(fontWeight: FontWeight.w300),),
                             Text(getDateText(widget.order.date)?? "", style: TextStyle(fontWeight: FontWeight.w300))
                           ],
                         ),
@@ -83,7 +83,7 @@ class _OrderScreenState extends State<OrderScreen>{
           ),
           Divider(thickness: 2),
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -91,65 +91,133 @@ class _OrderScreenState extends State<OrderScreen>{
                 Text("Amount", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
               ],),
           ),
-          Expanded
+          Container
           (
-            child: Container
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column
             (
-              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              child: ListView
-              (
-                children: widget.order.products.map(
-                  (OrderItem item) => Column
-                  (
-                    children:
-                    [
+              mainAxisSize: MainAxisSize.min,
+              children: widget.order.products.map<Widget>(
+                (OrderItem item) => Column
+                (
+                  children:
+                  [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:
+                      [
+                        SizedBox(
+                          width: 300,
+                          child: 
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                            [
+                              Text(item.quantity.toString() + " × ", style: TextStyle(fontWeight: FontWeight.w300),),
+                              Expanded(
+                                child: Text(item.name, style: TextStyle(fontWeight: FontWeight.w300),),
+                              ),
+                            ]
+                          ),
+                        ),
+                        Text("£" + (item.price.toDouble() * item.quantity/100).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.w300)) 
+                      ]
+                    )
+                  ]
+                )
+              ).toList()..add(
+                Padding(
+                  padding: EdgeInsets.only(top: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text("Subtotal", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5),),
+                      Text("£" + (widget.order.products.map((OrderItem item) => item.price * item.quantity).reduce((int a, int b) => a+b).toDouble()/100).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold, fontSize: 14.5))
+                    ],
+                  )
+                )
+              ),
+            )
+          ),
+          Divider(thickness: 2,),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Other Charges", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                Text("Amount", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+              ],),
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children:
+                  [
+                    SizedBox(
+                      width: 300,
+                      child: 
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children:
                         [
-                          SizedBox(
-                            width: 300,
-                            child: 
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children:
-                              [
-                                Text(item.quantity.toString() + " × ", style: TextStyle(fontWeight: FontWeight.w300),),
-                                Expanded(
-                                  child: Text(item.name, style: TextStyle(fontWeight: FontWeight.w300),),
-                                ),
-                              ]
-                            ),
+                          Expanded(
+                            child: Text("Delivery Fee", style: TextStyle(fontWeight: FontWeight.w300),),
                           ),
-                          Text("£" + (item.price.toDouble() * item.quantity/100).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.w300)) 
                         ]
-                      )
-                    ]
-                  )
-                ).toList(),
-              )
+                      ),
+                    ),
+                    Text("£3.50" , style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.w300)) 
+                  ]
+                )
+              ],
             ),
-          ),        
+          ),
           Divider(thickness: 2,),
           Container
           (
-            margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
+            margin: EdgeInsets.fromLTRB(10, 5, 10, 10),
             child: Row
             (
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("TOTAL PAID", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                Text("Total Paid", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
                 Text(widget.order.price, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 16, fontWeight: FontWeight.bold))
               ]
             )
           ),
-          Divider(thickness: 2,),
+          widget.order.paymentInfo.isEmpty ? Container(): Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text("Paid with", style: TextStyle(fontWeight: FontWeight.w300),),
+                  Container(
+                    child: Row(
+                      children: <Widget>[
+                        getCardBrandIcon(widget.order.paymentInfo["brand"] ?? ""),
+                        Padding(
+                          child: Text("ending in " + widget.order.paymentInfo["last4"] ?? "****", style: TextStyle(fontWeight: FontWeight.w300),),
+                          padding: EdgeInsets.only(left: 10),
+                        )
+                  ],
+                  ),
+                  ),
+              ],),
+          ),
+          Divider(thickness: 2, height: 40,),
           RaisedButton(
             onPressed: () => widget.onOrderAgain(widget.order),
-            child: Container(
-              padding: EdgeInsets.all(12),
-              width: double.infinity,
-              child: Center(child: Text("Order Again")),
+            child: SafeArea(
+              child: Container(
+                padding: EdgeInsets.all(12),
+                width: double.infinity,
+                child: Center(child: Text("Order Again")),
+              )
             )
           )
         ]

@@ -388,10 +388,10 @@ class _AppState extends State<App> {
 
       for(int x = 0; x< products.length; x++)
       {
-        if(order.products.containsKey(products[x].id))
-        {
-          dataStore.addProduct(products[x], order.products[products[x].id]);
-        }
+        
+        List<OrderItem> orderItems = order.products.where((OrderItem item) => item.id == products[x].id);
+        if(orderItems.length != 1) break;
+        dataStore.addProduct(products[x], orderItems[0].quantity);        
       }
     });
 

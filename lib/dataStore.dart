@@ -41,8 +41,9 @@ class DataStore {
     if (this.user == null) {
       throw('User is not logged in (or rather, not store in dataStore)');
     }
+
     var orderRef = await Firestore.instance.collection('orders').add({
-      'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
+      'basket': this.firestoreBasketFormat,
       'customerID': this.user.uid,
       'status': 'new_order',
       'createdByUserAt': FieldValue.serverTimestamp(),
@@ -54,13 +55,17 @@ class DataStore {
   void updateFirestoreOrder() async {
     if (!firestoreBasketInSync) {
       this.order.reference.updateData({
-        'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
+        'basket': this.firestoreBasketFormat,
         'status': 'edited_order',
         'updatedLastByUserAt': FieldValue.serverTimestamp(),
       });
     } else {
       print('basket already in sync');
     }
+  }
+
+  List<Map<String, dynamic>> get firestoreBasketFormat{
+    return List.from(this.checkoutData.map((Product product, int quantity) => MapEntry(0, {"id": product.id, "name": product.title, "quantity": quantity, "price": product.price})).values);
   }
 
   void createOrUpdateFirestoreOrder() async {

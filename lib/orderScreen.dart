@@ -46,16 +46,16 @@ class _OrderScreenState extends State<OrderScreen>{
               margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               child: ListView
               (
-                children: widget.order.products.keys.map(
-                  (String productID) => Row(
+                children: widget.order.products.map(
+                  (OrderItem item) => Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children:
                     [
                       SizedBox(
                         width: 300,
-                        child: Text(productID, overflow: TextOverflow.ellipsis)
+                        child: Text(item.id, overflow: TextOverflow.ellipsis)
                       ),
-                      Text("x " + widget.order.products[productID].toString(), style: TextStyle(color: Theme.of(context).accentColor),) 
+                      Text("x " + item.quantity.toString(), style: TextStyle(color: Theme.of(context).accentColor),) 
                     ]
                   )
                 ).toList(),

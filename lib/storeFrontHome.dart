@@ -1,4 +1,4 @@
-import 'package:bevvymobile/myOrders.dart';
+import 'package:bevvymobile/orderWidget.dart';
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/productWidgetSquare.dart';
@@ -22,7 +22,7 @@ class StoreFrontHome extends StatelessWidget
   Widget build(BuildContext context) {
     var content = [orderSection(context)];
     if(content[0] == null) content = [];
-    
+
     content.addAll(productListByCategory.keys.toList().map((String category)
     {
       return makeSection(category, productListByCategory[category].map((Product product) =>  ProductWidgetSquare(product: product,)).toList(), context);

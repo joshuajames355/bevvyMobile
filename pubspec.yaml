@@ -28,6 +28,7 @@ dependencies:
   stripe_payment: ^1.0.4
   edit_distance: ^0.4.1
   font_awesome_flutter: ^8.5.0
+  flutter_svg: ^0.15.0
 
   firebase_analytics: ^5.0.2
   firebase_crashlytics: ^0.1.0+3
@@ -69,6 +70,7 @@ flutter:
     - images/jd.jpg
     - images/GooglePay_mark_800_gray.png
     - images/Apple_Pay_Mark_RGB_041619.png
+    - images/JoviBanner.svg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

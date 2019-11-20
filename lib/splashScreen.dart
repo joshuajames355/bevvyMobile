@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 //Initial Screen
 class SplashScreen extends StatefulWidget
@@ -127,14 +128,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
               child: Transform.translate
               (
                 offset: Offset(introAnimationLogo.value, 0),
-                child: Image
-                (
-                  height: 200,
-                  width: 200,
-                  image: AssetImage
-                  (
-                    'images/logo.png',
-                  ),
+                child: Padding(
+                  padding: EdgeInsets.all(25),
+                  child: SvgPicture.asset("images/JoviBanner.svg", width: 80, height: 80),
                 ),
               ),
             ),

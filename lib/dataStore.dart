@@ -118,11 +118,19 @@ class DataStore {
   }
 
   String get orderAmountString {
-    double total = 0;
+    return orderAmountDouble.toStringAsFixed(2);
+  }
+
+  int get orderAmountInt{
+    int total = 0;
     this.checkoutData.forEach((Product k, int quantity){
       total += k.price * quantity;
     });
-    return total.toStringAsFixed(2);
+    return total;
+  }
+
+  double get orderAmountDouble{
+    return (this.orderAmountInt/100);
   }
 
   String get orderAmountStringWithCurrency {

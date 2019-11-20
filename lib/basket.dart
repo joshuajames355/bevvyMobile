@@ -133,7 +133,7 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Subtotal", style: TextStyle(fontSize: 16)),
-                    Text("£" + getTotal(dataStore.checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text(dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
                 Row
@@ -160,7 +160,7 @@ class Basket extends StatelessWidget
                               },
                             ),
                           ),
-                          Text(getTotal(dataStore.checkoutData) > freeDeliveryMinimun ? "£0.00" : "£" + deliveryFee.toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+                          Text(dataStore.orderAmountDouble > freeDeliveryMinimun ? "£0.00" : "£" + deliveryFee.toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
                         ]
                       )
                     ),
@@ -172,7 +172,7 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Total", style: TextStyle(fontSize: 16)),
-                    Text("£" + (getTotal(dataStore.checkoutData) + (getTotal(dataStore.checkoutData) > freeDeliveryMinimun ? 0 : deliveryFee)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text("£" + (dataStore.orderAmountDouble + (dataStore.orderAmountDouble > freeDeliveryMinimun ? 0 : deliveryFee)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
               ],
@@ -219,13 +219,4 @@ List<Widget> joinBasketElements(List<Widget> basketElements)
     joinedElements.addAll([Divider(height: 30, thickness: 2,), basketElements[x]]);
   }
   return joinedElements;
-}
-
-double getTotal(Map<Product, int> basket)
-{
-  double total = 0;
-  basket.forEach((Product k, int quantity){
-    total += k.price * quantity;
-  });
-  return total;
 }

@@ -9,7 +9,7 @@ class Product
   final String id;
   final String title;
   final String description;
-  final double price;
+  final int price;
   final String category;
   final String size;
   final String priceCategory;
@@ -17,6 +17,14 @@ class Product
 
   final Widget icon;
   final Widget iconLarge;
+
+  double get priceAsDouble {
+    return price.toDouble() / 100;
+  }
+
+  String get priceString {
+    return "£" + priceAsDouble.toStringAsFixed(2);
+  }
 
   //Loads Image from file
   Product({this.id, this.title, this.description, this.price, this.category, iconName, this.size, this.priceCategory}) : icon = Image(
@@ -58,7 +66,7 @@ class Product
       height: largeImageSize,  
     ),
       title = data["name"] ?? "",
-      price = (data["price"] ?? 0).toDouble() / 100,
+      price = (data["price"] ?? 0),
       description = data["description"] ?? "",
       size = (data["size"] is Map ? (data["size"]["magnitude"] ?? 0 ).toString() + (data["size"]["unit"] ?? "" ): ""),
       priceCategory = "\$\$",

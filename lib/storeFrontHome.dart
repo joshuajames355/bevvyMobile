@@ -21,6 +21,8 @@ class StoreFrontHome extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     var content = [orderSection(context)];
+    if(content[0] == null) content = [];
+    
     content.addAll(productListByCategory.keys.toList().map((String category)
     {
       return makeSection(category, productListByCategory[category].map((Product product) =>  ProductWidgetSquare(product: product,)).toList(), context);
@@ -46,18 +48,13 @@ class StoreFrontHome extends StatelessWidget
 
   Widget orderSection(BuildContext context)
   {
-    if(orders == null || orders.length == 0) return Container();
+    if(orders == null || orders.length == 0) return null;
     
     List<Order> validOrders = orders.where((Order order) => ![ "new_order", "synced_editing_order", "stripe_paymentintent_payment_failed"].contains(order.status)).toList();
-    if(validOrders.length == 0) return Container();
-
     List<Order> ordersToDisplay = validOrders.where((Order order) => ["dispatch_queue", "delayed_queue", "out_for_delivery"].contains(order.status)).toList();
-    String title = "Your Order(s) are coming";
-    if(ordersToDisplay.length == 0)
-    {
-      ordersToDisplay = validOrders;
-      title = "Order Again";
-    }
+
+    if(ordersToDisplay.length == 0) return null;
+    String title = ordersToDisplay.length == 1 ? "Your Order is coming" :  "Your Orders are coming";
 
     return Container
     (

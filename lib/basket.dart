@@ -50,7 +50,7 @@ class BasketDataWidget extends StatelessWidget
           (
             child: Center
             (
-              child: Text("£" + (dataStore.checkoutData[product] * product.price).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
+              child: Text("£" + (dataStore.checkoutData[product] * product.priceAsDouble).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
             ),
             size: Size(50,50),
           ),

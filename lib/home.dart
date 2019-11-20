@@ -128,7 +128,7 @@ class _HomeState extends State<Home> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if(!snapshot.hasData) return placeHolderPage();
 
-        List<Product> productList = snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList();
+        List<Product> productList = snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList();
 
         Map<String, List<Product>> productListByCategory = Map<String, List<Product>>();
         productList.forEach((Product x) {

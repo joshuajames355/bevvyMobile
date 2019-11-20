@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Order
 {
   const Order({this.status, this.products, this.orderID, this.price, this.date, this.paymentInfo});
@@ -10,10 +12,10 @@ class Order
   final List<OrderItem> products;
 
   Order.fromFirestore({Map<String, dynamic> data, this.orderID}) : 
-    status = data["status"] ?? "",
+    status = (data["status"] != null && data["status"] is String) ? data["status"] : "",
     products = List.from((data["basket"] ?? []).map<OrderItem>((dynamic item) => OrderItem(Map<String, dynamic>.from(item)))),
-    price = "£" + (((data["serverOrderTotal"] ?? 0.0)/100) as double).toStringAsFixed(2),
-    date = data["updatedLastByUserAt"] == null ? DateTime.now() : data["updatedLastByUserAt"].toDate(),
+    price = "£" + ((((data["serverOrderTotal"] != null && data["serverOrderTotal"] is int) ? data["serverOrderTotal"] : 0)/100) as double).toStringAsFixed(2),
+    date = (data["updatedLastByUserAt"] == null || !(data["updatedLastByUserAt"] is Timestamp)) ? DateTime.now() : data["updatedLastByUserAt"].toDate(),
     paymentInfo = (data["paymentInfo"] == null || !(data["paymentInfo"] is Map)) ? {} : Map<String, String>.from(data["paymentInfo"]);
 }
 

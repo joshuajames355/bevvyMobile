@@ -91,7 +91,7 @@ class _AppState extends State<App> {
   initState() {
     super.initState();
     dataStore = DataStore();
-
+    
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
@@ -285,7 +285,7 @@ class _AppState extends State<App> {
                 
                 return SearchResults
                 (
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
                 );
               }
             )
@@ -300,7 +300,7 @@ class _AppState extends State<App> {
               if(!snapshot.hasData) return placeHolderPage();
 
               return  CategoryScrollView(
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
                 initialCategory: args,             
               );
             }
@@ -384,7 +384,7 @@ class _AppState extends State<App> {
     dataStore.reset();
     catalogue.then((QuerySnapshot snap)
     {
-      var products = snap.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList();
+      var products = snap.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList();
 
       for(int x = 0; x< products.length; x++)
       {

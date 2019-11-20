@@ -26,7 +26,7 @@ class _MyOrdersState extends State<MyOrders>
     currentlyDisplayedItems = widget.orders.where((Order order) => ["dispatch_queue", "delayed_queue", "out_for_delivery"].contains(order.status)).toList();
     if(currentlyDisplayedItems.length == 0)
     {
-      currentlyDisplayedItems = widget.orders;
+      currentlyDisplayedItems = widget.orders.where((Order order) => !["new_order", "synced_editing_order", "stripe_paymentintent_payment_failed"].contains(order.status)).toList();
       isInProgressOrders = false;
     }
     currentlyDisplayedItems.sort((Order a, Order b) => b.date.compareTo(a.date));

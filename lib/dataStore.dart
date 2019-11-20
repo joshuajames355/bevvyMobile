@@ -147,6 +147,7 @@ class DataStore {
   }
 
   List<ApplePayItem> get basketAsApplePayItems {
+    // https://developer.apple.com/documentation/passkit/pkpaymentrequest/1619231-paymentsummaryitems
     List<ApplePayItem> items = [];
     this.checkoutData.forEach((Product product, int quantity) {
       for (var i = 0; i < quantity; i++) {
@@ -155,6 +156,13 @@ class DataStore {
           amount: product.priceAsDouble.toStringAsFixed(2)));
       }
     });
+
+    // Grand total summary row, with company name as label
+    items.add(ApplePayItem(
+      label: 'Jovi',
+      amount: this.orderAmountString
+    ));
+
     return items;
   }
 }

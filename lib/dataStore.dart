@@ -65,7 +65,16 @@ class DataStore {
   }
 
   List<Map<String, dynamic>> get firestoreBasketFormat{
-    return List.from(this.checkoutData.map((Product product, int quantity) => MapEntry(0, {"id": product.id, "name": product.title, "quantity": quantity, "price": product.price})).values);
+    return List.from(
+      this.checkoutData.map((Product product, int quantity) => 
+        MapEntry(product.id, {
+          "id": product.id, 
+          "name": product.title, 
+          "quantity": quantity, 
+          "price": product.price}
+        )
+      ).values
+    );
   }
 
   void createOrUpdateFirestoreOrder() async {

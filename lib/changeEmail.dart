@@ -59,7 +59,6 @@ class _ChangeEmailState extends State<ChangeEmail>
           padding: EdgeInsets.all(12),
           child: Text("Change Email"),
         ),
-        color: Theme.of(context).primaryColor,
         onPressed: changeEmail,
       )
     ];

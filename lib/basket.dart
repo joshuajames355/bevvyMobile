@@ -50,7 +50,7 @@ class BasketDataWidget extends StatelessWidget
           (
             child: Center
             (
-              child: Text("£" + (dataStore.checkoutData[product] * product.price).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
+              child: Text("£" + (dataStore.checkoutData[product] * product.priceAsDouble).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
             ),
             size: Size(50,50),
           ),
@@ -62,10 +62,12 @@ class BasketDataWidget extends StatelessWidget
 
 class Basket extends StatelessWidget
 {
-  const Basket({ Key key, this.dataStore, this.removeFromBasket}) : super(key: key);
+  const Basket({ Key key, this.dataStore, this.removeFromBasket, this.deliveryFee, this.freeDeliveryMinimun}) : super(key: key);
 
   final DataStore dataStore;
   final RemoveFromBasketFunc removeFromBasket;
+  final double deliveryFee;
+  final double freeDeliveryMinimun;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +133,7 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Subtotal", style: TextStyle(fontSize: 16)),
-                    Text("£" + getTotal(dataStore.checkoutData).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text(dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
                 Row
@@ -154,11 +156,11 @@ class Basket extends StatelessWidget
                               icon: Icon(IconData(59534, fontFamily: 'MaterialIcons')),
                               onPressed: ()
                               {
-                                showPlatformDialog(androidBarrierDismissible: true, context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)], title: Text("Delivery fee"), content: Text("Free if you spend more than £25."),  ios: (_) => CupertinoAlertDialogData(),));
+                                showPlatformDialog(androidBarrierDismissible: true, context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)], title: Text("Delivery fee"), content: Text("Free if you spend more than £" + freeDeliveryMinimun.toStringAsFixed(2)),  ios: (_) => CupertinoAlertDialogData(),));
                               },
                             ),
                           ),
-                          Text(getTotal(dataStore.checkoutData) > 25 ? "£0.00" : "£3.50", style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+                          Text(dataStore.orderAmountDouble > freeDeliveryMinimun ? "£0.00" : "£" + deliveryFee.toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
                         ]
                       )
                     ),
@@ -170,7 +172,7 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Total", style: TextStyle(fontSize: 16)),
-                    Text("£" + (getTotal(dataStore.checkoutData) + (getTotal(dataStore.checkoutData) > 25 ? 0 : 3.50)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text("£" + (dataStore.orderAmountDouble + (dataStore.orderAmountDouble > freeDeliveryMinimun ? 0 : deliveryFee)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
               ],
@@ -217,13 +219,4 @@ List<Widget> joinBasketElements(List<Widget> basketElements)
     joinedElements.addAll([Divider(height: 30, thickness: 2,), basketElements[x]]);
   }
   return joinedElements;
-}
-
-double getTotal(Map<Product, int> basket)
-{
-  double total = 0;
-  basket.forEach((Product k, int quantity){
-    total += k.price * quantity;
-  });
-  return total;
 }

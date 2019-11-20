@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:bevvymobile/basket.dart';
 import 'package:bevvymobile/categoryScrollView.dart';
@@ -8,12 +9,10 @@ import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
 import 'package:bevvymobile/home.dart';
-import 'package:bevvymobile/myOrders.dart';
 import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
 import 'package:bevvymobile/order.dart';
-import 'package:bevvymobile/newOrder.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/paymentMethods.dart';
 import 'package:bevvymobile/productScreen.dart';
@@ -21,6 +20,7 @@ import 'package:bevvymobile/accountDetails.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/config.dart';
 import 'package:bevvymobile/dataStore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter/material.dart';
@@ -31,6 +31,7 @@ import 'package:firebase_analytics/observer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 int accentColour = 0XFF91FFF8;
 Map<int, Color> accentColorPalette = {
@@ -64,7 +65,6 @@ ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   buttonColor: Color(0XFFFFA552),
   accentColor: MaterialColor(accentColour, accentColorPalette),
-
 );
 
 class App extends StatefulWidget {
@@ -77,7 +77,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  List<Order> orders;
   FirebaseUser user;
   final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
@@ -85,26 +84,39 @@ class _AppState extends State<App> {
   List<PaymentMethod> paymentMethods = [];
   PaymentMethod selectedMethod;
   DataStore dataStore;
-  int selectedTab = 0;
+  RemoteConfig remoteConfig;
+  int initialPage = 0;
 
   @override
   initState() {
     super.initState();
-    orders = List<Order>();
     dataStore = DataStore();
-
+    
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
     auth.currentUser().then(handleAuthStateChange);
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
-    new Future.delayed(Duration.zero, () {
+    new Future.delayed(Duration.zero, () async {
       var config = AppConfig.of(context);
       StripePayment.setOptions(
         StripeOptions(publishableKey: config.stripePublishableKey,
                       merchantId: config.stripeMerchantId,
                       androidPayMode: config.stripeAndroidPayMode));
+
+      remoteConfig = await RemoteConfig.instance;
+      await remoteConfig.setDefaults({"delivery_center_lon" : -1.5849, "delivery_center_lat" : 54.7753, "delivery_radius" : 5, "delivery_fee" : 350, "delivery_free_after" : 2500});
+      await remoteConfig.fetch();
+      remoteConfig.activateFetched();
+    });
+
+    SharedPreferences.getInstance().then((SharedPreferences prefs)
+    {
+      if(prefs.getBool("logged_in") ?? false)
+      {
+        navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+      }
     });
   }
 
@@ -116,6 +128,8 @@ class _AppState extends State<App> {
     if (updatedUser == null) {
       // Logout
       navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("logged_in", false);
     } else {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
@@ -127,12 +141,17 @@ class _AppState extends State<App> {
         //Crashlytics.
       });
       paymentMethodsStream.listen((QuerySnapshot query) async {
-        paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
+        setState(() {
+          paymentMethods = query.documents.map((DocumentSnapshot x ) => PaymentMethod.fromJson(x.data["asJSON"])).toList();
+        });
         if(selectedMethod == null)
         {
           setInitialPaymentMethod();
         }
       });
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool("logged_in", true);
 
       if (ds.exists) {
         // User document exists, now to change onboarding status
@@ -173,76 +192,20 @@ class _AppState extends State<App> {
           return MaterialPageRoute(builder: (context) => SplashScreen());
         }
         else if(settings.name == "/home") {
-          return MaterialPageRoute(builder: (context) => Scaffold
-          (
-            body: selectedTab == 0 ? FutureBuilder(
-              future: catalogue,
-              builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-              
-                return  Home(
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),           
-                );
-              }
-            ) : selectedTab == 1 ?Basket(
-              dataStore: dataStore,
-              removeFromBasket: removeFromBasket,
-            ) : selectedTab == 2 ? StreamBuilder(
-              stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if(!snapshot.hasData) {
-                  return placeHolderPage();
-                }
-                return  AccountDetails(
-                  user: user,
-                  onUserChange: onUserChange,
-                  userDocument: snapshot.data,
-                );
-              }
-            ) : selectedTab == 3 ? StreamBuilder(
-              stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
-              builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-                  
-                return MyOrders
-                (
-                  orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
-                );
-              }
-            ) : Container(),
-            bottomNavigationBar: BottomNavigationBar
+          return platformPageRoute(context: context, builder: (BuildContext _) => Home
             (
-              type: BottomNavigationBarType.fixed,
-              currentIndex: selectedTab,
-              onTap: (int index){
-                setState(() {
-                  selectedTab = index;
-                });
-              },
-              items: [
-                BottomNavigationBarItem
-                (
-                  title: Text("Home"),
-                  icon: Icon(IconData(59530, fontFamily: 'MaterialIcons')),
-                ),
-                BottomNavigationBarItem
-                (
-                  title: Text("Basket"),
-                  icon: Icon(IconData(59596, fontFamily: 'MaterialIcons')),
-                ),
-                BottomNavigationBarItem
-                (
-                  title: Text("Account"),
-                  icon: Icon(IconData(59473, fontFamily: 'MaterialIcons')),
-                ),
-                BottomNavigationBarItem
-                (
-                  title: Text("Orders"),
-                  icon: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
-                ),
-              ],
-            ),
-          ));
+              statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
+              catalogue: catalogue,
+              user: user,
+              onUserChange: onUserChange,
+              onOrderAgain: orderAgain,
+              removeFromBasket: removeFromBasket,
+              dataStore: dataStore,
+              initialPage: initialPage,
+              deliveryFee: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? remoteConfig.getInt("delivery_fee")/100 : 3.50,
+              freeDeliveryMinimun: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? remoteConfig.getInt("delivery_free_after")/100 : 25.00,
+            )
+          );
         }
         else if(settings.name == "/createAccountSMS") {
           return SlideLeftRoute(          
@@ -254,34 +217,15 @@ class _AppState extends State<App> {
             page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
           );
         }
-        else if(settings.name == "/accountDetails") {
-          return MaterialPageRoute(builder: (context) => StreamBuilder(
-            stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
-            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-              if(!snapshot.hasData) {
-                return placeHolderPage();
-              }
-              return  AccountDetails(
-                user: user,
-                onUserChange: onUserChange,
-                userDocument: snapshot.data,
-              );
-            }
-          ));
-        }
-        else if(settings.name == "/basket") {
-          return MaterialPageRoute(          
-            builder: (BuildContext context) => Basket(
-              dataStore: dataStore,
-              removeFromBasket: removeFromBasket,
-            ),
-          );
-        }
         else if (settings.name == "/checkout") {
           return SlideLeftRoute(
             page: (BuildContext context) => Checkout(
               dataStore: dataStore,
               paymentMethod: selectedMethod,
+              deliveryCenterLat: remoteConfig.getDouble("delivery_center_lat"),
+              deliveryCenterLon: remoteConfig.getDouble("delivery_center_lon"),
+              deliveryRadius: remoteConfig.getDouble("delivery_radius"),
+              statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
             ), 
           );   
         }
@@ -324,7 +268,9 @@ class _AppState extends State<App> {
                   
                 return OrderScreen
                 (
+                  statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
                   order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
+                  onOrderAgain: orderAgain,
                 );
               }
             )
@@ -339,7 +285,7 @@ class _AppState extends State<App> {
                 
                 return SearchResults
                 (
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
                 );
               }
             )
@@ -354,29 +300,11 @@ class _AppState extends State<App> {
               if(!snapshot.hasData) return placeHolderPage();
 
               return  CategoryScrollView(
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data)).toList(),
+                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
                 initialCategory: args,             
               );
             }
           ));
-        }
-        else if(settings.name == "/newOrder")
-        {
-          final bool args = settings.arguments;
-          return MaterialPageRoute(builder: (context) => NewOrder
-            (
-              isNative: args,
-              dataStore: dataStore,
-              onClearBasket: (){
-                setState(() {
-                  dataStore.reset();
-                });
-              },
-            )
-          );
-        }
-        else {
-          return MaterialPageRoute(builder: (context) => SplashScreen());
         }
       },
     );
@@ -450,21 +378,25 @@ class _AppState extends State<App> {
         }
     }
   }
-}
 
-//Displayed when the page is not ready
-Widget placeHolderPage()
-{
-  return WillPopScope(
-    onWillPop: () async => false,
-    child: Container(
-      width: double.infinity,
-      height: double.infinity,
-      child: Align
-      (
-        alignment: Alignment.center,
-        child: CircularProgressIndicator(),
-      )
-    )
-  );
+  void orderAgain(Order order)
+  {
+    dataStore.reset();
+    catalogue.then((QuerySnapshot snap)
+    {
+      var products = snap.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList();
+
+      for(int x = 0; x< products.length; x++)
+      {
+        
+        List<OrderItem> orderItems = order.products.where((OrderItem item) => item.id == products[x].id);
+        if(orderItems.length != 1) break;
+        dataStore.addProduct(products[x], orderItems[0].quantity);        
+      }
+    });
+
+
+    initialPage = 1;
+    navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+  }
 }

@@ -206,7 +206,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                 ),
                 child: Center
                 (
-                  child: Text("£" + product.price.toStringAsFixed(2), style: TextStyle(color: Colors.white),),
+                  child: Text(product.priceString, style: TextStyle(color: Colors.white),),
                 )
               )
             )

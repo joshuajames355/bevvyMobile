@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:bevvymobile/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:stripe_payment/stripe_payment.dart';
 
@@ -66,7 +68,54 @@ class _PaymentMethodsState extends State<PaymentMethods>
       ),
       body: Column
       (
-        children: getColumnContent(context)
+        children: [
+          Expanded(
+            child: ListView(
+              children: getColumnContent(context)
+            )
+          ),
+          Divider(),
+          Card
+          (
+            child: FlatButton
+            (
+              child: Container
+              (
+                width: double.infinity,
+                child: Row
+                (
+                  children:
+                  [
+                    Padding
+                    (
+                      child: Icon(IconData(57669, fontFamily: 'MaterialIcons')),
+                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    ),
+                    Text("Add New Card..."),
+                  ]
+                )
+              ),
+              onPressed: () async {
+                try {
+                  PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(
+                    CardFormPaymentRequest(requiredBillingAddressFields: 'full',
+                                          prefilledInformation: PrefilledInformation(billingAddress: BillingAddress(country: 'GB'))));
+                  // Store in user's private Firestore collection, ready to be consumed by Function to attach to customer
+                  Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
+                    'asJSON': paymentMethod.toJson(),
+                    'stripe_attachment': 'unattached',
+                    'stripe_message': '',
+                  });
+                } on PlatformException catch(exception) {
+                  // 'cancelled' operation indicates user has dismissed modal window (iOS only)
+                  if (exception.code != 'cancelled') {
+                    rethrow;
+                  }
+                }
+              }
+            )
+          )
+        ]
       )
     );
   }
@@ -78,7 +127,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
       Padding
       (
         padding: EdgeInsets.all(10),
-        child: Icon(IconData(59553, fontFamily: 'MaterialIcons'), size: 200,),
+        child: Icon(FontAwesomeIcons.creditCard, size: 125,),
       ),
       Divider(),
       FutureBuilder
@@ -131,7 +180,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
                 [
                   Padding
                   (
-                    child: Icon(IconData(59553, fontFamily: 'MaterialIcons')),
+                    child: getCardBrandIcon(brand),
                     padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                   ),
                   method.card == null ? Container() : Text(brand + " Ending in " + (method.card.last4 ?? "")),
@@ -151,54 +200,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
         );
       })
     );
-
-    content.addAll
-    (
-      [
-        Divider(),
-        Card
-        (
-          child: FlatButton
-          (
-            child: Container
-            (
-              width: double.infinity,
-              child: Row
-              (
-                children:
-                [
-                  Padding
-                  (
-                    child: Icon(IconData(57669, fontFamily: 'MaterialIcons')),
-                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  ),
-                  Text("Add New Card..."),
-                ]
-              )
-            ),
-            onPressed: () async {
-              try {
-                PaymentMethod paymentMethod = await StripePayment.paymentRequestWithCardForm(
-                  CardFormPaymentRequest(requiredBillingAddressFields: 'full',
-                                         prefilledInformation: PrefilledInformation(billingAddress: BillingAddress(country: 'GB'))));
-                // Store in user's private Firestore collection, ready to be consumed by Function to attach to customer
-                Firestore.instance.collection('users').document(widget.user.uid).collection('payment_methods').document(paymentMethod.id).setData({
-                  'asJSON': paymentMethod.toJson(),
-                  'stripe_attachment': 'unattached',
-                  'stripe_message': '',
-                });
-              } on PlatformException catch(exception) {
-                // 'cancelled' operation indicates user has dismissed modal window (iOS only)
-                if (exception.code != 'cancelled') {
-                  rethrow;
-                }
-              }
-            }
-          )
-        )
-      ]
-    );
-
+    
     return content;
   }
 

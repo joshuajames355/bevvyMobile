@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:bevvymobile/newOrder.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:stripe_payment/stripe_payment.dart';
 import 'package:bevvymobile/dataStore.dart';
+import 'package:bevvymobile/utils.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -12,10 +15,15 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class Checkout extends StatefulWidget
 {
-  const Checkout({ Key key, this.dataStore, this.paymentMethod}) : super(key: key);
+  const Checkout({ Key key, this.dataStore, this.paymentMethod, this.deliveryCenterLat, this.deliveryCenterLon, this.deliveryRadius, this.statusNames}) : super(key: key);
 
   final DataStore dataStore;
   final PaymentMethod paymentMethod;
+
+  final double deliveryRadius;
+  final double deliveryCenterLat;
+  final double deliveryCenterLon;
+  final Map<String, String> statusNames;
 
   @override
   _CheckoutState createState() => _CheckoutState();
@@ -31,10 +39,20 @@ class _CheckoutState extends State<Checkout>
   LocationData lastLocationFix;
 
   CameraPosition cameraPosition; 
+  int orderUpdateEventID = -1;
+
+  String orderStatus = "pending";
+
+  Set<Circle> circles;
 
   @override
   void initState() {
     getLocation();
+    circles = Set.from([Circle(
+      circleId: CircleId("delivery"),
+      center: LatLng(widget.deliveryCenterLat, widget.deliveryCenterLon),
+      radius: widget.deliveryRadius * 1000,
+    )]);
     cameraPosition = CameraPosition(target: lastLocationFix == null ? LatLng(54.7753, -1.5849) : LatLng(lastLocationFix.latitude, lastLocationFix.longitude), zoom: 16);
     super.initState();
   }
@@ -42,7 +60,7 @@ class _CheckoutState extends State<Checkout>
   @override
   Widget build(BuildContext context)
   {
-    return Scaffold
+    return orderStatus == "pending" ? Scaffold
     (
       appBar: AppBar
       (
@@ -68,6 +86,7 @@ class _CheckoutState extends State<Checkout>
               [
                 GoogleMap
                 (
+                  circles: circles,
                   initialCameraPosition: cameraPosition,
                   onCameraMove: (CameraPosition position)
                   {
@@ -82,18 +101,15 @@ class _CheckoutState extends State<Checkout>
                     }
                   },
                 ),
-                Positioned.fill
+                Align
                 (
-                  child: Align
+                  alignment: Alignment.center,
+                  child: Transform.translate
                   (
-                    alignment: Alignment.center,
-                    child: Transform.translate
-                    (
-                      offset: Offset(0, -25),
-                      child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
-                    )
-                  ),
-                )          
+                    offset: Offset(0, -25),
+                    child: Icon(IconData(57544, fontFamily: 'MaterialIcons',), color: Theme.of(context).accentColor, size: 50,),
+                  )
+                ),     
               ]
             ),
           ),
@@ -111,26 +127,36 @@ class _CheckoutState extends State<Checkout>
             ),
             onPressed: ()
             {
-              //Navigator.pushNamed(context, "/checkout", arguments: cameraPosition.target);
-              showModalBottomSheet
-              (
-                isScrollControlled: true,
-                context: context, builder: (BuildContext context2) => bottomModal(context2)
-              );
+              double distance = distBetweenPoints(widget.deliveryCenterLat, widget.deliveryCenterLon, cameraPosition.target.latitude, cameraPosition.target.longitude);
+              if(distance < widget.deliveryRadius * 1000)
+              {
+                showModalBottomSheet
+                (
+                  isScrollControlled: true,
+                  context: context, builder: (BuildContext context2) => bottomModal(context2)
+                );
+              }
+              else
+              {
+                showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("We do not deliver to that location.")));
+              }
             },
           )
         ]
       ),
-      floatingActionButton: Padding
+      floatingActionButton: PlatformWidget
       (
-        padding: EdgeInsets.only(bottom: 50),
-        child: FloatingActionButton
+        android: (_) => Padding
         (
-          child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
-          onPressed: getLocation,
-        ),
+          padding: EdgeInsets.only(bottom: 50),
+          child: FloatingActionButton
+          (
+            child: Icon(IconData(58716, fontFamily: 'MaterialIcons')),
+            onPressed: getLocation,
+          ),
+        )
       )
-    );
+    ) : NewOrder(orderStatus: orderStatus, statusNames: widget.statusNames, orderID: widget.dataStore.order.documentID,);
   }
 
   getLocation()
@@ -250,7 +276,10 @@ class _CheckoutState extends State<Checkout>
                                 ),
                                 FlatButton(
                                   child: Text('Pay'),
-                                  onPressed: () => runExistingCardPayment(),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    runExistingCardPayment();
+                                  },
                                 )
                               ]);
                           });
@@ -366,33 +395,85 @@ class _CheckoutState extends State<Checkout>
       return;
     }
 
-    try {
-      StripePayment.confirmPaymentIntent(
-        PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
-                      paymentMethodId: paymentMethodID)
-      );
-    } on PlatformException catch(exception) {
-      // Cancel just native pay
+    setState(() {
+     orderStatus = "edited_order" ;
+    });
+
+    
+    StripePayment.confirmPaymentIntent(
+      PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
+                    paymentMethodId: paymentMethodID)
+    ).catchError((error){
+      print(error);
+
+      setState(() {
+        orderStatus = "error";
+      });
+
       StripePayment.cancelNativePayRequest();
 
-      // Present error for all cards
-      if (exception.code != 'authenticationFailed') {
-        print(exception.message);
-        // TODO
-        // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
-      } else {
-        rethrow;
+      if(error is PlatformException)
+      {
+        //3D secured cancelled - PlatformException(failed, failed, null)
+        if (error.code != 'authenticationFailed') {
+          if(error.code == "api") // stripe failure
+          {
+            if(error.message == "Your card was declined.")
+            setState(() {
+              orderStatus = "error_card_declined";
+            });
+          }
+          print(error.message);
+          // TODO
+          // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
+        }
       }
-    } catch (error) {
-      print(error);
-    }
+    });
 
-    Navigator.pushNamed(context, "/newOrder", arguments: isNative);
+    orderUpdateEventID = widget.dataStore.subscribeToOrderUpdate((DocumentSnapshot snap) async {
+      if (snap.data['status'] == 'edited_order') {
+        // Payment status hasn't changed
+        return;
+      } else if (snap.data['status'] == 'dispatch_queue') {
+        // Yay! Payment has gone through
+
+        setState(() {
+          orderStatus = 'dispatch_queue';
+        });
+
+        if (isNative) {
+          StripePayment.completeNativePayRequest();
+        }
+        Future.delayed(Duration(seconds: 1)).then((x) {
+          widget.dataStore.reset();
+          Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);
+          Navigator.pushNamed(context, '/order', arguments: snap.documentID);
+        });
+
+      } else {
+
+        // Error
+        // TODO: error handle
+        // Again, need to reset basket / payment intent if we want to allow the user to retry.
+        if(!orderStatus.startsWith("error")){
+          setState(() {
+            orderStatus = 'error';
+          });
+        }
+
+        if (isNative) {
+          StripePayment.cancelNativePayRequest();
+        }
+      }
+    });
+
+    Navigator.pop(context);
   }
 
   @override
   void dispose() {
     _noteToDriver.dispose();
+    if(orderUpdateEventID != -1) widget.dataStore.unsubscribeFromOrderUpdates(orderUpdateEventID);
     super.dispose();
   }
 }

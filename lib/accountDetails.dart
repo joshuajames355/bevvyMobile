@@ -42,7 +42,7 @@ class AccountDetails extends StatelessWidget
               ),
               onPressed: ()
               {
-                showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => ChangeEmail(user: user)).then((var x)
+                showDialog(context: context, builder: (context) => ChangeEmail(user: user)).then((var x)
                 {
                   if(x == true)
                   {
@@ -80,14 +80,33 @@ class AccountDetails extends StatelessWidget
             ),
           ),
           Expanded(child: Container()),//Fill space
-          FlatButton(
-            onPressed: (){
-              auth.signOut();
-            },
-            child: Container(
-              padding: EdgeInsets.all(12),
-              width: double.infinity,
-              child: Text("Log Out"),),
+          Card(
+            child: FlatButton(
+              onPressed: (){
+                showPlatformDialog(context: context,
+                          builder: (context) {
+                            return PlatformAlertDialog(
+                              content: Text("Are you sure you want to log out?"),
+                              actions: <Widget>[
+                                FlatButton(
+                                  child: Text('Close'),
+                                  onPressed: () => Navigator.pop(context),
+                                ),
+                                FlatButton(
+                                  child: Text('Confirm'),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    auth.signOut();
+                                  },
+                                )
+                              ]);
+                          });
+              },
+              child: Container(
+                margin: EdgeInsets.all(12),
+                width: double.infinity,
+                child: Text("Log Out"),),
+            )
           )
         ]
       )

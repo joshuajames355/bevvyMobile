@@ -2,13 +2,16 @@ import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
 import "productWidget.dart";
 
+typedef void OnSelectCategory(int category);
+
 class CategoryView extends StatelessWidget
 {
-  const CategoryView({ Key key, this.productList, this.categories, this.currentCategory}) : super(key: key);
+  const CategoryView({ Key key, this.productList, this.categories, this.currentCategory, this.onSelectCategory}) : super(key: key);
 
   final List<Product> productList;
   final List<String> categories;
   final int currentCategory;
+  final OnSelectCategory onSelectCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,7 @@ class CategoryView extends StatelessWidget
                 
                 onPressed: ()
                 {
-
+                  this.onSelectCategory(currentCategory-1);
                 },
                 child: Padding
                 (
@@ -53,7 +56,7 @@ class CategoryView extends StatelessWidget
               (
                 onPressed: ()
                 {
-
+                  this.onSelectCategory(currentCategory+1);
                 },
                 child: Padding
                 (

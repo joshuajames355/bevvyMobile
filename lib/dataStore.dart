@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:collection/collection.dart' show MapEquality;
 import 'package:stripe_payment/stripe_payment.dart';
+import 'dart:math';
+
+typedef void OrderUpdateEvent(DocumentSnapshot order);
 
 class DataStore {
   Map<Product, int> checkoutData;
@@ -10,6 +13,9 @@ class DataStore {
   DocumentSnapshot order;
   DocumentReference orderRef;
   FirebaseUser user;
+
+  Map<int, OrderUpdateEvent> onOrderUpdateEvents = Map<int, OrderUpdateEvent>();
+  Random rand = Random();
 
   DataStore() {
     this.checkoutData = Map<Product, int>();
@@ -35,11 +41,13 @@ class DataStore {
     if (this.user == null) {
       throw('User is not logged in (or rather, not store in dataStore)');
     }
+
     var orderRef = await Firestore.instance.collection('orders').add({
-      'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
+      'basket': this.firestoreBasketFormat,
       'customerID': this.user.uid,
       'status': 'new_order',
       'createdByUserAt': FieldValue.serverTimestamp(),
+      'updatedLastByUserAt': FieldValue.serverTimestamp(),
     });
     this.setOrderRef(orderRef);
   }
@@ -47,13 +55,26 @@ class DataStore {
   void updateFirestoreOrder() async {
     if (!firestoreBasketInSync) {
       this.order.reference.updateData({
-        'basket': this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)),
+        'basket': this.firestoreBasketFormat,
         'status': 'edited_order',
         'updatedLastByUserAt': FieldValue.serverTimestamp(),
       });
     } else {
       print('basket already in sync');
     }
+  }
+
+  List<Map<String, dynamic>> get firestoreBasketFormat{
+    return List.from(
+      this.checkoutData.map((Product product, int quantity) => 
+        MapEntry(product.id, {
+          "id": product.id, 
+          "name": product.title, 
+          "quantity": quantity, 
+          "price": product.price}
+        )
+      ).values
+    );
   }
 
   void createOrUpdateFirestoreOrder() async {
@@ -81,6 +102,7 @@ class DataStore {
     this.orderStream = null;
     this.order = null;
     this.checkoutData = Map<Product, int>();
+    this.onOrderUpdateEvents = Map<int, OrderUpdateEvent>();
   }
 
   void setOrderRef(DocumentReference ref) {
@@ -88,15 +110,36 @@ class DataStore {
     this.orderStream = this.orderRef.snapshots();
     this.orderStream.listen((DocumentSnapshot snap) async {
       this.order = snap;
+      this.onOrderUpdateEvents.forEach((int key, OrderUpdateEvent event) => event(snap));
     });
   }
 
+  int subscribeToOrderUpdate(OrderUpdateEvent event)
+  {
+    int key = rand.nextInt(1<<32);
+    this.onOrderUpdateEvents[key] = event;
+    return key;
+  }
+
+  void unsubscribeFromOrderUpdates(int id)
+  {
+    if(id < this.onOrderUpdateEvents.length) this.onOrderUpdateEvents.remove(id);
+  }
+
   String get orderAmountString {
-    double total = 0;
+    return orderAmountDouble.toStringAsFixed(2);
+  }
+
+  int get orderAmountInt{
+    int total = 0;
     this.checkoutData.forEach((Product k, int quantity){
       total += k.price * quantity;
     });
-    return total.toStringAsFixed(2);
+    return total;
+  }
+
+  double get orderAmountDouble{
+    return (this.orderAmountInt/100);
   }
 
   String get orderAmountStringWithCurrency {
@@ -104,14 +147,22 @@ class DataStore {
   }
 
   List<ApplePayItem> get basketAsApplePayItems {
+    // https://developer.apple.com/documentation/passkit/pkpaymentrequest/1619231-paymentsummaryitems
     List<ApplePayItem> items = [];
     this.checkoutData.forEach((Product product, int quantity) {
       for (var i = 0; i < quantity; i++) {
         items.add(ApplePayItem(
           label: product.title,
-          amount: product.price.toStringAsFixed(2)));
+          amount: product.priceAsDouble.toStringAsFixed(2)));
       }
     });
+
+    // Grand total summary row, with company name as label
+    items.add(ApplePayItem(
+      label: 'Jovi',
+      amount: this.orderAmountString
+    ));
+
     return items;
   }
 }

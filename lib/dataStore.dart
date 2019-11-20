@@ -152,7 +152,7 @@ class DataStore {
       for (var i = 0; i < quantity; i++) {
         items.add(ApplePayItem(
           label: product.title,
-          amount: product.price.toStringAsFixed(2)));
+          amount: product.priceAsDouble.toStringAsFixed(2)));
       }
     });
     return items;

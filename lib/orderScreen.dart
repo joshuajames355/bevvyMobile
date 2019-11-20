@@ -34,28 +34,96 @@ class _OrderScreenState extends State<OrderScreen>{
       body: Column
       (
         children: [
-          Padding(
-            padding: EdgeInsets.only(top: 20, bottom: 10),
-            child: Center(child: Text("Items", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),)),
+          Center
+          (
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+              child: Text(widget.statusNames[widget.order.status], style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+            )
           ),
-          Divider(thickness: 2,),
+          Card
+          (
+            margin: EdgeInsets.all(5),
+            child: Padding(
+              padding: EdgeInsets.all(12),
+              child: Row
+              (
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    child: Icon(IconData(59485, fontFamily: 'MaterialIcons')),
+                  ),
+                  Expanded(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children:
+                      [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            Text("Order ID ", style: TextStyle(fontWeight: FontWeight.bold),),
+                            Text(widget.order.orderID ?? "", )
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text("Placed At", style: TextStyle(fontWeight: FontWeight.w300),),
+                            Text(getDateText(widget.order.date)?? "", style: TextStyle(fontWeight: FontWeight.w300))
+                          ],
+                        ),
+                      ]
+                    ),
+                  )
+                ]
+              )
+            ),
+          ),
+          Divider(thickness: 2),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text("Item", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                Text("Amount", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+              ],),
+          ),
           Expanded
           (
             child: Container
             (
-              margin: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: ListView
               (
                 children: widget.order.products.map(
-                  (OrderItem item) => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  (OrderItem item) => Column
+                  (
                     children:
                     [
-                      SizedBox(
-                        width: 300,
-                        child: Text(item.id, overflow: TextOverflow.ellipsis)
-                      ),
-                      Text("x " + item.quantity.toString(), style: TextStyle(color: Theme.of(context).accentColor),) 
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children:
+                        [
+                          SizedBox(
+                            width: 300,
+                            child: 
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children:
+                              [
+                                Text(item.quantity.toString() + " × ", style: TextStyle(fontWeight: FontWeight.w300),),
+                                Expanded(
+                                  child: Text(item.name, style: TextStyle(fontWeight: FontWeight.w300),),
+                                ),
+                              ]
+                            ),
+                          ),
+                          Text("£" + (item.price.toDouble() * item.quantity/100).toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.w300)) 
+                        ]
+                      )
                     ]
                   )
                 ).toList(),
@@ -70,47 +138,12 @@ class _OrderScreenState extends State<OrderScreen>{
             (
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Total: "),
-                Text(widget.order.price, style: TextStyle(color: Theme.of(context).accentColor))
+                Text("TOTAL PAID", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
+                Text(widget.order.price, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 16, fontWeight: FontWeight.bold))
               ]
             )
           ),
-          Container
-          (
-            margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
-            child: Row
-            (
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Order placed:"),
-                Text(getDateText(widget.order.date)?? "", style: TextStyle(color: Theme.of(context).accentColor))
-              ]
-            )
-          ),
-          Container
-          (
-            margin: EdgeInsets.fromLTRB(25, 5, 25, 5),
-            child: Row
-            (
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Status: "),
-                Text(widget.statusNames[widget.order.status] ?? "", )
-              ]
-            )
-          ),
-          Container
-          (
-            margin: EdgeInsets.fromLTRB(25, 5, 25, 25),
-            child: Row
-            (
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("ID: "),
-                Text(widget.order.orderID ?? "", )
-              ]
-            )
-          ),
+          Divider(thickness: 2,),
           RaisedButton(
             onPressed: () => widget.onOrderAgain(widget.order),
             child: Container(

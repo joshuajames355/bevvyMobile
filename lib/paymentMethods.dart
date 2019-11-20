@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'package:stripe_payment/stripe_payment.dart';
 
@@ -126,7 +127,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
       Padding
       (
         padding: EdgeInsets.all(10),
-        child: Icon(IconData(59553, fontFamily: 'MaterialIcons'), size: 200,),
+        child: Icon(FontAwesomeIcons.creditCard, size: 125,),
       ),
       Divider(),
       FutureBuilder

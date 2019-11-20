@@ -43,9 +43,16 @@ class _CheckoutState extends State<Checkout>
 
   String orderStatus = "pending";
 
+  Set<Circle> circles;
+
   @override
   void initState() {
     getLocation();
+    circles = Set.from([Circle(
+      circleId: CircleId("delivery"),
+      center: LatLng(widget.deliveryCenterLat, widget.deliveryCenterLon),
+      radius: widget.deliveryRadius * 1000,
+    )]);
     cameraPosition = CameraPosition(target: lastLocationFix == null ? LatLng(54.7753, -1.5849) : LatLng(lastLocationFix.latitude, lastLocationFix.longitude), zoom: 16);
     super.initState();
   }
@@ -79,6 +86,7 @@ class _CheckoutState extends State<Checkout>
               [
                 GoogleMap
                 (
+                  circles: circles,
                   initialCameraPosition: cameraPosition,
                   onCameraMove: (CameraPosition position)
                   {

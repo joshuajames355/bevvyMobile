@@ -29,9 +29,9 @@ double distBetweenPoints(double lat1, double lon1, double lat2, double lon2)
   var earthRadius = 6378137.0; // WGS84 major axis
   return 2 * earthRadius * asin(
       sqrt(
-          pow(sin( degToRad(lat1) - degToRad(lat2)) / 2, 2)
-              + degToRad(lat1)
-              * degToRad(lat2)
+          pow(sin( (degToRad(lat2) - degToRad(lat1))/2), 2)
+              + cos(degToRad(lat1))
+              * cos(degToRad(lat2))
               * pow(sin(degToRad(lon1) - degToRad(lon2)) / 2, 2)
       )
   );

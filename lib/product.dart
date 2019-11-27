@@ -67,7 +67,7 @@ class Product
       title = (data["name"] != null && data["name"] is String) ? data["name"] : "",
       price = (data["price"] != null && data["price"] is int ? data["price"] : 0),
       description = (data["description"] != null && data["description"] is String) ? data["description"] : "",
-      size = (data["size"] is Map ? ((data["size"]["magnitude"] != null && data["size"]["magnitude"] is int ) ? data["size"]["magnitude"] : 0 ).toString() + ((data["size"]["unit"] != null && data["size"]["unit"] is String) ? data["size"]["unit"] : "" ): ""),
+      size = (data["size"] is Map ? ((data["size"]["magnitude"] != null && (data["size"]["magnitude"] is int || data["size"]["magnitude"] is double) ) ? data["size"]["magnitude"] : 0 ).toString() + ((data["size"]["unit"] != null && data["size"]["unit"] is String) ? data["size"]["unit"] : "" ): ""),
       category = (data["category"] != null && data["category"] is String) ? data["category"]  : "None",
       legalRestriction = (data["legal_restriction"] != null && data["legal_restriction"] is String) ? data["legal_restriction"]  : ""
     ;    

@@ -23,9 +23,21 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Firebase (staging)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.802264056148-tmepu7r0g703h81seikcukduc8d1nq03</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Firebase (live)</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.859982213837-3ls1mfokttq1uoj1j9qlifl2j69a2q2g</string>
 			</array>
 		</dict>
 	</array>

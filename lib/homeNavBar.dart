@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeNavBar extends StatefulWidget 
@@ -16,10 +17,8 @@ class _HomeNavBarState extends State<HomeNavBar> {
   @override
   Widget build(BuildContext context)
   {
-    return BottomNavigationBar
+    return CupertinoTabBar
     (
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Theme.of(context).accentColor,
       currentIndex:  lastSelected,
       items: [
         BottomNavigationBarItem

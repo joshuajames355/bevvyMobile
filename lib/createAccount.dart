@@ -53,7 +53,7 @@ class _CreateAccountState extends State<CreateAccount>
     (
       appBar: AppBar
       (
-        title: Text("Sign Up"),
+        title: Text("Sign Up", style: TextStyle(fontFamily: "opificio")),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),

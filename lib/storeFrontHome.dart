@@ -30,7 +30,7 @@ class StoreFrontHome extends StatelessWidget
     
     return Scaffold (
       appBar: AppBar(
-        title: Text("Home"),
+        title: Text("Home", style: TextStyle(fontFamily: "opificio"),),
         actions: <Widget>
         [
           IconButton(
@@ -69,7 +69,7 @@ class StoreFrontHome extends StatelessWidget
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 30),
-                  child: Text(title, style: TextStyle(fontSize: 20)),
+                  child: Text(title, style: TextStyle(fontSize: 20, fontFamily: "opificio")),
                 ),
                 FlatButton(
                   onPressed: (){
@@ -109,7 +109,7 @@ class StoreFrontHome extends StatelessWidget
               children: <Widget>[
                 Padding(
                   padding: EdgeInsets.only(left: 30),
-                  child: Text(title, style: TextStyle(fontSize: 20)),
+                  child: Text(title, style: TextStyle(fontSize: 20, fontFamily: "opificio")),
                 ),
                 FlatButton(
                   onPressed: (){

@@ -50,7 +50,7 @@ class CategoryView extends StatelessWidget
               Text
               (
                 categories[currentCategory],
-                style: TextStyle(fontSize: 24),
+                style: TextStyle(fontSize: 24, fontFamily: "opificio"),
               ),
               currentCategory < categories.length - 1 ? FlatButton
               (

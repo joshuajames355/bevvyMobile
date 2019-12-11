@@ -124,7 +124,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
               [
                 Padding(
                   padding: EdgeInsets.fromLTRB(12,12,12,0),
-                  child: Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
+                  child: Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, fontFamily: "opificio"), textAlign: TextAlign.left,),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(12,12,12,0),

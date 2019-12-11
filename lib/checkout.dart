@@ -64,7 +64,7 @@ class _CheckoutState extends State<Checkout>
     (
       appBar: AppBar
       (
-        title: Text("Select Location"),
+        title: Text("Select Location", style: TextStyle(fontFamily: "opificio")),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),

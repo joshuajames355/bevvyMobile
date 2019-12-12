@@ -62,7 +62,7 @@ class ProductWidget extends StatelessWidget
               (
                 child: Center
                 (
-                  child: Text("£"  + product.price.toStringAsFixed(2), style: TextStyle(color: Theme.of(context).accentColor)),
+                  child: Text(product.priceString, style: TextStyle(color: Theme.of(context).accentColor)),
                 ),
                 size: Size(75,75),
               ),

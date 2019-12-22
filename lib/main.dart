@@ -83,7 +83,9 @@ class _AppState extends State<App> {
   final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
   Stream<QuerySnapshot> paymentMethodsStream;
+  Future<FirebaseUser> userFuture;
   List<PaymentMethod> paymentMethods = [];
+  bool hasLoaded = false;
   PaymentMethod selectedMethod;
   DataStore dataStore;
   RemoteConfig remoteConfig;
@@ -97,7 +99,8 @@ class _AppState extends State<App> {
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
-    auth.currentUser().then(handleAuthStateChange);
+    userFuture = auth.currentUser();
+    userFuture.then(handleAuthStateChange);
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
     new Future.delayed(Duration.zero, () async {
@@ -113,12 +116,10 @@ class _AppState extends State<App> {
       remoteConfig.activateFetched();
     });
 
-    SharedPreferences.getInstance().then((SharedPreferences prefs)
-    {
-      if(prefs.getBool("logged_in") ?? false)
-      {
-        navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-      }
+    Future.wait([userFuture, catalogue, Future.delayed(Duration(milliseconds: 1000))]).then((_){
+      setState(() {
+        hasLoaded = true;
+      }); 
     });
   }
 
@@ -130,8 +131,6 @@ class _AppState extends State<App> {
     if (updatedUser == null) {
       // Logout
       navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("logged_in", false);
     } else {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
@@ -151,9 +150,6 @@ class _AppState extends State<App> {
           setInitialPaymentMethod();
         }
       });
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("logged_in", true);
 
       if (ds.exists) {
         // User document exists, now to change onboarding status
@@ -182,15 +178,26 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-          title: 'Jovi',
-          theme: darkTheme,
-          navigatorKey: navKey,
-          navigatorObservers: [
-            FirebaseAnalyticsObserver(analytics: analytics),
-          ],
-          onGenerateRoute: onGenerateRoute,
-
+    return hasLoaded ? MaterialApp(
+      title: 'Jovi',
+      theme: darkTheme,
+      navigatorKey: navKey,
+      navigatorObservers: [
+        FirebaseAnalyticsObserver(analytics: analytics),
+      ],
+      initialRoute: user != null ? "/home" : "/",
+      onGenerateRoute: onGenerateRoute,
+    ) : Align(
+      alignment: Alignment.center,
+      child: Image
+      (
+        height: 35,
+        width: 35,
+        image: AssetImage
+        (
+          'images/loading.gif',
+        ),
+      ),
     );
   }
 

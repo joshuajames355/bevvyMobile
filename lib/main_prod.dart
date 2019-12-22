@@ -5,6 +5,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   var configuredApp = new AppConfig(
     apiBaseUrl: '',
     child: new App(),

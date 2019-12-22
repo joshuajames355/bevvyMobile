@@ -2,7 +2,6 @@ import 'package:bevvymobile/categoryView.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 //Displays all products divided by category in a PageView
 class CategoryScrollView extends StatefulWidget

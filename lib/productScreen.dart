@@ -124,7 +124,7 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
               [
                 Padding(
                   padding: EdgeInsets.fromLTRB(12,12,12,0),
-                  child: Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22), textAlign: TextAlign.left,),
+                  child: Text(widget.product.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24, fontFamily: "opificio"), textAlign: TextAlign.left,),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(12,12,12,0),
@@ -133,15 +133,15 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: 
                     [
-                      Text(widget.product.category, style: TextStyle(fontWeight: FontWeight.bold),),
-                      Text(widget.product.size, style: TextStyle(fontWeight: FontWeight.bold),),
-                      Text(getAgeRestrictionMessage(widget.product), style: TextStyle(fontWeight: FontWeight.bold),),
+                      Text(widget.product.category, style: TextStyle(fontSize: 18),),
+                      Text(widget.product.size, style: TextStyle(fontSize: 18),),
+                      Text(widget.product.priceString, style: TextStyle(fontSize: 18),),
                     ]
                   ),
                 ),
                 Divider(height: 20, thickness: 2,),
                 Padding(
-                  child:Text(widget.product.description),
+                  child: Text(widget.product.description, style: TextStyle(fontWeight: FontWeight.w300),),
                   padding: EdgeInsets.symmetric(horizontal: 12),
                 ),
                 Container(height: 75,)
@@ -155,64 +155,19 @@ class _ProductScreenState extends State<ProductScreen> with SingleTickerProvider
 
   Widget productImage(Product product, BuildContext context)
   {
-    return Hero
+    return Container
     (
-      tag: product.id,
-      child: Stack
+      constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width), //maintain aspect ratio of 1
+      child: SizedBox
       (
-        children: 
-        [
-          Container
-          (
-            constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.width), //maintain aspect ratio of 1
-            child: SizedBox
-            (
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.width,
-              child: FittedBox
-              (
-                child: product.iconLarge,
-                fit: BoxFit.fill,
-              ),
-            ),
-          ),
-          Positioned
-          (
-            left: 15,
-            bottom: 15,
-            child: Opacity(
-              opacity: max(0, 1 - scrollValue/MediaQuery.of(context).size.width) ,
-              child: Container
-              (
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration
-                (
-                  color: Theme.of(context).buttonColor,
-                  boxShadow: 
-                  [
-                    BoxShadow
-                    (
-                      color: Colors.red,
-                      blurRadius: 5,
-                      spreadRadius: 1,
-                      offset: Offset(
-                        1.5, // horizontal, move right 10
-                        1.5, // vertical, move down 10
-                      ),
-                    ),
-                  ],
-                  shape: BoxShape.circle
-                ),
-                child: Center
-                (
-                  child: Text(product.priceString, style: TextStyle(color: Colors.white),),
-                )
-              )
-            )
-          )
-        ]
-      ),
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.width,
+        child: FittedBox
+        (
+          child: product.iconLarge,
+          fit: BoxFit.fill,
+        ),
+      ),     
     );
   }
 }

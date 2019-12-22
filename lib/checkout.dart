@@ -64,7 +64,7 @@ class _CheckoutState extends State<Checkout>
     (
       appBar: AppBar
       (
-        title: Text("Select Location"),
+        title: Text("Select Location", style: TextStyle(fontFamily: "opificio")),
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
@@ -138,7 +138,42 @@ class _CheckoutState extends State<Checkout>
               }
               else
               {
-                showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Error"), content: Text("We do not deliver to that location.")));
+                showModalBottomSheet
+                (
+                  isScrollControlled: true,
+                  context: context, builder: (BuildContext context2) => SafeArea(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.all(25),
+                            child: Center(child: Text("Outside Delivery Area", style: TextStyle(fontFamily: "opificio", fontSize: 18, fontWeight: FontWeight.bold))),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(12),
+                            child: Center(child: Icon(IconData(57346, fontFamily: 'MaterialIcons'), size: 75)),
+                          ),
+                          Padding
+                          (
+                            padding: EdgeInsets.all(15),
+                            child: Text("Unfortunately Jovi cannot deliver to this location currently. Please select another location."),
+                          ),
+                          RaisedButton(
+                            child: Container(
+                              child: Padding(
+                                child: Center(child: Text("Go Back", style: TextStyle(fontSize: 18),)), 
+                                padding: EdgeInsets.all(12),
+                              ),
+                              width: double.infinity,),
+                            onPressed: (){
+                              Navigator.of(context).pop();
+                            },
+                          )
+                        ],
+                    )
+                  )
+                );
               }
             },
           )

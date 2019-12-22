@@ -1,19 +1,25 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class HomeNavBar extends StatelessWidget 
+class HomeNavBar extends StatefulWidget 
 {
-  const HomeNavBar({ Key key, this.currentIndex}) :  super(key: key);
+  const HomeNavBar({ Key key, this.navKey}) :  super(key: key);
 
-  final int currentIndex;
-  
+  final GlobalKey<NavigatorState> navKey;
+
+  @override
+  _HomeNavBarState createState() => _HomeNavBarState();
+}
+
+class _HomeNavBarState extends State<HomeNavBar> {
+  int lastSelected = 0;
+
   @override
   Widget build(BuildContext context)
   {
-    return BottomNavigationBar
+    return CupertinoTabBar
     (
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Theme.of(context).accentColor,
-      currentIndex: currentIndex,
+      currentIndex:  lastSelected,
       items: [
         BottomNavigationBarItem
         (
@@ -37,6 +43,26 @@ class HomeNavBar extends StatelessWidget
         ),
       ],
       onTap: (int page){
+        setState(() {
+          lastSelected = page;
+        });
+        if(widget.navKey != null)
+        {
+          switch(page){
+            case 0:
+              widget.navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+              return;
+            case 1:
+              widget.navKey.currentState.pushNamed("/basket");
+              return;
+            case 2:
+              widget.navKey.currentState.pushNamed("/accountDetails");
+              return;
+            case 3:
+              widget.navKey.currentState.pushNamed("/myOrders");
+              return;
+          }
+        }
         switch(page){
           case 0:
             Navigator.pushNamedAndRemoveUntil(context, '/home', (Route<dynamic> route) => false);

@@ -20,7 +20,6 @@ class OrderWidget extends StatelessWidget
         child: Container(
           height: 175,
           width: double.infinity,
-          margin: EdgeInsets.all(7),
           child: Column
           (
             crossAxisAlignment: CrossAxisAlignment.start,

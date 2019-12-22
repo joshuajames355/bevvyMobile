@@ -21,7 +21,7 @@ class AccountDetails extends StatelessWidget
     return Scaffold(
       appBar: AppBar
       (
-        title: Text("Account Details"),
+        title: Text("Account Details", style: TextStyle(fontFamily: "opificio")),
       ),
       body: Column
       (

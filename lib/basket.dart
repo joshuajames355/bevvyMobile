@@ -74,7 +74,7 @@ class Basket extends StatelessWidget
     return Scaffold(
       appBar: AppBar
       (
-        title: Text("Your Basket"),
+        title: Text("Your Basket", style: TextStyle(fontFamily: "opificio"),),
       ),
       body: Column
       (

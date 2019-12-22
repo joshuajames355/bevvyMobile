@@ -36,7 +36,7 @@ class _NewOrderState extends State<NewOrder>
     
     return Scaffold
     (
-      appBar: AppBar(title: Text("Order: " + widget.orderID)),
+      appBar: AppBar(title: Text("Order: " + widget.orderID, style: TextStyle(fontFamily: "opificio"))),
       body: Column
       (
         mainAxisAlignment: MainAxisAlignment.center,

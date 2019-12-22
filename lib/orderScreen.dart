@@ -38,7 +38,7 @@ class _OrderScreenState extends State<OrderScreen>{
           (
             child: Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 12),
-              child: Text(widget.statusNames[widget.order.status], style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+              child: Text(widget.statusNames[widget.order.status], style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: "opificio"),),
             )
           ),
           Card

@@ -44,7 +44,7 @@ class _CreateAccountSMSState extends State<CreateAccountSMS> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text("Verify Phone number"),
+          title: Text("Verify Phone number", style: TextStyle(fontFamily: "opificio")),
           leading: FlatButton(
             child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),
             onPressed: () {

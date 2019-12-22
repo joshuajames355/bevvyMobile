@@ -36,7 +36,7 @@ class _MyOrdersState extends State<MyOrders>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("My Orders"),
+        title: Text("My Orders", style: TextStyle(fontFamily: "opificio")),
       ),
       body: Column(
         children:

@@ -47,7 +47,7 @@ class _PaymentMethodsState extends State<PaymentMethods>
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children:
           [
-            Text("Payment Methods"),
+            Text("Payment Methods", style: TextStyle(fontFamily: "opificio")),
             (widget.selectedMethod == null || widget.selectedMethod.type != "card") ? Container() : IconButton
             (
               icon: Icon(const IconData(57693, fontFamily: 'MaterialIcons')),

@@ -8,7 +8,8 @@ import 'package:bevvymobile/checkout.dart';
 import 'package:bevvymobile/createAccount.dart';
 import 'package:bevvymobile/createAccountSMS.dart';
 import 'package:bevvymobile/globals.dart';
-import 'package:bevvymobile/home.dart';
+import 'package:bevvymobile/homeNavBar.dart';
+import 'package:bevvymobile/myOrders.dart';
 import 'package:bevvymobile/orderScreen.dart';
 import 'package:bevvymobile/searchResults.dart';
 import 'package:bevvymobile/transitions.dart';
@@ -17,6 +18,7 @@ import 'package:bevvymobile/product.dart';
 import 'package:bevvymobile/paymentMethods.dart';
 import 'package:bevvymobile/productScreen.dart';
 import 'package:bevvymobile/accountDetails.dart';
+import 'package:bevvymobile/storeFrontHome.dart';
 import 'package:bevvymobile/splashScreen.dart';
 import 'package:bevvymobile/config.dart';
 import 'package:bevvymobile/dataStore.dart';
@@ -81,7 +83,9 @@ class _AppState extends State<App> {
   final GlobalKey<NavigatorState> navKey = new GlobalKey<NavigatorState>();
   Future<QuerySnapshot> catalogue;
   Stream<QuerySnapshot> paymentMethodsStream;
+  Future<FirebaseUser> userFuture;
   List<PaymentMethod> paymentMethods = [];
+  bool hasLoaded = false;
   PaymentMethod selectedMethod;
   DataStore dataStore;
   RemoteConfig remoteConfig;
@@ -95,7 +99,8 @@ class _AppState extends State<App> {
     catalogue = widget.store.collection("catalogue").where("available", isEqualTo: true).getDocuments();
 
     //Used to ensure persistance.
-    auth.currentUser().then(handleAuthStateChange);
+    userFuture = auth.currentUser();
+    userFuture.then(handleAuthStateChange);
     auth.onAuthStateChanged.listen(handleAuthStateChange);
 
     new Future.delayed(Duration.zero, () async {
@@ -111,12 +116,10 @@ class _AppState extends State<App> {
       remoteConfig.activateFetched();
     });
 
-    SharedPreferences.getInstance().then((SharedPreferences prefs)
-    {
-      if(prefs.getBool("logged_in") ?? false)
-      {
-        navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-      }
+    Future.wait([userFuture, catalogue, Future.delayed(Duration(milliseconds: 1000))]).then((_){
+      setState(() {
+        hasLoaded = true;
+      }); 
     });
   }
 
@@ -128,8 +131,6 @@ class _AppState extends State<App> {
     if (updatedUser == null) {
       // Logout
       navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("logged_in", false);
     } else {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
@@ -149,9 +150,6 @@ class _AppState extends State<App> {
           setInitialPaymentMethod();
         }
       });
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool("logged_in", true);
 
       if (ds.exists) {
         // User document exists, now to change onboarding status
@@ -180,134 +178,214 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return hasLoaded ? MaterialApp(
       title: 'Jovi',
       theme: darkTheme,
       navigatorKey: navKey,
       navigatorObservers: [
         FirebaseAnalyticsObserver(analytics: analytics),
       ],
-      onGenerateRoute: (RouteSettings settings) {
-        if(settings.name == "/") {
-          return MaterialPageRoute(builder: (context) => SplashScreen());
-        }
-        else if(settings.name == "/home") {
-          return platformPageRoute(context: context, builder: (BuildContext _) => Home
-            (
-              statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
-              catalogue: catalogue,
-              user: user,
-              onUserChange: onUserChange,
-              onOrderAgain: orderAgain,
-              removeFromBasket: removeFromBasket,
-              dataStore: dataStore,
-              initialPage: initialPage,
-              deliveryFee: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? remoteConfig.getInt("delivery_fee")/100 : 3.50,
-              freeDeliveryMinimun: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? remoteConfig.getInt("delivery_free_after")/100 : 25.00,
-            )
-          );
-        }
-        else if(settings.name == "/createAccountSMS") {
-          return SlideLeftRoute(          
-            page: (BuildContext context) => CreateAccountSMS()
-          );
-        }
-        else if(settings.name == "/createAccount") {
-          return SlideLeftRoute(          
-            page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
-          );
-        }
-        else if (settings.name == "/checkout") {
-          return SlideLeftRoute(
-            page: (BuildContext context) => Checkout(
-              dataStore: dataStore,
-              paymentMethod: selectedMethod,
-              deliveryCenterLat: remoteConfig.getDouble("delivery_center_lat"),
-              deliveryCenterLon: remoteConfig.getDouble("delivery_center_lon"),
-              deliveryRadius: remoteConfig.getDouble("delivery_radius"),
-              statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
-            ), 
-          );   
-        }
-        else if(settings.name == "/product")
-        {
-          final Product args = settings.arguments;
+      initialRoute: user != null ? "/home" : "/",
+      onGenerateRoute: onGenerateRoute,
+    ) : Align(
+      alignment: Alignment.center,
+      child: Image
+      (
+        height: 35,
+        width: 35,
+        image: AssetImage
+        (
+          'images/loading.gif',
+        ),
+      ),
+    );
+  }
 
-          return MaterialPageRoute(builder: (context) => ProductScreen(
-              product: args, 
-              addToBasket: addToBasket,
-              dataStore: dataStore ,
-            )
-          );
-        }
-        else if(settings.name == "/paymentMethods") {
-          return MaterialPageRoute(builder: (context) => PaymentMethods(
-            user: user,
-            paymentMethods: paymentMethods,      
-            selectedMethod: selectedMethod,
-            onChangeSelectedMethod: (PaymentMethod method) async {
-              setState(() {
-                selectedMethod = method;
-              });
-              String toDisk = method.id;
-              if(method.type == "googlepay") toDisk = "googlepay";
-              if(method.type == "applepay") toDisk = "applepay";
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.setString("paymentMethods", toDisk);
-            },  
-          )); 
-        }
-        else if(settings.name == "/order") {
-          final String orderID = settings.arguments;
-
-          return MaterialPageRoute(
-            builder: (BuildContext context) => StreamBuilder(
-              stream: Firestore.instance.collection("orders").document(orderID).snapshots(),
-              builder:  (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-                  
-                return OrderScreen
-                (
-                  statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
-                  order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
-                  onOrderAgain: orderAgain,
-                );
-              }
-            )
-          );  
-        }
-        else if(settings.name == "/search") {
-          return SlideDownRoute(
-            page: (BuildContext context) => FutureBuilder(
+  Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    if(settings.name == "/") {
+      return MaterialPageRoute(builder: (context) => SplashScreen());
+    }
+    else if(settings.name == "/home") {
+      return platformPageRoute(context: context, builder: (BuildContext _) => NavBarScaffold(
+        onGenerateRoute: (RouteSettings settings){
+          if(settings.name == "/"){
+            return CupertinoPageRoute(builder: (BuildContext _) => FutureBuilder(
               future: catalogue,
               builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if(!snapshot.hasData) return placeHolderPage();
-                
-                return SearchResults
-                (
-                  productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
+                if(!snapshot.hasData) return Container();
+
+                List<Product> productList = snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList();
+
+                Map<String, List<Product>> productListByCategory = Map<String, List<Product>>();
+                productList.forEach((Product x) {
+                  if(productListByCategory.containsKey(x.category)) productListByCategory[x.category].add(x);
+                  else productListByCategory[x.category] = [x];
+                });
+              
+                return  StreamBuilder(
+                  stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
+                  builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if(!snapshot.hasData) return Container();
+              
+                    return StoreFrontHome(
+                        gotoMyOrders: () => Navigator.pushNamed(context, "/myOrders"),
+                        statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
+                        productListByCategory: productListByCategory,
+                        onOrderAgain: (Order order){orderAgain(order); Navigator.pushNamed(context, "/basket");},
+                        orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+                    );
+                  }                    
                 );
               }
-            )
-          );  
-        }
-        else if(settings.name == "/category") {
-          final String args = settings.arguments;
+              ),
+              settings: RouteSettings(name: "/home", isInitialRoute: true));
+            }
+            else if(settings.name=="/basket")
+            {
+              return CupertinoPageRoute(builder: (BuildContext _) =>  Basket(
+                dataStore: dataStore,
+                removeFromBasket: removeFromBasket,
+                deliveryFee: 0,
+                freeDeliveryMinimun: 0,
+              ),
+              settings: RouteSettings(name: "/basket", isInitialRoute: true));
+            }
+            else if(settings.name=="/accountDetails")
+            {
+              return CupertinoPageRoute(builder: (BuildContext _) => StreamBuilder(
+                stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
+                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if(!snapshot.hasData) {
+                    return Container();
+                  }
+                  return  AccountDetails(
+                    user: user,
+                    onUserChange: onUserChange,
+                    userDocument: snapshot.data,
+                  );
+                }
+              ),
+              settings: RouteSettings(name: "/accountDetails", isInitialRoute: true));
+            }
+            else if(settings.name == "/product")
+            {
+              final Product args = settings.arguments;
 
-          return MaterialPageRoute(builder: (context) => FutureBuilder(
-            future: catalogue,
-            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-              if(!snapshot.hasData) return placeHolderPage();
-
-              return  CategoryScrollView(
-                productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
-                initialCategory: args,             
+              return MaterialPageRoute(builder: (context) => ProductScreen(
+                  product: args, 
+                  addToBasket: addToBasket,
+                  dataStore: dataStore ,
+                )
               );
             }
-          ));
-        }
-      },
-    );
+            else if(settings.name == "/myOrders") {
+              return CupertinoPageRoute(builder: (BuildContext context) => StreamBuilder(
+                stream: Firestore.instance.collection("orders").where("customerID", isEqualTo: user.uid).snapshots(),
+                builder:  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if(!snapshot.hasData) return Container();
+                  
+                  return MyOrders
+                  (
+                    orders: snapshot.data.documents.map((DocumentSnapshot snap) => Order.fromFirestore(data: snap.data.cast<String, dynamic>(), orderID: snap.documentID)).toList(),
+                    statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
+                    onOrderAgain: (Order order){orderAgain(order); Navigator.pushNamed(context, "/basket");},
+                  );
+                }),
+              settings: RouteSettings(name: "/accountDetails", isInitialRoute: true));
+            }
+            else if(settings.name == "/order") {
+              final String orderID = settings.arguments;
+
+              return MaterialPageRoute(
+                builder: (BuildContext context) => StreamBuilder(
+                  stream: Firestore.instance.collection("orders").document(orderID).snapshots(),
+                  builder:  (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if(!snapshot.hasData) return Container();
+                      
+                    return OrderScreen
+                    (
+                      statusNames: Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))),
+                      order: Order.fromFirestore(data: snapshot.data.data, orderID: orderID),
+                      onOrderAgain: (Order order){orderAgain(order); Navigator.pushNamed(context, "/basket");},
+                    );
+                  }
+                )
+              );  
+            }
+            else if (settings.name == "/checkout") {
+              return SlideLeftRoute(
+                page: (BuildContext context) => Checkout(
+                  dataStore: dataStore,
+                  paymentMethod: selectedMethod,
+                  deliveryCenterLat: remoteConfig.getDouble("delivery_center_lat"),
+                  deliveryCenterLon: remoteConfig.getDouble("delivery_center_lon"),
+                  deliveryRadius: remoteConfig.getDouble("delivery_radius"),
+                  statusNames: (remoteConfig != null && remoteConfig.lastFetchStatus == LastFetchStatus.success) ? Map<String,String>.from(jsonDecode(remoteConfig.getString("order_state_descriptions"))) : Map<String, String>(),
+                ), 
+              );   
+            }
+            else if(settings.name == "/paymentMethods") {
+              return MaterialPageRoute(builder: (context) => PaymentMethods(
+                user: user,
+                paymentMethods: paymentMethods,      
+                selectedMethod: selectedMethod,
+                onChangeSelectedMethod: (PaymentMethod method) async {
+                  setState(() {
+                    selectedMethod = method;
+                  });
+                  String toDisk = method.id;
+                  if(method.type == "googlepay") toDisk = "googlepay";
+                  if(method.type == "applepay") toDisk = "applepay";
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  await prefs.setString("paymentMethods", toDisk);
+                },  
+              )); 
+            }
+            else if(settings.name == "/search") {
+              return SlideDownRoute(
+                page: (BuildContext context) => FutureBuilder(
+                  future: catalogue,
+                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if(!snapshot.hasData) return Container();
+                    
+                    return SearchResults
+                    (
+                      productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
+                    );
+                  }
+                )
+              );  
+            }
+            else if(settings.name == "/category") {
+              final String args = settings.arguments;
+
+              return MaterialPageRoute(builder: (context) => FutureBuilder(
+                future: catalogue,
+                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if(!snapshot.hasData) return Container();
+
+                  return  CategoryScrollView(
+                    productList: snapshot.data.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList(),
+                    initialCategory: args,             
+                  );
+                }
+              ));
+            }
+            return platformPageRoute(context: context, builder: (BuildContext _) => Container());
+          },
+        ),
+      );
+    }
+    else if(settings.name == "/createAccountSMS") {
+      return SlideLeftRoute(          
+        page: (BuildContext context) => CreateAccountSMS()
+      );
+    }
+    else if(settings.name == "/createAccount") {
+      return SlideLeftRoute(          
+        page: (BuildContext context) => CreateAccount(user: user, handleAuthStateChangeFunc: handleAuthStateChange,)
+      );
+    }
   }
 
   addToBasket(Product product, int quantity) {
@@ -386,17 +464,43 @@ class _AppState extends State<App> {
     {
       var products = snap.documents.map((DocumentSnapshot x ) => Product.fromFireStore(data: x.data, id: x.documentID)).toList();
 
-      for(int x = 0; x< products.length; x++)
-      {
-        
-        List<OrderItem> orderItems = order.products.where((OrderItem item) => item.id == products[x].id);
-        if(orderItems.length != 1) break;
+      for(int x = 0; x < products.length; x++)
+      {        
+        List<OrderItem> orderItems = order.products.where((OrderItem item) => (item.id == products[x].id)).toList();
+        if(orderItems.length != 1) continue;
         dataStore.addProduct(products[x], orderItems[0].quantity);        
       }
+      //rerender
+      setState(() {});
     });
+  }
+}
+
+typedef Route<dynamic> OnGenerateRoute(RouteSettings settings);
 
 
-    initialPage = 1;
-    navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+class NavBarScaffold extends StatefulWidget
+{
+  const NavBarScaffold({ Key key, this.onGenerateRoute}) :  super(key: key);
+
+  final OnGenerateRoute onGenerateRoute;
+
+  @override
+  _NavBarScaffoldState createState() => _NavBarScaffoldState();
+}
+
+class _NavBarScaffoldState extends State<NavBarScaffold> {
+  GlobalKey<NavigatorState> navKey = GlobalKey();
+  Widget build(BuildContext context)  {
+    return Scaffold
+    (
+      body: Navigator
+      (
+        key: navKey,
+        onGenerateRoute: widget.onGenerateRoute,
+      ),
+
+      bottomNavigationBar: HomeNavBar(navKey: navKey),
+    );
   }
 }

@@ -93,7 +93,7 @@ class DataStore {
   bool get firestoreBasketInSync {
     var me = new MapEquality<String, int>();
     return me.equals(
-      Map<String, int>.from(order.data['basket']),
+      Map<String, int>.fromIterable(order.data['basket'], key: (dynamic obj) => obj["id"], value : (dynamic obj) => obj["quantity"]),
       this.checkoutData.map((Product product, int quantity) => MapEntry<String, int>(product.id, quantity)));
   }
 

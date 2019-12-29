@@ -471,7 +471,7 @@ class _CheckoutState extends State<Checkout>
           // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
         }
       }
-    });
+    };
 
     orderUpdateEventID = widget.dataStore.subscribeToOrderUpdate((DocumentSnapshot snap) async {
       if (snap.data['status'] == 'edited_order') {

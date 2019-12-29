@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
+		2EBB85BFBA137E47482D84BB /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 064B765F12D71377F9FD41E1 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		3B80C3941E831B6300D905FE /* App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; };
 		3B80C3951E831B6300D905FE /* App.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 3B80C3931E831B6300D905FE /* App.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		3C9C5245BFFE884F26492DAC /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A2EFFA4DFF27D04030DBD312 /* libPods-Runner.a */; };
 		9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; };
 		9705A1C71CF904A300538489 /* Flutter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 9740EEBA1CF902C7004384FC /* Flutter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
@@ -309,6 +309,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		064B765F12D71377F9FD41E1 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		110E1BF3179535E0A5266873 /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
@@ -327,7 +328,6 @@
 		97C146FD1CF9000F007C117D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A2EFFA4DFF27D04030DBD312 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDD3B1F2B69BEE2FA6501D1 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		B8E3FBC2363C5DF1BB95DF0A /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		CD8258C1627C5011F611C457 /* Pods-Runner.debug-live.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug-live.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug-live.xcconfig"; sourceTree = "<group>"; };
@@ -350,7 +350,7 @@
 				9705A1C61CF904A100538489 /* Flutter.framework in Frameworks */,
 				3B80C3941E831B6300D905FE /* App.framework in Frameworks */,
 				FAEE0D9D2357CBCE0033B4CB /* MapKit.framework in Frameworks */,
-				3C9C5245BFFE884F26492DAC /* libPods-Runner.a in Frameworks */,
+				2EBB85BFBA137E47482D84BB /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -429,7 +429,7 @@
 			isa = PBXGroup;
 			children = (
 				FAEE0D9C2357CBCE0033B4CB /* MapKit.framework */,
-				A2EFFA4DFF27D04030DBD312 /* libPods-Runner.a */,
+				064B765F12D71377F9FD41E1 /* Pods_Runner.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -437,44 +437,44 @@
 		FAB4709A2361E8FB00FC6926 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				FAB470CA2361E8FC00FC6926 /* libBoringSSL-GRPC.a */,
-				FAB470CC2361E8FC00FC6926 /* libcloud_firestore.a */,
-				FAB470CE2361E8FC00FC6926 /* libfirebase_analytics.a */,
-				FAB470D02361E8FC00FC6926 /* libfirebase_auth.a */,
-				FAB470D22361E8FC00FC6926 /* libfirebase_core.a */,
-				FAB470D42361E8FC00FC6926 /* libfirebase_crashlytics.a */,
-				FAB470D62361E8FC00FC6926 /* libfirebase_in_app_messaging.a */,
-				FAEC67DC23880133007410AF /* libfirebase_remote_config.a */,
-				FAEC67DE23880133007410AF /* libFirebaseABTesting.a */,
-				FAB470D82361E8FC00FC6926 /* libFirebaseAuth.a */,
-				FAB470DA2361E8FC00FC6926 /* libFirebaseCore.a */,
-				FAB470DC2361E8FC00FC6926 /* libFirebaseCoreDiagnostics.a */,
-				FAB470DE2361E8FC00FC6926 /* libFirebaseFirestore.a */,
-				FAB470E02361E8FC00FC6926 /* libFirebaseInAppMessaging.a */,
-				FAB470E22361E8FC00FC6926 /* libFirebaseInAppMessagingDisplay.a */,
+				FAB470CA2361E8FC00FC6926 /* openssl_grpc.framework */,
+				FAB470CC2361E8FC00FC6926 /* cloud_firestore.framework */,
+				FAB470CE2361E8FC00FC6926 /* firebase_analytics.framework */,
+				FAB470D02361E8FC00FC6926 /* firebase_auth.framework */,
+				FAB470D22361E8FC00FC6926 /* firebase_core.framework */,
+				FAB470D42361E8FC00FC6926 /* firebase_crashlytics.framework */,
+				FAB470D62361E8FC00FC6926 /* firebase_in_app_messaging.framework */,
+				FAEC67DC23880133007410AF /* firebase_remote_config.framework */,
+				FAEC67DE23880133007410AF /* FirebaseABTesting.framework */,
+				FAB470D82361E8FC00FC6926 /* FirebaseAuth.framework */,
+				FAB470DA2361E8FC00FC6926 /* FirebaseCore.framework */,
+				FAB470DC2361E8FC00FC6926 /* FirebaseCoreDiagnostics.framework */,
+				FAB470DE2361E8FC00FC6926 /* FirebaseFirestore.framework */,
+				FAB470E02361E8FC00FC6926 /* FirebaseInAppMessaging.framework */,
+				FAB470E22361E8FC00FC6926 /* FirebaseInAppMessagingDisplay.framework */,
 				FAB470E42361E8FC00FC6926 /* InAppMessagingDisplayResources.bundle */,
-				FAB470E62361E8FC00FC6926 /* libFirebaseInstanceID.a */,
-				FAEC67E023880133007410AF /* libFirebaseRemoteConfig.a */,
-				FAB470E82361E8FC00FC6926 /* libFMDB.a */,
-				FAB470EA2361E8FC00FC6926 /* libgoogle_maps_flutter.a */,
-				FAB470EC2361E8FC00FC6926 /* libGoogleDataTransport.a */,
-				FAB470EE2361E8FC00FC6926 /* libGoogleDataTransportCCTSupport.a */,
-				FAB470F02361E8FC00FC6926 /* libGoogleUtilities.a */,
-				FAB470F22361E8FC00FC6926 /* libgRPC-C++.a */,
+				FAB470E62361E8FC00FC6926 /* FirebaseInstanceID.framework */,
+				FAEC67E023880133007410AF /* FirebaseRemoteConfig.framework */,
+				FAB470E82361E8FC00FC6926 /* FMDB.framework */,
+				FAB470EA2361E8FC00FC6926 /* google_maps_flutter.framework */,
+				FAB470EC2361E8FC00FC6926 /* GoogleDataTransport.framework */,
+				FAB470EE2361E8FC00FC6926 /* GoogleDataTransportCCTSupport.framework */,
+				FAB470F02361E8FC00FC6926 /* GoogleUtilities.framework */,
+				FAB470F22361E8FC00FC6926 /* grpcpp.framework */,
 				FAB470F42361E8FC00FC6926 /* gRPCCertificates-Cpp.bundle */,
-				FAB470F62361E8FC00FC6926 /* libgRPC-Core.a */,
-				FAB470F82361E8FC00FC6926 /* libGTMSessionFetcher.a */,
-				FAB470FA2361E8FC00FC6926 /* libleveldb-library.a */,
-				FAB470FC2361E8FC00FC6926 /* liblocation.a */,
-				FAB470FE2361E8FC00FC6926 /* libnanopb.a */,
-				FAB471002361E8FC00FC6926 /* libpath_provider.a */,
-				FAB471022361E8FC00FC6926 /* libPods-Runner.a */,
-				FAB471042361E8FC00FC6926 /* libProtobuf.a */,
-				FAB471062361E8FC00FC6926 /* libshared_preferences.a */,
-				FAB471082361E8FC00FC6926 /* libsqflite.a */,
-				FAB4710A2361E8FC00FC6926 /* libStripe.a */,
+				FAB470F62361E8FC00FC6926 /* grpc.framework */,
+				FAB470F82361E8FC00FC6926 /* GTMSessionFetcher.framework */,
+				FAB470FA2361E8FC00FC6926 /* leveldb.framework */,
+				FAB470FC2361E8FC00FC6926 /* location.framework */,
+				FAB470FE2361E8FC00FC6926 /* nanopb.framework */,
+				FAB471002361E8FC00FC6926 /* path_provider.framework */,
+				FAB471022361E8FC00FC6926 /* Pods_Runner.framework */,
+				FAB471042361E8FC00FC6926 /* protobuf.framework */,
+				FAB471062361E8FC00FC6926 /* shared_preferences.framework */,
+				FAB471082361E8FC00FC6926 /* sqflite.framework */,
+				FAB4710A2361E8FC00FC6926 /* Stripe.framework */,
 				FAB4710C2361E8FC00FC6926 /* Stripe.bundle */,
-				FAB4710E2361E8FC00FC6926 /* libstripe_payment.a */,
+				FAB4710E2361E8FC00FC6926 /* stripe_payment.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -549,94 +549,94 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		FAB470CA2361E8FC00FC6926 /* libBoringSSL-GRPC.a */ = {
+		FAB470CA2361E8FC00FC6926 /* openssl_grpc.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libBoringSSL-GRPC.a";
+			fileType = wrapper.framework;
+			path = openssl_grpc.framework;
 			remoteRef = FAB470C92361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470CC2361E8FC00FC6926 /* libcloud_firestore.a */ = {
+		FAB470CC2361E8FC00FC6926 /* cloud_firestore.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libcloud_firestore.a;
+			fileType = wrapper.framework;
+			path = cloud_firestore.framework;
 			remoteRef = FAB470CB2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470CE2361E8FC00FC6926 /* libfirebase_analytics.a */ = {
+		FAB470CE2361E8FC00FC6926 /* firebase_analytics.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfirebase_analytics.a;
+			fileType = wrapper.framework;
+			path = firebase_analytics.framework;
 			remoteRef = FAB470CD2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470D02361E8FC00FC6926 /* libfirebase_auth.a */ = {
+		FAB470D02361E8FC00FC6926 /* firebase_auth.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfirebase_auth.a;
+			fileType = wrapper.framework;
+			path = firebase_auth.framework;
 			remoteRef = FAB470CF2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470D22361E8FC00FC6926 /* libfirebase_core.a */ = {
+		FAB470D22361E8FC00FC6926 /* firebase_core.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfirebase_core.a;
+			fileType = wrapper.framework;
+			path = firebase_core.framework;
 			remoteRef = FAB470D12361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470D42361E8FC00FC6926 /* libfirebase_crashlytics.a */ = {
+		FAB470D42361E8FC00FC6926 /* firebase_crashlytics.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfirebase_crashlytics.a;
+			fileType = wrapper.framework;
+			path = firebase_crashlytics.framework;
 			remoteRef = FAB470D32361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470D62361E8FC00FC6926 /* libfirebase_in_app_messaging.a */ = {
+		FAB470D62361E8FC00FC6926 /* firebase_in_app_messaging.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfirebase_in_app_messaging.a;
+			fileType = wrapper.framework;
+			path = firebase_in_app_messaging.framework;
 			remoteRef = FAB470D52361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470D82361E8FC00FC6926 /* libFirebaseAuth.a */ = {
+		FAB470D82361E8FC00FC6926 /* FirebaseAuth.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseAuth.a;
+			fileType = wrapper.framework;
+			path = FirebaseAuth.framework;
 			remoteRef = FAB470D72361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470DA2361E8FC00FC6926 /* libFirebaseCore.a */ = {
+		FAB470DA2361E8FC00FC6926 /* FirebaseCore.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseCore.a;
+			fileType = wrapper.framework;
+			path = FirebaseCore.framework;
 			remoteRef = FAB470D92361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470DC2361E8FC00FC6926 /* libFirebaseCoreDiagnostics.a */ = {
+		FAB470DC2361E8FC00FC6926 /* FirebaseCoreDiagnostics.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseCoreDiagnostics.a;
+			fileType = wrapper.framework;
+			path = FirebaseCoreDiagnostics.framework;
 			remoteRef = FAB470DB2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470DE2361E8FC00FC6926 /* libFirebaseFirestore.a */ = {
+		FAB470DE2361E8FC00FC6926 /* FirebaseFirestore.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseFirestore.a;
+			fileType = wrapper.framework;
+			path = FirebaseFirestore.framework;
 			remoteRef = FAB470DD2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470E02361E8FC00FC6926 /* libFirebaseInAppMessaging.a */ = {
+		FAB470E02361E8FC00FC6926 /* FirebaseInAppMessaging.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseInAppMessaging.a;
+			fileType = wrapper.framework;
+			path = FirebaseInAppMessaging.framework;
 			remoteRef = FAB470DF2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470E22361E8FC00FC6926 /* libFirebaseInAppMessagingDisplay.a */ = {
+		FAB470E22361E8FC00FC6926 /* FirebaseInAppMessagingDisplay.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseInAppMessagingDisplay.a;
+			fileType = wrapper.framework;
+			path = FirebaseInAppMessagingDisplay.framework;
 			remoteRef = FAB470E12361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -647,52 +647,52 @@
 			remoteRef = FAB470E32361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470E62361E8FC00FC6926 /* libFirebaseInstanceID.a */ = {
+		FAB470E62361E8FC00FC6926 /* FirebaseInstanceID.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseInstanceID.a;
+			fileType = wrapper.framework;
+			path = FirebaseInstanceID.framework;
 			remoteRef = FAB470E52361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470E82361E8FC00FC6926 /* libFMDB.a */ = {
+		FAB470E82361E8FC00FC6926 /* FMDB.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFMDB.a;
+			fileType = wrapper.framework;
+			path = FMDB.framework;
 			remoteRef = FAB470E72361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470EA2361E8FC00FC6926 /* libgoogle_maps_flutter.a */ = {
+		FAB470EA2361E8FC00FC6926 /* google_maps_flutter.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libgoogle_maps_flutter.a;
+			fileType = wrapper.framework;
+			path = google_maps_flutter.framework;
 			remoteRef = FAB470E92361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470EC2361E8FC00FC6926 /* libGoogleDataTransport.a */ = {
+		FAB470EC2361E8FC00FC6926 /* GoogleDataTransport.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGoogleDataTransport.a;
+			fileType = wrapper.framework;
+			path = GoogleDataTransport.framework;
 			remoteRef = FAB470EB2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470EE2361E8FC00FC6926 /* libGoogleDataTransportCCTSupport.a */ = {
+		FAB470EE2361E8FC00FC6926 /* GoogleDataTransportCCTSupport.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGoogleDataTransportCCTSupport.a;
+			fileType = wrapper.framework;
+			path = GoogleDataTransportCCTSupport.framework;
 			remoteRef = FAB470ED2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470F02361E8FC00FC6926 /* libGoogleUtilities.a */ = {
+		FAB470F02361E8FC00FC6926 /* GoogleUtilities.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGoogleUtilities.a;
+			fileType = wrapper.framework;
+			path = GoogleUtilities.framework;
 			remoteRef = FAB470EF2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470F22361E8FC00FC6926 /* libgRPC-C++.a */ = {
+		FAB470F22361E8FC00FC6926 /* grpcpp.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libgRPC-C++.a";
+			fileType = wrapper.framework;
+			path = grpcpp.framework;
 			remoteRef = FAB470F12361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -703,80 +703,80 @@
 			remoteRef = FAB470F32361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470F62361E8FC00FC6926 /* libgRPC-Core.a */ = {
+		FAB470F62361E8FC00FC6926 /* grpc.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libgRPC-Core.a";
+			fileType = wrapper.framework;
+			path = grpc.framework;
 			remoteRef = FAB470F52361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470F82361E8FC00FC6926 /* libGTMSessionFetcher.a */ = {
+		FAB470F82361E8FC00FC6926 /* GTMSessionFetcher.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGTMSessionFetcher.a;
+			fileType = wrapper.framework;
+			path = GTMSessionFetcher.framework;
 			remoteRef = FAB470F72361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470FA2361E8FC00FC6926 /* libleveldb-library.a */ = {
+		FAB470FA2361E8FC00FC6926 /* leveldb.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libleveldb-library.a";
+			fileType = wrapper.framework;
+			path = leveldb.framework;
 			remoteRef = FAB470F92361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470FC2361E8FC00FC6926 /* liblocation.a */ = {
+		FAB470FC2361E8FC00FC6926 /* location.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = liblocation.a;
+			fileType = wrapper.framework;
+			path = location.framework;
 			remoteRef = FAB470FB2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB470FE2361E8FC00FC6926 /* libnanopb.a */ = {
+		FAB470FE2361E8FC00FC6926 /* nanopb.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libnanopb.a;
+			fileType = wrapper.framework;
+			path = nanopb.framework;
 			remoteRef = FAB470FD2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB471002361E8FC00FC6926 /* libpath_provider.a */ = {
+		FAB471002361E8FC00FC6926 /* path_provider.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libpath_provider.a;
+			fileType = wrapper.framework;
+			path = path_provider.framework;
 			remoteRef = FAB470FF2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB471022361E8FC00FC6926 /* libPods-Runner.a */ = {
+		FAB471022361E8FC00FC6926 /* Pods_Runner.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libPods-Runner.a";
+			fileType = wrapper.framework;
+			path = Pods_Runner.framework;
 			remoteRef = FAB471012361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB471042361E8FC00FC6926 /* libProtobuf.a */ = {
+		FAB471042361E8FC00FC6926 /* protobuf.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libProtobuf.a;
+			fileType = wrapper.framework;
+			path = protobuf.framework;
 			remoteRef = FAB471032361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB471062361E8FC00FC6926 /* libshared_preferences.a */ = {
+		FAB471062361E8FC00FC6926 /* shared_preferences.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libshared_preferences.a;
+			fileType = wrapper.framework;
+			path = shared_preferences.framework;
 			remoteRef = FAB471052361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB471082361E8FC00FC6926 /* libsqflite.a */ = {
+		FAB471082361E8FC00FC6926 /* sqflite.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libsqflite.a;
+			fileType = wrapper.framework;
+			path = sqflite.framework;
 			remoteRef = FAB471072361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB4710A2361E8FC00FC6926 /* libStripe.a */ = {
+		FAB4710A2361E8FC00FC6926 /* Stripe.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libStripe.a;
+			fileType = wrapper.framework;
+			path = Stripe.framework;
 			remoteRef = FAB471092361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -787,31 +787,31 @@
 			remoteRef = FAB4710B2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAB4710E2361E8FC00FC6926 /* libstripe_payment.a */ = {
+		FAB4710E2361E8FC00FC6926 /* stripe_payment.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libstripe_payment.a;
+			fileType = wrapper.framework;
+			path = stripe_payment.framework;
 			remoteRef = FAB4710D2361E8FC00FC6926 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAEC67DC23880133007410AF /* libfirebase_remote_config.a */ = {
+		FAEC67DC23880133007410AF /* firebase_remote_config.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libfirebase_remote_config.a;
+			fileType = wrapper.framework;
+			path = firebase_remote_config.framework;
 			remoteRef = FAEC67DB23880133007410AF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAEC67DE23880133007410AF /* libFirebaseABTesting.a */ = {
+		FAEC67DE23880133007410AF /* FirebaseABTesting.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseABTesting.a;
+			fileType = wrapper.framework;
+			path = FirebaseABTesting.framework;
 			remoteRef = FAEC67DD23880133007410AF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		FAEC67E023880133007410AF /* libFirebaseRemoteConfig.a */ = {
+		FAEC67E023880133007410AF /* FirebaseRemoteConfig.framework */ = {
 			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libFirebaseRemoteConfig.a;
+			fileType = wrapper.framework;
+			path = FirebaseRemoteConfig.framework;
 			remoteRef = FAEC67DF23880133007410AF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1044,7 +1044,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1057,7 +1057,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1184,7 +1184,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1197,7 +1197,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1218,7 +1218,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1231,7 +1231,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1307,7 +1307,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1320,7 +1320,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1397,7 +1397,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1410,7 +1410,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1482,7 +1482,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1495,7 +1495,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1566,7 +1566,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1579,7 +1579,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1649,7 +1649,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1662,7 +1662,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1732,7 +1732,7 @@
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = "${FLUTTER_BUILD_NUMBER}";
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = 7GUCX5VA2W;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -1745,7 +1745,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				MARKETING_VERSION = "${FLUTTER_BUILD_NAME}";
+				MARKETING_VERSION = 0.4.3;
 				PRODUCT_BUNDLE_IDENTIFIER = co.uk.joviapp.jovicustomer;
 				PRODUCT_NAME = Jovi;
 				PROVISIONING_PROFILE_SPECIFIER = "";

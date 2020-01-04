@@ -210,7 +210,7 @@ DEPENDENCIES:
   - firebase_crashlytics (from `.symlinks/plugins/firebase_crashlytics/ios`)
   - firebase_in_app_messaging (from `.symlinks/plugins/firebase_in_app_messaging/ios`)
   - firebase_remote_config (from `.symlinks/plugins/firebase_remote_config/ios`)
-  - Flutter (from `.symlinks/flutter/ios-release`)
+  - Flutter (from `Flutter`)
   - google_maps_flutter (from `.symlinks/plugins/google_maps_flutter/ios`)
   - location (from `.symlinks/plugins/location/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
@@ -267,7 +267,7 @@ EXTERNAL SOURCES:
   firebase_remote_config:
     :path: ".symlinks/plugins/firebase_remote_config/ios"
   Flutter:
-    :path: ".symlinks/flutter/ios-release"
+    :path: Flutter
   google_maps_flutter:
     :path: ".symlinks/plugins/google_maps_flutter/ios"
   location:
@@ -327,6 +327,6 @@ SPEC CHECKSUMS:
   Stripe: 8c9ac6b717a38ed4f373d4db9204cfe8c4120d65
   stripe_payment: 1baf1bbf556f7a35c210dc9e2eccf2075947b6be
 
-PODFILE CHECKSUM: 3d014d9d415698eec34fde3b66290fd495805128
+PODFILE CHECKSUM: 1c019deae9eeb943376f64565e9388a8605cd58a
 
 COCOAPODS: 1.8.3

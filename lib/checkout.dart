@@ -434,11 +434,19 @@ class _CheckoutState extends State<Checkout>
      orderStatus = "edited_order" ;
     });
 
-    
-    StripePayment.confirmPaymentIntent(
-      PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
-                    paymentMethodId: paymentMethodID)
-    ).catchError((error){
+    try {
+      StripePayment.confirmPaymentIntent(
+        PaymentIntent(clientSecret: widget.dataStore.order['stripePaymentIntentClientSecret'],
+                      paymentMethodId: paymentMethodID)
+      );
+    } on PlatformException catch(exception) {
+      // 'cancelled' operation indicates user has dismissed modal window (iOS only)
+      if (exception.code == 'authenticationFailed') {
+        // TODO: display exception.message to user (e.g. 'Your card has insufficient funds.')
+      } else {
+        rethrow;
+      }
+    } catch (error) {
       print(error);
 
       setState(() {
@@ -463,7 +471,7 @@ class _CheckoutState extends State<Checkout>
           // Payment(Intent) will have failed, so have to create a new order(?), definitely a new PaymentIntent.
         }
       }
-    });
+    };
 
     orderUpdateEventID = widget.dataStore.subscribeToOrderUpdate((DocumentSnapshot snap) async {
       if (snap.data['status'] == 'edited_order') {

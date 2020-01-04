@@ -130,7 +130,7 @@ class _AppState extends State<App> {
     });
     if (updatedUser == null) {
       // Logout
-      navKey.currentState.pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+      navKey.currentState.pushReplacementNamed('/');
     } else {
       Crashlytics.instance.setUserIdentifier(updatedUser.uid);
 
@@ -154,10 +154,10 @@ class _AppState extends State<App> {
       if (ds.exists) {
         // User document exists, now to change onboarding status
         if (ds.data['onboardingStatus'] == 'new_user') {
-          navKey.currentState.pushReplacementNamed("/createAccount");
+          if(navKey.currentState != null) navKey.currentState..pushNamedAndRemoveUntil("/createAccount", (Route<dynamic> route) => false);
         } else if (ds.data['onboardingStatus'] == 'onboarded_user') {
           // Proceed to home
-          navKey.currentState.pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+          if(navKey.currentState != null) navKey.currentState..pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
         } else {
           // Handle error
         }
@@ -398,11 +398,6 @@ class _AppState extends State<App> {
     setState(() {
       dataStore.removeFromBasket(productID);
     });
-  }
-
-  onLogin(FirebaseUser newUser) {
-    navKey.currentState.pop();
-    showPlatformDialog(androidBarrierDismissible: true,context: navKey.currentState.overlay.context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("Success"), content: Text("You are now logged in.")));
   }
 
   onUserChange() {

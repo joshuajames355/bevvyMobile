@@ -181,4 +181,14 @@ class DataStore {
 
     return items;
   }
+
+  Future<int> remoteOrderAmountInt() {
+   if (this.order?.data['status'] == 'synced_editing_order' && this.order?.metadata?.hasPendingWrites == false) {
+      return Future.value(this.order?.data['serverOrderTotal']);
+    } else {
+      return this.orderRef.snapshots().firstWhere((DocumentSnapshot snap) {
+        return (snap?.data['status'] == 'synced_editing_order' && snap?.metadata?.hasPendingWrites == false);
+      }).then((DocumentSnapshot snap) async { return this.order?.data['serverOrderTotal']; });
+    }
+  }
 }

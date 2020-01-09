@@ -127,11 +127,27 @@ class DataStore {
   }
 
   int get orderAmountInt{
-    int total = 0;
+    int basketSubtotal = 0;
     this.checkoutData.forEach((Product k, int quantity){
-      total += k.price * quantity;
+      basketSubtotal += k.price * quantity;
     });
-    return total;
+
+    int otherchargesBasketSubtotal = 0;
+    this.order?.data['othercharges']?.forEach((charge) => {
+      if (charge['type'] == 'fixed_amount') {
+        otherchargesBasketSubtotal += charge['value']
+      } else if (charge['type'] == 'percentage_basket') {
+        otherchargesBasketSubtotal += ((charge['value'] / 100) * basketSubtotal)
+      }
+    });
+
+    int otherchargesTotalSubtotal = 0;
+    this.order?.data['othercharges']?.forEach((charge) => {
+      if (charge['type'] == 'percentage_total') {
+        otherchargesTotalSubtotal += ((charge['value'] / 100) * (basketSubtotal + otherchargesBasketSubtotal))
+      }
+    });
+    return basketSubtotal + otherchargesBasketSubtotal + otherchargesTotalSubtotal;
   }
 
   double get orderAmountDouble{

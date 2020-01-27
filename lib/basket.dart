@@ -60,7 +60,7 @@ class BasketDataWidget extends StatelessWidget
   }
 }
 
-class Basket extends StatelessWidget
+class Basket extends StatefulWidget
 {
   const Basket({ Key key, this.dataStore, this.removeFromBasket, this.deliveryFee, this.freeDeliveryMinimun}) : super(key: key);
 
@@ -68,6 +68,24 @@ class Basket extends StatelessWidget
   final RemoveFromBasketFunc removeFromBasket;
   final double deliveryFee;
   final double freeDeliveryMinimun;
+
+  @override
+  _BasketState createState() => _BasketState();
+}
+
+class _BasketState extends State<Basket> {
+  int reference;
+  @override
+  void initState() {
+    reference = this.widget.dataStore.subscribeToOrderUpdate((_) => this.setState(()=> _)); //Update UI on datastore update.
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    this.widget.dataStore.unsubscribeFromOrderUpdates(reference);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,13 +106,13 @@ class Basket extends StatelessWidget
               (
                 children: joinBasketElements
                 (
-                  dataStore.checkoutData.keys.map((Product x) => Dismissible 
+                  widget.dataStore.checkoutData.keys.map((Product x) => Dismissible 
                     (
                       key: Key(x.id),
-                      child: BasketDataWidget(product: x, dataStore: dataStore, removeFromBasket: removeFromBasket,),
+                      child: BasketDataWidget(product: x, dataStore: widget.dataStore, removeFromBasket: widget.removeFromBasket,),
                       onDismissed: (DismissDirection direction)
                       {
-                        removeFromBasket(x.id);
+                        widget.removeFromBasket(x.id);
                       },
                       direction: DismissDirection.endToStart,
                       background: Container
@@ -133,49 +151,36 @@ class Basket extends StatelessWidget
                   children: 
                   [
                     Text("Subtotal", style: TextStyle(fontSize: 16)),
-                    Text(dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text(widget.dataStore.basketSubtotalStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
                   ]
                 ),
-                Row
-                (
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: 
-                  [
-                    Text("Delivery fee", style: TextStyle(fontSize: 16)),
-                    Container
-                    (
-                      child: Row
-                      (
-                        children: 
-                        [
-                          Padding
-                          (
-                            padding: EdgeInsets.symmetric(horizontal: 10),
-                            child: IconButton
-                            (
-                              icon: Icon(IconData(59534, fontFamily: 'MaterialIcons')),
-                              onPressed: ()
-                              {
-                                showPlatformDialog(androidBarrierDismissible: true, context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)], title: Text("Delivery fee"), content: Text("Free if you spend more than £" + freeDeliveryMinimun.toStringAsFixed(2)),  ios: (_) => CupertinoAlertDialogData(),));
-                              },
-                            ),
-                          ),
-                          Text(dataStore.orderAmountDouble > freeDeliveryMinimun ? "£0.00" : "£" + deliveryFee.toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
-                        ]
-                      )
-                    ),
-                  ]
-                ),
+              ]..addAll(this.widget.dataStore.otherCharges.map((OtherChargeItem item) => OtherChargesBasketElement(item)))..add(
+              
                 Row
                 (
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: 
                   [
                     Text("Total", style: TextStyle(fontSize: 16)),
-                    Text("£" + (dataStore.orderAmountDouble + (dataStore.orderAmountDouble > freeDeliveryMinimun ? 0 : deliveryFee)).toStringAsFixed(2), style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor)),
+                    Text(widget.dataStore.orderAmountStringWithCurrency, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor, fontStyle: this.widget.dataStore.isSynced ? FontStyle.normal : FontStyle.italic)),
                   ]
                 ),
-              ],
+              )
+            ),
+          ),
+          Card
+          (
+            child: Padding(
+              padding: EdgeInsets.all(6),
+              child: TextField(
+                textInputAction: TextInputAction.go,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  border: UnderlineInputBorder(),
+                  labelText: "Promo Codes",
+                ),
+                onSubmitted: addPromoCode,
+              ),
             ),
           ),
           RaisedButton
@@ -192,11 +197,11 @@ class Basket extends StatelessWidget
             ),
             onPressed: () async
             {
-              if (dataStore.checkoutData.length == 0) {
+              if (widget.dataStore.checkoutData.length == 0) {
                 showPlatformDialog(androidBarrierDismissible: true,context: context, builder: (context) => PlatformAlertDialog(actions: <Widget>[PlatformDialogAction(child: Text("Ok"), onPressed: () => Navigator.pop(context),)],title: Text("The Basket is Empty"), content: Text("Add at least one item to your basket.")));
               } else {                
                 try {
-                  dataStore.createOrUpdateFirestoreOrder();
+                  widget.dataStore.createOrUpdateFirestoreOrder();
                   Navigator.pushNamed(context, "/checkout");
                 } catch (error) {
                   print(error);
@@ -208,7 +213,41 @@ class Basket extends StatelessWidget
       )
     );
   }
+
+  void addPromoCode(String code){
+    this.widget.dataStore.addPromoCode(code);
+  }
 }
+
+class OtherChargesBasketElement extends StatelessWidget
+{
+  const OtherChargesBasketElement(this.item, { Key key}) : super(key: key);
+
+  final OtherChargeItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: 
+      [
+        Text(item.name, style: TextStyle(fontSize: 16)),
+        Container
+        (
+          child: Row
+          (
+            children: 
+            [
+              Text(item.printValue, style: TextStyle(fontSize: 16, color: Theme.of(context).accentColor))
+            ]
+          )
+        ),
+      ]
+    );
+  }
+}
+
+
 List<Widget> joinBasketElements(List<Widget> basketElements)
 {
   if(basketElements.length == 0) return [];

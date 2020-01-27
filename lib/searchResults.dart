@@ -27,6 +27,7 @@ class _SearchResultsState extends State<SearchResults>
     (
       appBar: AppBar
       (
+        automaticallyImplyLeading: false,
         title: TextField(
           autofocus: true,
           textInputAction: TextInputAction.search,

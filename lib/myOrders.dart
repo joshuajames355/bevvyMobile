@@ -37,6 +37,7 @@ class _MyOrdersState extends State<MyOrders>
     return Scaffold(
       appBar: AppBar(
         title: Text("My Orders", style: TextStyle(fontFamily: "opificio")),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children:

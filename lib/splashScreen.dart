@@ -15,8 +15,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
   TextEditingController _controller = TextEditingController();
   List<Widget> images = [
-    SplashScreenImage(description: "Description 1. Our company is called Jovi, maybe we should do something.", imageFilename: "images/smirnoff.jpg",),
-    SplashScreenImage(description: "Description 2", imageFilename: "images/jd.jpg",)
+    SplashScreenImage(imageFilename: "images/caption1.jpg",),
+    SplashScreenImage(imageFilename: "images/caption2.jpg",),
+    SplashScreenImage(imageFilename: "images/caption3.jpg",)
     ];
   AnimationController animationController;
   Animation<double> imageAnimation;
@@ -209,10 +210,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
 
 class SplashScreenImage extends StatelessWidget
 {
-  const SplashScreenImage({ Key key, this.imageFilename, this.description}) : super(key: key);
+  const SplashScreenImage({ Key key, this.imageFilename}) : super(key: key);
 
   final String imageFilename;
-  final String description;
 
 
   @override
@@ -235,11 +235,6 @@ class SplashScreenImage extends StatelessWidget
                 width: 200,
                 image: AssetImage(imageFilename),
               ),
-              Padding
-              (
-                child: Text(description),
-                padding: EdgeInsets.all(3),
-              )
             ]
           )
         )

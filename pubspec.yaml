@@ -66,12 +66,13 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - images/smirnoff.jpg
-    - images/loading.gif
     - images/jd.jpg
     - images/GooglePay_mark_800_gray.png
     - images/Apple_Pay_Mark_RGB_041619.png
     - images/JoviBanner.svg
+    - images/caption1.jpg
+    - images/caption2.jpg
+    - images/caption3.jpg
   fonts:
     - family: opificio
       fonts:

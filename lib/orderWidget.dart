@@ -49,7 +49,7 @@ class OrderWidget extends StatelessWidget
                   children: <Widget>
                   [
                     Text(order.products.length.toString() + (order.products.length == 1 ? " item" : " items")),
-                    Text(order.price, style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)),
+                    Text(order.serverOrderTotal, style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),

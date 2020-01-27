@@ -22,6 +22,7 @@ class AccountDetails extends StatelessWidget
       appBar: AppBar
       (
         title: Text("Account Details", style: TextStyle(fontFamily: "opificio")),
+        automaticallyImplyLeading: false,
       ),
       body: Column
       (

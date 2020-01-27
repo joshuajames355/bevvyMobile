@@ -487,15 +487,18 @@ class NavBarScaffold extends StatefulWidget
 class _NavBarScaffoldState extends State<NavBarScaffold> {
   GlobalKey<NavigatorState> navKey = GlobalKey();
   Widget build(BuildContext context)  {
-    return Scaffold
-    (
-      body: Navigator
+    return WillPopScope(
+      onWillPop: () => Future.value(false),
+      child: Scaffold
       (
-        key: navKey,
-        onGenerateRoute: widget.onGenerateRoute,
-      ),
+        body: Navigator
+        (
+          key: navKey,
+          onGenerateRoute: widget.onGenerateRoute,
+        ),
 
-      bottomNavigationBar: HomeNavBar(navKey: navKey),
+        bottomNavigationBar: HomeNavBar(navKey: navKey),
+      )
     );
   }
 }

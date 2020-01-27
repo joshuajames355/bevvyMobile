@@ -46,6 +46,7 @@ class _CategoryScrollViewState extends State<CategoryScrollView>
     (
       appBar: AppBar
       (
+        automaticallyImplyLeading: false,
         leading: FlatButton
         (
           child: Icon(IconData(58820, fontFamily: 'MaterialIcons', matchTextDirection: true)),

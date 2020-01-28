@@ -1,19 +1,23 @@
 import 'package:bevvymobile/order.dart';
 import 'package:bevvymobile/product.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:bevvymobile/dataStore.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 typedef void RemoveFromBasketFunc(String productID);
+typedef void AddProductFunc(Product product, int quantity);
+
 typedef void AddOrder(Order order);
 
 class BasketDataWidget extends StatelessWidget
 {
-  const BasketDataWidget({ Key key, this.product, this.dataStore, this.removeFromBasket}) : super(key: key);
+  const BasketDataWidget({ Key key, this.product, this.dataStore, this.removeFromBasket, this.addProduct}) : super(key: key);
 
   final Product product;
   final DataStore dataStore;
   final RemoveFromBasketFunc removeFromBasket;
+  final AddProductFunc addProduct;
 
   @override
   Widget build(BuildContext context) 
@@ -28,7 +32,7 @@ class BasketDataWidget extends StatelessWidget
           SizedBox.fromSize
           (
             child: product.icon,
-            size: Size(50,50),
+            size: Size(80,80),
           ),
           Expanded
           (
@@ -40,8 +44,32 @@ class BasketDataWidget extends StatelessWidget
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>
                 [
-                  Text(product.title, style: TextStyle( fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
-                  Text(dataStore.checkoutData[product].toString() + "X",),
+                  Text(product.title, style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold), textAlign: TextAlign.left,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      SizedBox(
+                        width: 33,
+                        child: FloatingActionButton(
+                          onPressed: ()=>{addProduct(product, -1)},
+                          child: Icon(IconData(0xe15b, fontFamily: 'MaterialIcons'), color: Colors.black, size: 19.0,),
+                          backgroundColor: Colors.white,
+                          ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(left: 20, right: 20),
+                        child: Text(dataStore.checkoutData[product].toString(), style: TextStyle(fontSize: 22.0)),
+                      ),
+                      SizedBox(
+                        width: 33,
+                        child: FloatingActionButton(
+                          onPressed: ()=>{addProduct(product, 1)},
+                          child: Icon(Icons.add, color: Colors.black, size: 19.0),
+                          backgroundColor: Colors.white,
+                          ),
+                      ),
+                    ],
+                  ),
                 ],
               )
             ),
@@ -62,10 +90,11 @@ class BasketDataWidget extends StatelessWidget
 
 class Basket extends StatelessWidget
 {
-  const Basket({ Key key, this.dataStore, this.removeFromBasket, this.deliveryFee, this.freeDeliveryMinimun}) : super(key: key);
+  const Basket({ Key key, this.dataStore, this.removeFromBasket, this.addProduct, this.deliveryFee, this.freeDeliveryMinimun}) : super(key: key);
 
   final DataStore dataStore;
   final RemoveFromBasketFunc removeFromBasket;
+  final AddProductFunc addProduct;
   final double deliveryFee;
   final double freeDeliveryMinimun;
 
@@ -91,7 +120,7 @@ class Basket extends StatelessWidget
                   dataStore.checkoutData.keys.map((Product x) => Dismissible 
                     (
                       key: Key(x.id),
-                      child: BasketDataWidget(product: x, dataStore: dataStore, removeFromBasket: removeFromBasket,),
+                      child: BasketDataWidget(product: x, dataStore: dataStore, removeFromBasket: removeFromBasket, addProduct: addProduct,),
                       onDismissed: (DismissDirection direction)
                       {
                         removeFromBasket(x.id);

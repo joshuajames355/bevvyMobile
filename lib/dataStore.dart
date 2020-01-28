@@ -30,7 +30,7 @@ class DataStore {
       }
       return MapEntry(index, value);
     });
-    if(!foundItem) checkoutData[product] = quantity;
+    if(!foundItem && quantity > 0) checkoutData[product] = quantity;
   }
 
   void removeFromBasket(String productID) {

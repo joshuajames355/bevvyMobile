@@ -150,32 +150,40 @@ class _OrderScreenState extends State<OrderScreen>{
                 Text("Amount", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
               ],),
           ),
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Container
+          (
+            margin: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column
+            (
+              mainAxisSize: MainAxisSize.min,
+              children: widget.order.otherCharges.map<Widget>(
+                (OtherChargeItem item) => Column
+                (
                   children:
                   [
-                    SizedBox(
-                      width: 300,
-                      child: 
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children:
-                        [
-                          Expanded(
-                            child: Text("Delivery Fee", style: TextStyle(fontWeight: FontWeight.w300),),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children:
+                      [
+                        SizedBox(
+                          width: 300,
+                          child: 
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children:
+                            [
+                              Text(item.name, style: TextStyle(fontWeight: FontWeight.w300))
+                            ]
                           ),
-                        ]
-                      ),
-                    ),
-                    Text("£3.50" , style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.w300)) 
+                        ),
+                        Text(item.printValue, style: TextStyle(color: Theme.of(context).accentColor, fontWeight: FontWeight.w300)) 
+                      ]
+                    )
                   ]
                 )
-              ],
-            ),
+              ).toList(),
+            )
           ),
           Divider(thickness: 2,),
           Container
@@ -186,7 +194,7 @@ class _OrderScreenState extends State<OrderScreen>{
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Total Paid", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                Text(widget.order.price, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 16, fontWeight: FontWeight.bold))
+                Text(widget.order.serverOrderTotal, style: TextStyle(color: Theme.of(context).accentColor, fontSize: 16, fontWeight: FontWeight.bold))
               ]
             )
           ),

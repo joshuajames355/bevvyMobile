@@ -9,11 +9,12 @@ typedef void VoidFunc();
 
 class AccountDetails extends StatelessWidget
 {
-  const AccountDetails({ Key key, this.user, this.onUserChange, this.userDocument}) : super(key: key);
+  const AccountDetails({ Key key, this.user, this.onUserChange, this.userDocument, this.loyaltyStamps}) : super(key: key);
 
   final FirebaseUser user;
   final VoidFunc onUserChange;
   final DocumentSnapshot userDocument;
+  final QuerySnapshot loyaltyStamps;
 
   @override
   Widget build(BuildContext context) 
@@ -80,7 +81,26 @@ class AccountDetails extends StatelessWidget
               onPressed: () => Navigator.pushNamed(context, "/paymentMethods"),
             ),
           ),
-          Expanded(child: Container()),//Fill space
+          Expanded(
+            flex: 1,
+            child: new GridView.count(
+              crossAxisCount: 3,
+              childAspectRatio: 1.0,
+              shrinkWrap: true,
+              mainAxisSpacing: 2.0,      
+              crossAxisSpacing: 2.0,
+              padding: const EdgeInsets.only(left: 70.0, right: 70.0, top: 40.0),
+              children: <int>[0,1,2,3,4,5,6,7,8].map((int i) {
+                return Container(
+                  color: Colors.blueGrey,
+                  child: Center(child: (loyaltyStamps.documents.length > i) ? Image(
+                    height: 64,
+                    width: 64,
+                    image: AssetImage("images/jovi_stamp.png")) : null
+                  )
+                );
+              }).toList()),
+          ),
           Card(
             child: FlatButton(
               onPressed: (){

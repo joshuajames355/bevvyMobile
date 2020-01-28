@@ -1,3 +1,4 @@
+import 'package:bevvymobile/order.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:bevvymobile/product.dart';
@@ -15,6 +16,7 @@ class DataStore {
   FirebaseUser user;
 
   Map<int, OrderUpdateEvent> onOrderUpdateEvents = Map<int, OrderUpdateEvent>();
+  List<Future<DocumentSnapshot>> nextSnapshots = [];
   Random rand = Random();
 
   DataStore() {
@@ -37,30 +39,32 @@ class DataStore {
     checkoutData.removeWhere((Product product, int quantity) => product.id == productID);
   }
 
-  void createFirestoreOrder() async {
+  Future<void> createFirestoreOrder() {
     if (this.user == null) {
       throw('User is not logged in (or rather, not store in dataStore)');
     }
 
-    var orderRef = await Firestore.instance.collection('orders').add({
+    return Firestore.instance.collection('orders').add({
       'basket': this.firestoreBasketFormat,
       'customerID': this.user.uid,
       'status': 'new_order',
       'createdByUserAt': FieldValue.serverTimestamp(),
       'updatedLastByUserAt': FieldValue.serverTimestamp(),
+    }).then((var orderRef) {
+      this.setOrderRef(orderRef);
     });
-    this.setOrderRef(orderRef);
   }
 
-  void updateFirestoreOrder() async {
+  Future<void> updateFirestoreOrder() {
     if (!firestoreBasketInSync) {
-      this.order.reference.updateData({
+      return this.order.reference.updateData({
         'basket': this.firestoreBasketFormat,
         'status': 'edited_order',
         'updatedLastByUserAt': FieldValue.serverTimestamp(),
       });
     } else {
       print('basket already in sync');
+      return Future.value();
     }
   }
 
@@ -77,17 +81,21 @@ class DataStore {
     );
   }
 
-  void createOrUpdateFirestoreOrder() async {
+   createOrUpdateFirestoreOrder() async {
     try {
       if (this.orderRef == null) {
-        createFirestoreOrder();
+        await createFirestoreOrder();
       } else {
-        updateFirestoreOrder();
+        await updateFirestoreOrder();
       }
     } catch (error) {
       print('err' + error.toString());
       rethrow;
     }
+  }
+
+  bool get isSynced{
+    return this.order != null && this.firestoreBasketInSync && this.order.data["status"] == "synced_editing_order";
   }
 
   bool get firestoreBasketInSync {
@@ -123,30 +131,62 @@ class DataStore {
 
   void unsubscribeFromOrderUpdates(int id)
   {
-    if(id < this.onOrderUpdateEvents.length) this.onOrderUpdateEvents.remove(id);
+    this.onOrderUpdateEvents.remove(id);
+  }
+
+  double get basketSubtotalDouble{
+    return (this.basketSubtotalClientSide/100);
+  }
+
+  String get basketSubtotalString {
+    return basketSubtotalDouble.toStringAsFixed(2);
+  }
+
+  String get basketSubtotalStringWithCurrency {
+    return '£' + basketSubtotalString;
+  }
+
+  int get basketSubtotalClientSide{
+      int basketSubtotal = 0;
+    this.checkoutData.forEach((Product k, int quantity){
+      basketSubtotal += k.price * quantity;
+    });
+    return basketSubtotal;
   }
 
   int get orderAmountInt{
+    if(this.order != null && this.firestoreBasketInSync && this.order.data["status"] == "synced_editing_order")
+    {
+      var total = this.order.data["serverOrderTotal"];
+      if (total != null && total != 0){
+        return total;
+      }
+    }
+
     int basketSubtotal = 0;
     this.checkoutData.forEach((Product k, int quantity){
       basketSubtotal += k.price * quantity;
     });
 
     int otherchargesBasketSubtotal = 0;
-    this.order?.data['othercharges']?.forEach((charge) => {
-      if (charge['type'] == 'fixed_amount') {
-        otherchargesBasketSubtotal += charge['value']
-      } else if (charge['type'] == 'percentage_basket') {
-        otherchargesBasketSubtotal += ((charge['value'] / 100) * basketSubtotal)
-      }
-    });
-
     int otherchargesTotalSubtotal = 0;
-    this.order?.data['othercharges']?.forEach((charge) => {
-      if (charge['type'] == 'percentage_total') {
-        otherchargesTotalSubtotal += ((charge['value'] / 100) * (basketSubtotal + otherchargesBasketSubtotal))
-      }
-    });
+
+    if(this.order?.data != null && this.order?.data.containsValue("othercharges"))
+    {
+      this.order?.data['othercharges']?.forEach((charge) => {
+        if (charge['type'] == 'fixed_amount') {
+          otherchargesBasketSubtotal += charge['value']
+        } else if (charge['type'] == 'percentage_basket') {
+          otherchargesBasketSubtotal += ((charge['value'] / 100) * basketSubtotal)
+        }
+      });
+
+      this.order?.data['othercharges']?.forEach((charge) => {
+        if (charge['type'] == 'percentage_total') {
+          otherchargesTotalSubtotal += ((charge['value'] / 100) * (basketSubtotal + otherchargesBasketSubtotal))
+        }
+      });
+    }
     return basketSubtotal + otherchargesBasketSubtotal + otherchargesTotalSubtotal;
   }
 
@@ -160,6 +200,34 @@ class DataStore {
 
   String get orderAmountStringWithCurrency {
     return '£' + orderAmountString;
+  }
+
+  List<OtherChargeItem> get otherCharges{
+    if(this.order?.data != null && this.order?.data.containsKey("othercharges"))
+    {
+      return List.from(this.order.data["othercharges"].map<OtherChargeItem>((dynamic item) => OtherChargeItem(Map<String, dynamic>.from(item))));
+    }
+    return [];
+  }
+
+  addPromoCode(String code) async{
+    try {
+      if (this.orderRef == null) {
+        await createFirestoreOrder();
+      } 
+    } catch (error) {
+      print('err' + error.toString());
+      rethrow;
+    }
+
+    while ( this.order == null || this.order.data["status"] != "synced_editing_order"){ //TODO: handle this properly
+      await Future.delayed(Duration(milliseconds: 200));
+    }
+    this.order.reference.updateData({
+      'status': 'edited_order',
+      'updatedLastByUserAt': FieldValue.serverTimestamp(),
+      'othercharges': FieldValue.arrayUnion([{"name" : code}])
+    });
   }
 
   List<ApplePayItem> get basketAsApplePayItems {

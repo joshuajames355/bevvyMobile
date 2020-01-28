@@ -255,14 +255,20 @@ class _AppState extends State<App> {
             {
               return CupertinoPageRoute(builder: (BuildContext _) => StreamBuilder(
                 stream: Firestore.instance.collection('users').document(user.uid).snapshots(),
-                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                  if(!snapshot.hasData) {
-                    return Container();
-                  }
-                  return  AccountDetails(
-                    user: user,
-                    onUserChange: onUserChange,
-                    userDocument: snapshot.data,
+                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> userSnapshot) {
+                  return StreamBuilder(
+                    stream: Firestore.instance.collection('users').document(user.uid).collection('loyalty_stamps').snapshots(),
+                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> stampsSnapshot) {
+                      if(!userSnapshot.hasData) {
+                        return Container();
+                      }
+                      return  AccountDetails(
+                        user: user,
+                        onUserChange: onUserChange,
+                        userDocument: userSnapshot.data,
+                        loyaltyStamps: stampsSnapshot.data
+                      );
+                    }
                   );
                 }
               ),

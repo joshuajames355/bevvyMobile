@@ -245,6 +245,7 @@ class _AppState extends State<App> {
               return CupertinoPageRoute(builder: (BuildContext _) =>  Basket(
                 dataStore: dataStore,
                 removeFromBasket: removeFromBasket,
+                addProduct: addToBasket,
                 deliveryFee: 0,
                 freeDeliveryMinimun: 0,
               ),

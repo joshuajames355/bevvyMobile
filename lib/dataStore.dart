@@ -28,11 +28,11 @@ class DataStore {
     checkoutData = checkoutData.map((Product index, int value) {
       if(index.id == product.id)  {
         foundItem = true;
-        return MapEntry(product, value + quantity);
+        return MapEntry(product, max(value + quantity, 0));
       }
       return MapEntry(index, value);
     });
-    if(!foundItem) checkoutData[product] = quantity;
+    if(!foundItem && quantity > 0) checkoutData[product] = quantity;
   }
 
   void removeFromBasket(String productID) {
